@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>cn.argento.askia</groupId>
+    <artifactId>CocoaToolkit</artifactId>
+    <packaging>pom</packaging>
+    <version>0.0.1</version>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <modules>
+        <module>CocoaToolkit-Utilities</module>
+        <module>CocoaToolkit-DesignPatterns</module>
+        <module>CocoaToolkit-Annotations</module>
+        <module>CocoaToolkit-CommandToolsProviders</module>
+        <module>CocoaToolkit-LanguageExtends</module>
+    </modules>
+
+
+    <dependencyManagement>
+        <!-- 引入自身模块方便其他子模块引入 -->
+        <dependencies>
+            <dependency>
+                <groupId>cn.argento.askia</groupId>
+                <artifactId>CocoaToolkit-Annotations</artifactId>
+                <version>0.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.argento.askia</groupId>
+                <artifactId>CocoaToolkit-DesignPatterns</artifactId>
+                <version>0.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.argento.askia</groupId>
+                <artifactId>CocoaToolkit-Utilities</artifactId>
+                <version>0.0.1</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+
+    <!-- 所有模块都需要的依赖 -->
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+
+
+
+
+</project>
