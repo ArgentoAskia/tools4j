@@ -2,14 +2,13 @@ package cn.argento.askia.utilities.windows.reg;
 
 import cn.argento.askia.utilities.IOStreamUtility;
 
-import javax.annotation.processing.Processor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class AbstractCommand implements Command {
+public abstract class AbstractRegCommand implements RegCommand {
     protected StringBuilder commandBuilder;
     protected BitSet argsDuplicatedSet;
 
@@ -17,10 +16,10 @@ public abstract class AbstractCommand implements Command {
 
     private Map<String, BitSet> argBitSetMap;
 
-    protected AbstractCommand(){
+    protected AbstractRegCommand(){
         this("");
     }
-    protected AbstractCommand(String cmdInit){
+    protected AbstractRegCommand(String cmdInit){
         commandBuilder = new StringBuilder(cmdInit);
         argsDuplicatedSet = new BitSet(BIT_SET_INIT_SIZE);
         argBitSetMap = new HashMap<>();

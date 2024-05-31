@@ -1,8 +1,6 @@
 package cn.argento.askia.utilities.windows.reg;
 
-import java.io.Console;
-
-public final class RegAdd extends AbstractCommand{
+public final class RegAdd extends AbstractRegCommand {
 
 
 
@@ -25,7 +23,7 @@ public final class RegAdd extends AbstractCommand{
     }
 
     @Override
-    public Command build() {
+    public RegCommand build() {
         return RegAdd.this;
     }
 
@@ -166,9 +164,9 @@ public final class RegAdd extends AbstractCommand{
 
 
         //end to build optionalArgs
-        Command endOptionalArgs();
+        RegCommand endOptionalArgs();
 
-        Command noOptionalArgs();
+        RegCommand noOptionalArgs();
     }
 
     private class OptionalArgsImpl implements OptionalArgs {
@@ -243,12 +241,12 @@ public final class RegAdd extends AbstractCommand{
 
 
         @Override
-        public Command endOptionalArgs() {
+        public RegCommand endOptionalArgs() {
             return RegAdd.this;
         }
 
         @Override
-        public Command noOptionalArgs() {
+        public RegCommand noOptionalArgs() {
             return endOptionalArgs();
         }
     }

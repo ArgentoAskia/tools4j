@@ -1,8 +1,6 @@
 package cn.argento.askia.utilities.windows.reg;
 
-import java.util.Optional;
-
-public final class RegDelete extends AbstractCommand{
+public final class RegDelete extends AbstractRegCommand {
     @Override
     protected void registerArgBits() {
         register("keyName", "v", "f", "reg:32");
@@ -17,7 +15,7 @@ public final class RegDelete extends AbstractCommand{
     }
 
     @Override
-    public Command build() {
+    public RegCommand build() {
         return RegDelete.this;
     }
 
@@ -148,8 +146,8 @@ public final class RegDelete extends AbstractCommand{
         OptionalArgs reg64();
 
         //end to build optionalArgs
-        Command endOptionalArgs();
-        Command noOptionalArgs();
+        RegCommand endOptionalArgs();
+        RegCommand noOptionalArgs();
     }
     private class OptionalArgsImpl implements OptionalArgs{
 
@@ -190,12 +188,12 @@ public final class RegDelete extends AbstractCommand{
         }
 
         @Override
-        public Command endOptionalArgs() {
+        public RegCommand endOptionalArgs() {
             return RegDelete.this;
         }
 
         @Override
-        public Command noOptionalArgs() {
+        public RegCommand noOptionalArgs() {
             return endOptionalArgs();
         }
     }

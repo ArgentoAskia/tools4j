@@ -3,7 +3,7 @@ package cn.argento.askia.utilities.windows.reg;
 
 import java.io.UnsupportedEncodingException;
 
-public final class RegQuery extends AbstractCommand{
+public final class RegQuery extends AbstractRegCommand {
 
 //    public interface RequiredArgs{
 //        OptionalArgs addOptionalArgs();
@@ -49,7 +49,7 @@ public final class RegQuery extends AbstractCommand{
     }
 
     @Override
-    public Command build() {
+    public RegCommand build() {
         return RegQuery.this;
     }
 
@@ -184,8 +184,8 @@ public final class RegQuery extends AbstractCommand{
 
 
         //end to build optionalArgs
-        Command endOptionalArgs();
-        Command noOptionalArgs();
+        RegCommand endOptionalArgs();
+        RegCommand noOptionalArgs();
     }
 
 
@@ -260,12 +260,12 @@ public final class RegQuery extends AbstractCommand{
         }
 
         @Override
-        public Command endOptionalArgs() {
+        public RegCommand endOptionalArgs() {
             return RegQuery.this;
         }
 
         @Override
-        public Command noOptionalArgs() {
+        public RegCommand noOptionalArgs() {
             return endOptionalArgs();
         }
     }
