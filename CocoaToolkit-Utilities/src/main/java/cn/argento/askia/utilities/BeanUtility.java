@@ -3,6 +3,7 @@ package cn.argento.askia.utilities;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
+import java.util.function.Function;
 
 /**
  * java.bean.*封装, 提供JavaBean属性复制, JavaBean序列化等功能, propertiesManager等功能
@@ -27,5 +28,15 @@ public final class BeanUtility {
     public static boolean isJavaBean(Class<?> beanClass){
         return false;
     }
+
+
+    public static <ST, DT> boolean copyProperty(Object src, String srcPropertyName,
+                                       Object dest, String destPropertyName,
+                                       Function<ST, DT> typeAdapterFunction){
+        return false;
+    }
+
+
+
 
 }
