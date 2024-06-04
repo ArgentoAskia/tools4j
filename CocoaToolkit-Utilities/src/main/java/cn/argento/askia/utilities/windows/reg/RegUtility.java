@@ -53,7 +53,6 @@ public class RegUtility {
         checkSystemSupported();
         return new RegQuery();
     }
-
     public static RegAdd add(){
         checkSystemSupported();
         return new RegAdd();
@@ -63,5 +62,48 @@ public class RegUtility {
         return new RegDelete();
     }
 
-    
+    public static RegCompare compare(){
+        checkSystemSupported();
+        return new RegCompare();
+    }
+
+    public static RegCopy copy(){
+        checkSystemSupported();
+        return new RegCopy();
+    }
+
+    public static RegExport export(){
+        checkSystemSupported();
+        return new RegExport();
+    }
+
+    public static RegFlags flags(){
+        checkSystemSupported();
+        return new RegFlags();
+    }
+
+    public static RegImport imports(){
+        checkSystemSupported();
+        return new RegImport();
+    }
+
+    public static RegLoad load(){
+        checkSystemSupported();
+        return new RegLoad();
+    }
+
+    public static RegRestore restore(){
+        checkSystemSupported();
+        return new RegRestore();
+    }
+
+    public static RegSave save(){
+        checkSystemSupported();
+        return new RegSave();
+    }
+
+    public static RegUnload unload(){
+        checkSystemSupported();
+        return new RegUnload();
+    }
 }
