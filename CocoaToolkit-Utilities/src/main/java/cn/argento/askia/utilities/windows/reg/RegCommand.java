@@ -3,14 +3,18 @@ package cn.argento.askia.utilities.windows.reg;
 /**
  * 抽象 {@code Reg} 命令接口.
  * <p>
- * 该接口主要有三个接口方法：<br>
+ * 该接口提供了修改Windows系统注册表的能力, 该接口主要有三个接口方法：<br>
  * <ul>
  *     <li>Object exec(): 调用该方法将会执行指令并得到执行结果！</li>
  *     <li>String toString(): 得到拼接出来的字符串形式的指令, 一般用于调试输出查看命令格式</li>
  *     <li>RegCommand build(): 调用此命令则构建出 {@code RegCommand}对象！</li>
  * </ul>
  *
- * @implNote
+ * @apiNote
+ *  核心原理是拼接Windows系统下的Reg指令，然后通过{@link ProcessBuilder}创建CMD进程并执行Reg指令, 然后对拿到的返回值结果进行分析并返回！
+ *  需要注意，该接口的所有实现只能在Windows平台下运行, 因此并不具备跨平台能力, 所有的实现无需检测当前平台, 该工作交由{@link RegUtility}来做！
+ *
+ *
  *
  * @author Askia
  */
@@ -62,7 +66,7 @@ public interface RegCommand {
      */
     RegCommand build();
 
-    // TODO: 2024/5/29 加入判断命令能否运行的接口, 静态方法
+    // TODO: 2024/5/29 加入判断命令能否运行的接口, 静态方法,考虑使用正则表达式？
     static boolean isValid(RegCommand regCommand){
         return false;
     }
