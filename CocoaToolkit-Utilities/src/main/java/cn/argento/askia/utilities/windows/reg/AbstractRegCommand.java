@@ -8,17 +8,31 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *
+ */
 public abstract class AbstractRegCommand implements RegCommand {
+
+    // 字符串命令
     protected StringBuilder commandBuilder;
+    // 用于判别用户是否调用了
+
     protected BitSet argsDuplicatedSet;
 
     private static final int BIT_SET_INIT_SIZE = 128;
 
     private Map<String, BitSet> argBitSetMap;
 
+    /**
+     * template
+     */
     protected AbstractRegCommand(){
         this("");
     }
+
+    /**
+     * template
+     */
     protected AbstractRegCommand(String cmdInit){
         commandBuilder = new StringBuilder(cmdInit);
         argsDuplicatedSet = new BitSet(BIT_SET_INIT_SIZE);
@@ -26,8 +40,10 @@ public abstract class AbstractRegCommand implements RegCommand {
         registerArgBits();
     }
 
+
     protected abstract void registerArgBits();
 
+   
     protected void appendCMD(String cmd, boolean appendSpace){
         commandBuilder.append(cmd);
         if (appendSpace){
@@ -53,6 +69,21 @@ public abstract class AbstractRegCommand implements RegCommand {
     protected void register(String argName, BitSet bit){
         argBitSetMap.put(argName, bit);
     }
+
+    /**
+     *
+     * <p>
+     *
+     * <hr>
+     *   使用示例如下：
+     *   <blockquote style="background-color:rgb(232,232,232)"><pre>
+     *
+     *   </pre></blockquote>
+     * <hr>
+     *
+     * @param key
+     * @param sameAs
+     */
     protected void registerSame(String key, String sameAs){
         final BitSet bitSet = argBitSetMap.get(sameAs);
         assert bitSet != null;
@@ -61,6 +92,20 @@ public abstract class AbstractRegCommand implements RegCommand {
 
 
     // false = bit not exist
+    /**
+     *
+     * <p>
+     *
+     * <hr>
+     *   使用示例如下：
+     *   <blockquote style="background-color:rgb(232,232,232)"><pre>
+     *
+     *   </pre></blockquote>
+     * <hr>
+     *
+     * @param argName
+     * @return boolean
+     */
     protected boolean cmpBit(String argName){
         final BitSet bitSet = argBitSetMap.get(argName);
         final BitSet clone = (BitSet) argsDuplicatedSet.clone();
@@ -76,6 +121,7 @@ public abstract class AbstractRegCommand implements RegCommand {
 
 
     protected abstract Object analyzeResult(byte[] result);
+
 
     @Override
     public Object exec() {
