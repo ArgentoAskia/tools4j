@@ -66,9 +66,76 @@ public interface RegCommand {
      */
     RegCommand build();
 
-    // TODO: 2024/5/29 加入判断命令能否运行的接口, 静态方法,考虑使用正则表达式？
+    // done-> 2024/5/29 加入判断命令能否运行的接口, 静态方法,考虑使用正则表达式？
+    /**
+     * 判别该{@code RegCommand}上的字符串指令是否是一个可运行的指令, 即合法指令！
+     * <p>
+     *
+     * <hr>
+     *   使用示例如下:
+     *   <blockquote style="background-color:rgb(232,232,232)"><pre>
+     *   final RegCommand regAddCmd = RegUtility.query()
+     *           .keyName().fullKey(RegUtility.RootKeyConstants.HKLM, "subkey")
+     *           .ve()
+     *           .endOptionalArgs().build();
+     *
+     *   RegCommand.isValid(regAddCmd);     // true
+     *   </pre></blockquote>
+     *
+     * @param regCommand regCommand对象, 使用{@link RegCommand#build()}即可得到实例！
+     * @return boolean类型, 如果指令格式合法, 责返回true, 否则返回false
+     */
     static boolean isValid(RegCommand regCommand){
-        return false;
+        final String s = regCommand.toString();
+        // because regCommand.toString() return null instance of ""
+        if (s == null){
+            // so we decide to throw an exception!
+            throw new NullPointerException("reg command is null!");
+        }
+        // will microsoft update the reg command and add some new features in it???
+        // this condition may not happen recently! so enum is enough!
+
+        // start with ignore case?
+        String sCopy = s.toUpperCase();
+        if (sCopy.startsWith("REG ADD")){
+            return AbstractRegCommand.regAddPattern.matcher(s).matches();
+        }
+        if (sCopy.startsWith("REG COMPARE")){
+            return AbstractRegCommand.regComparePattern.matcher(s).matches();
+        }
+        if (sCopy.startsWith("REG COPY")){
+            return AbstractRegCommand.regCopyPattern.matcher(s).matches();
+        }
+        if (sCopy.startsWith("REG DELETE")){
+            return AbstractRegCommand.regDeletePattern.matcher(s).matches();
+        }
+        if (sCopy.startsWith("REG EXPORT")){
+            return AbstractRegCommand.regExportPattern.matcher(s).matches();
+        }
+        if (sCopy.startsWith("REG FLAGS")){
+            return AbstractRegCommand.regFlagsPattern.matcher(s).matches();
+        }
+        if (sCopy.startsWith("REG IMPORT")){
+            return AbstractRegCommand.regImportPattern.matcher(s).matches();
+        }
+        if (sCopy.startsWith("REG LOAD")){
+            return AbstractRegCommand.regLoadPattern.matcher(s).matches();
+        }
+        if (sCopy.startsWith("REG QUERY")){
+            return AbstractRegCommand.regQueryPattern.matcher(s).matches();
+        }
+        if (sCopy.startsWith("REG RESTORE")){
+            return AbstractRegCommand.regRestorePattern.matcher(s).matches();
+        }
+        if (sCopy.startsWith("REG SAVE")){
+            return AbstractRegCommand.regSavePattern.matcher(s).matches();
+        }
+        if (sCopy.startsWith("REG UNLOAD")){
+            return AbstractRegCommand.regUnloadPattern.matcher(s).matches();
+        }
+        // 默认情况下, 每个指令可能都会包含到子指令，这是因为子实现在构造器中就已经明确了指令类型
+        // 但是可能有极端情况（虽然不常见）, 比如拿到了空字符串？遇到这种情况我们选择抛一个异常！
+        throw new IllegalStateException("check if it is REG COMMAND?");
     }
 
 }
