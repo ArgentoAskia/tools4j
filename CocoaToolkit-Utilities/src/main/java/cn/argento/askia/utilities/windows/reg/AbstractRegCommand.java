@@ -7,11 +7,30 @@ import java.io.InputStream;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  *
  */
 public abstract class AbstractRegCommand implements RegCommand {
+
+    // for JDK 8's interfaces not allow private static method!
+    // we put the pattern here and make it package private to ensure RegCommand can use it!
+    // TODO: 2024/6/4 init all patterns!
+    static final Pattern regAddPattern = Pattern.compile("");
+    static final Pattern regComparePattern = Pattern.compile("");
+    static final Pattern regCopyPattern = Pattern.compile("");
+    static final Pattern regDeletePattern = Pattern.compile("");
+    static final Pattern regExportPattern = Pattern.compile("");
+    static final Pattern regFlagsPattern = Pattern.compile("");
+    static final Pattern regImportPattern = Pattern.compile("");
+    static final Pattern regLoadPattern = Pattern.compile("");
+    static final Pattern regQueryPattern = Pattern.compile("");
+    static final Pattern regRestorePattern = Pattern.compile("");
+    static final Pattern regSavePattern = Pattern.compile("");
+    static final Pattern regUnloadPattern = Pattern.compile("");
+
+
 
     // 字符串命令
     protected StringBuilder commandBuilder;
