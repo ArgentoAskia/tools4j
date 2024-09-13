@@ -5,15 +5,14 @@ import cn.argento.askia.exceptions.errors.SystemError;
 import javax.swing.text.Style;
 import java.io.*;
 import java.lang.reflect.Array;
+import java.nio.charset.Charset;
 import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class SystemUtility {
 
@@ -206,10 +205,61 @@ public class SystemUtility {
         return null;
     }
 
+    public static Map<String, String> getSystemEnvironments(){
+        Map<String, String> envs = new HashMap<>();
+        String cmd = "";
+        String separator = "\r\n";
+        if (isWindowsNTOS()){
+            cmd = "set";
+        }
+        else if (isUnixClassesOS()){
+            cmd = "printenv";
+        }
+        else if (isMacOS()){
+            cmd = "printenv";
+        }
+        if (cmd.equalsIgnoreCase("")){
+            return null;
+        }
+        final String set = exec(cmd);
+        final String[] split = Objects.requireNonNull(set).split(separator);
+        for (String s : split) {
+            final String[] keyValue = s.split("=");
+            envs.put(keyValue[0], keyValue[1]);
+        }
+        return envs;
+    }
+
+    public static void setSystemEnvironment(String varName,
+                                            String varValue){
+
+    }
+
+    public static void setUserEnvironment(String varName,
+                                          String varValue){
+
+    }
+
+    protected static String exec(String command){
+        final Runtime runtime = Runtime.getRuntime();
+        try {
+            final Process exec = runtime.exec("cmd /C " + command);
+            final InputStream inputStream = exec.getInputStream();
+            final byte[] bytes = IOStreamUtility.readAllBytes(inputStream);
+            return new String(bytes, Charset.defaultCharset());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     public static void main(String[] args) {
 //        environments();
 //        System.out.println(getCurrentRunningJDKDir());
-        System.out.println(getClassPath());
+//        System.out.println(getClassPath());
+//        final String set = exec("set");
+//        System.out.println(set);
+        System.out.println(getSystemEnvironments());
     }
 }
