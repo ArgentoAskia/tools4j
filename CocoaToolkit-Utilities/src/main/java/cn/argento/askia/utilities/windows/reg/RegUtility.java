@@ -1,6 +1,12 @@
 package cn.argento.askia.utilities.windows.reg;
 
 
+import cn.argento.askia.utilities.windows.reg.args.RegCommandArg;
+import cn.argento.askia.utilities.windows.reg.sub.RegAdd;
+import cn.argento.askia.utilities.windows.reg.sub.RegCompare;
+import cn.argento.askia.utilities.windows.reg.sub.RegCopy;
+import cn.argento.askia.utilities.windows.reg.sub.RegSubCommandManager;
+
 /**
  * 注册表工具类！
  */
@@ -30,7 +36,6 @@ public class RegUtility {
     }
 
     public static void main(String[] args) {
-
     }
 
     private static boolean systemSupported(){
@@ -45,65 +50,34 @@ public class RegUtility {
         return systemSupported();
     }
 
-    private static void checkSystemSupported(){
+    private static void checkSystemSupportedAndThrow(){
         if (!isSystemSupported())
             throw new UnsupportedOperationException("非 Windows NT 系统, 不支持注册表操作！");
     }
-    public static RegQuery query(){
-        checkSystemSupported();
-        return new RegQuery();
+
+    public enum Solver{
+        USE_LATEST, THROW_EXCEPTION
     }
-    public static RegAdd add(){
-        checkSystemSupported();
-        return new RegAdd();
+    private static Solver solver;
+    public static void setCallingChainExceptionSolve(Solver solve){
+        RegUtility.solver = solve;
     }
-    public static RegDelete delete(){
-        checkSystemSupported();
-        return new RegDelete();
+    public static Solver getCallingChainExceptionSolve(){
+        return solver;
     }
 
-    public static RegCompare compare(){
-        checkSystemSupported();
-        return new RegCompare();
+
+    public RegAdd add(){
+        return RegSubCommandManager.newRegSubCommandInstance(RegAdd.class);
     }
 
-    public static RegCopy copy(){
-        checkSystemSupported();
-        return new RegCopy();
+    public RegCopy copy(){
+        return RegSubCommandManager.newRegSubCommandInstance(RegCopy.class);
     }
 
-    public static RegExport export(){
-        checkSystemSupported();
-        return new RegExport();
+    public RegCompare compare(){
+        return RegSubCommandManager.newRegSubCommandInstance(RegCompare.class);
     }
 
-    public static RegFlags flags(){
-        checkSystemSupported();
-        return new RegFlags();
-    }
 
-    public static RegImport imports(){
-        checkSystemSupported();
-        return new RegImport();
-    }
-
-    public static RegLoad load(){
-        checkSystemSupported();
-        return new RegLoad();
-    }
-
-    public static RegRestore restore(){
-        checkSystemSupported();
-        return new RegRestore();
-    }
-
-    public static RegSave save(){
-        checkSystemSupported();
-        return new RegSave();
-    }
-
-    public static RegUnload unload(){
-        checkSystemSupported();
-        return new RegUnload();
-    }
 }
