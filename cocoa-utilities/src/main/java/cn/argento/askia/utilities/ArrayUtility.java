@@ -33,6 +33,8 @@ import java.util.function.Function;
 @SuppressWarnings("SuspiciousSystemArraycopy")
 public final class ArrayUtility {
 
+    private ArrayUtility(){}
+
     private final static String TARGET_OBJECT_NOT_ARRAY = "参数 arrayObj 不是一个数组";
 
     // 检查对象是不是一个数组
@@ -80,6 +82,44 @@ public final class ArrayUtility {
     public static int getLength(Object arrayObj){
         checkObjectIsArray(arrayObj);
         return Array.getLength(arrayObj);
+    }
+
+    /**
+     *
+     * @param arrayObj
+     * @param vClass
+     * @param <V>
+     * @return
+     */
+    public static <V> V[] getAll(Object arrayObj, Class<V> vClass){
+        final int length = getLength(arrayObj);
+        V[] arrayResult = newArray2(vClass, length);
+        for (int i = 0 ;i < length; i++){
+            final Object o = get(arrayObj, i);
+            if (vClass.isAssignableFrom(o.getClass())){
+                final V cast = vClass.cast(o);
+                arrayResult[i] = cast;
+            }
+        }
+        return arrayResult;
+    }
+
+    /**
+     * 提供将{@linkplain Object Object}类型的数据解包成{@linkplain Object[] Object[]}的能力.
+     *
+     * <p>方法会检查提供的参数 {@code arrayObj} 是否是一个数组, 如果不是则会抛出{@link IllegalArgumentException}
+     * <p>方法基于{@link System#arraycopy(Object, int, Object, int, int)}方法来进行数组复制
+     *
+     * @param arrayObj arrayObj
+     * @return Object[] 数组
+     * @throws IllegalArgumentException 如果参数 {@code arrayObj} 不是是一个数组
+     */
+    public static Object[] getAll(Object arrayObj){
+        checkObjectIsArray(arrayObj);
+        final int length = getLength(arrayObj);
+        Object[] objects = new Object[length];
+        System.arraycopy(arrayObj, 0, objects, 0, length);
+        return objects;
     }
 
 
@@ -168,7 +208,11 @@ public final class ArrayUtility {
      */
     @SuppressWarnings("unchecked")
     @Deprecated
-    protected static <T> T[] newArray2(Class<? extends T> componentType, int length){
+    public static <T> T[] newArray2(Class<? extends T> componentType, int length) {
+        Objects.requireNonNull(componentType);
+        if (length < 0 ){
+            throw new IllegalArgumentException("长度是负数：" + length);
+        }
         return (T[]) Array.newInstance(componentType, length);
     }
 
@@ -570,6 +614,11 @@ public final class ArrayUtility {
         return count;
     }
 
+    public static <S, T extends S> Set<S> toSet(T[] arrayObj){
+        Set<S> set = new HashSet<>(Arrays.asList(arrayObj));
+        return set;
+    }
+
     /**
      * @param arrayObj
      * @param map
@@ -651,6 +700,11 @@ public final class ArrayUtility {
         return false;
     }
 
+
+    public static <T> boolean fastContain(T[] array, Object target){
+        return Arrays.stream(array).parallel().anyMatch(target::equals);
+    }
+
     /**
      * 快速判断数组内是否包含某个成员！
      * <strong>该方法旨在当 {@linkplain #contain(Object, Object)} 方法在执行效率上无法满足时
@@ -713,5 +767,89 @@ public final class ArrayUtility {
 
     public static void unsorted(Object arrayObj){
 
+    }
+
+    @SuppressWarnings("unchecked")
+    // 合并数组
+    public static <A> A[] combine(A[] array1, A[] array2, boolean removeDuplicate){
+        Collection<A> collection;
+        if (removeDuplicate){
+            collection = new HashSet<>();
+        }
+        else{
+            collection = new ArrayList<>();
+        }
+        collection.addAll(Arrays.asList(array1));
+        collection.addAll(Arrays.asList(array2));
+        return collection.toArray((A[])ArrayUtility.newArray(array1.getClass().getComponentType(), 0));
+    }
+
+    /**
+     * 创建一个包含特定成员的数组
+     * @param aTypeObject 成员
+     * @param <A> 任何泛型支持的类型
+     * @return 直接调用此方法将返回空数据
+     */
+    @SafeVarargs
+    @SuppressWarnings("unchecked")
+    public static <A> A[] as(A... aTypeObject){
+        if (aTypeObject.length == 0){
+            return (A[]) newArray2(aTypeObject.getClass().getComponentType(), 0);
+        }
+        else{
+            return as(aTypeObject.length, aTypeObject);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @SafeVarargs
+    private static <A> A[] as(int arrayLength, A... aTypeObject){
+        int originalArrayLength = aTypeObject.length;
+        final Class<?> componentType = aTypeObject.getClass().getComponentType();
+        int realArrayLength = Math.max(originalArrayLength, arrayLength);
+        if (aTypeObject.length == 0){
+            // 退化为创建数组
+            return (A[]) newArray2(componentType, realArrayLength);
+        }
+        final A[] objects = (A[]) newArray2(componentType, realArrayLength);
+        System.arraycopy(aTypeObject, 0, objects, 0, originalArrayLength);
+        return objects;
+    }
+
+
+    /**
+     * 严格的数组判等, 要求：顺序相同，元素相同
+     * @param array1
+     * @param array2
+     * @return
+     */
+    public static boolean equalsStrictly(Object array1, Object array2){
+        checkObjectIsArray(array1);
+        checkObjectIsArray(array2);
+        // 长度不同则肯定false
+        if (getLength(array1) != getLength(array2)){
+            return false;
+        }
+        final int length = getLength(array1);
+        for (int i = 0; i < length; i++) {
+            final Object objFromArray1 = get(array1, i);
+            final Object objFromArray2 = get(array2, i);
+            if (!Objects.equals(objFromArray1, objFromArray2)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static <T1, T2> boolean equalsStrictly(T1[] array1, T2[] array2, BiFunction<T1, T2, Boolean> equalFunction){
+        if (array1.length != array2.length){
+            return false;
+        }
+        for (int i = 0; i < array1.length; i++) {
+            if (!equalFunction.apply(array1[i], array2[i])){
+                return false;
+            }
+        }
+        return true;
     }
 }
