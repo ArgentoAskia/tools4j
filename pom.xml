@@ -27,6 +27,7 @@
         <module>cocoa-command-tools-providers</module>
         <module>cocoa-language-extends</module>
         <module>cocoa-concurrent</module>
+        <module>cocoac-core</module>
     </modules>
 
 

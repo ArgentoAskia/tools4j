@@ -6,12 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="cocoa-utilities" />
-        <module name="cocoa-design-patterns" />
-        <module name="cocoa-concurrent" />
         <module name="cocoa-annotations" />
         <module name="cocoa-language-extends" />
         <module name="cocoa-command-tools-providers" />
+        <module name="cocoac-core" />
+        <module name="cocoa-utilities" />
+        <module name="cocoa-design-patterns" />
+        <module name="cocoa-concurrent" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="11">
