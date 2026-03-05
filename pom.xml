@@ -28,6 +28,7 @@
         <module>cocoa-language-extends</module>
         <module>cocoa-concurrent</module>
         <module>cocoac-core</module>
+        <module>cocoa-gui</module>
     </modules>
 
 
