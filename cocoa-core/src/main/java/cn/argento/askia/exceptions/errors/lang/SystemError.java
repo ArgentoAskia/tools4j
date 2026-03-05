@@ -1,6 +1,5 @@
-package cn.argento.askia.exceptions.errors;
+package com.yumitoy.exceptions.errors.lang;
 
-import java.io.FileNotFoundException;
 import java.util.Locale;
 
 /**

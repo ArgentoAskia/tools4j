@@ -1,7 +1,5 @@
 package cn.argento.askia.exceptions.runtime.files;
 
-import cn.argento.askia.utilities.SystemUtility;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,9 +19,21 @@ public class UnsupportedMimeTypeException extends RuntimeException {
     private static final String EXCEPTION_TXT_PART1 = "accept ";
     private static final String EXCEPTION_TXT_PART2 = "support ";
 
+    private static boolean isWindowsNTOS(){
+        // bug here!
+        // if “OS” is not exist ,this method will throw NPE
+        // this is not we want!
+        final String os = System.getenv("OS");
+        if (os != null && os.equalsIgnoreCase("Windows_NT")){
+            return true;
+        }
+        // "os.name" creates by jvm!
+        return System.getProperty("os.name").toLowerCase().contains("window") ||
+                System.getProperty("os.name").toLowerCase().contains("win");
+    }
 
     private static String getFileType(File file){
-        if (SystemUtility.isWindowsNTOS()) {
+        if (isWindowsNTOS()) {
             final String fileType = file.getAbsolutePath().split("\\.")[1];
             return "NTSuffix/" + fileType;
         }

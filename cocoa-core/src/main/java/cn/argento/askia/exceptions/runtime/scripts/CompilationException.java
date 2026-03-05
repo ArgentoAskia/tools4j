@@ -1,12 +1,6 @@
-package cn.argento.askia.exceptions;
+package cn.argento.askia.exceptions.runtime.scripts;
 
 import java.io.File;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 /**
  *

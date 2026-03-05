@@ -1,8 +1,6 @@
 package cn.argento.askia.exceptions.runtime.lang;
 
 
-import java.util.function.Consumer;
-
 /**
  * 当一个理论上必定能够实例化成功的对象, 在代码运行的时候由于各种各样的原因导致实例化失败的时候, 抛出此异常.<br>
  *
