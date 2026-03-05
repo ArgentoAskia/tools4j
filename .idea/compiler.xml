@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="cocoa-utilities" />
         <module name="cocoa-design-patterns" />
+        <module name="cocoa-concurrent" />
         <module name="cocoa-annotations" />
         <module name="cocoa-language-extends" />
         <module name="cocoa-command-tools-providers" />

@@ -26,6 +26,7 @@
         <module>cocoa-design-patterns</module>
         <module>cocoa-command-tools-providers</module>
         <module>cocoa-language-extends</module>
+        <module>cocoa-concurrent</module>
     </modules>
 
 
