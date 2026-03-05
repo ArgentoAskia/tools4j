@@ -1,15 +1,49 @@
 package cn.argento.askia.utilities.algorithms;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class StringAlgorithmsUtility {
-    public static void main(String[] args) {
-        final int i = BF1("glk".toCharArray(), "agidgcjhggik".toCharArray());
-        System.out.println(i);
+//    public static void main(String[] args) {
+//        final int i = BF1("glk".toCharArray(), "agidgcjhggik".toCharArray());
+//        System.out.println(i);
+//
+//        // 1 1 2 4 3 3 7 6 3
+//        final int[] ints = buildNext("abcabdabe".toCharArray());
+//        System.out.println(Arrays.toString(ints));
+//    }
 
-        // 1 1 2 4 3 3 7 6 3
-        final int[] ints = buildNext("abcabdabe".toCharArray());
-        System.out.println(Arrays.toString(ints));
+    public static void main(String[] args) {
+        String file1Path = "C:\\Users\\Admin\\Desktop\\1.txt";
+        String file2Path = "C:\\Users\\Admin\\Desktop\\2.txt";
+        String mergedFilePath = "C:\\Users\\Admin\\Desktop\\merged.txt";
+
+        try {
+            // 读取两个文件的内容
+            List<String> lines1 = Files.readAllLines(Paths.get(file1Path));
+            List<String> lines2 = Files.readAllLines(Paths.get(file2Path));
+
+            // 按行合并两个列表
+            List<String> mergedLines = IntStream.range(0, Math.max(lines1.size(), lines2.size()))
+                    .mapToObj(i -> {
+                        String line1 = i < lines1.size() ? lines1.get(i) : "";
+                        String line2 = i < lines2.size() ? lines2.get(i) : "";
+                        return line1 + "\\" + "n" + line2; // 按需调整合并逻辑
+                    })
+                    .collect(Collectors.toList());
+
+            // 将合并后的内容写入新文件
+            Files.write(Paths.get(mergedFilePath), mergedLines);
+
+            System.out.println("文件合并完成，结果已保存到：" + mergedFilePath);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static int BF1(char[] pattern, char[] text){
@@ -170,5 +204,23 @@ public class StringAlgorithmsUtility {
         str2ArrayAlongList.toArray(result2);
         str1ArrayAlongList.toArray(result1);
         return true;
+    }
+
+    private static List<String> concat(List<String> list1, List<String> list2, String concatStr){
+        return IntStream.range(0, Math.max(list1.size(), list2.size()))
+                .mapToObj(i -> {
+                    String s1 = i < list1.size() ? list1.get(i) : "";
+                    String s2 = i < list2.size() ? list2.get(i) : "";
+                    return s1 + concatStr +s2;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public static List<String> concat(String str1, String separator1, String str2, String separator2, String concatStr){
+        String[] splitStr1 = str1.split(separator1);
+        String[] splitStr2 = str2.split(separator2);
+        ArrayList<String> stringsList1 = new ArrayList<>(Arrays.asList(splitStr1));
+        ArrayList<String> stringsList2 = new ArrayList<>(Arrays.asList(splitStr2));
+        return concat(stringsList1, stringsList2, concatStr);
     }
 }
