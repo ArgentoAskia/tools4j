@@ -930,6 +930,17 @@ public final class AnnotationUtility {
         return property.getDefaultValue();
     }
 
+
+    public static <T> T getDefaultValue(Class<? extends Annotation> annotationClass, String propertyName, Class<T> tClass, T defaultValueAfterNoSuchMethod){
+        try {
+            Method property = annotationClass.getMethod(propertyName);
+            return tClass.cast(property.getDefaultValue());
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            return defaultValueAfterNoSuchMethod;
+        }
+    }
+
     /**
      * 获取注解某个属性的类型.
      *
