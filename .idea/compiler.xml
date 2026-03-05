@@ -10,9 +10,11 @@
         <module name="cocoa-language-extends" />
         <module name="cocoa-command-tools-providers" />
         <module name="cocoac-core" />
+        <module name="cocoa-network" />
         <module name="cocoa-utilities" />
         <module name="cocoa-design-patterns" />
         <module name="cocoa-concurrent" />
+        <module name="cocoa-gui" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="11">
