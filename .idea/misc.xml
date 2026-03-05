@@ -21,6 +21,8 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/CocoaToolkit-Utilities/pom.xml" />
+        <option value="$PROJECT_DIR$/cocoa-design-patterns/pom.xml" />
       </list>
     </option>
   </component>

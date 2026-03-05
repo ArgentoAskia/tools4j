@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cn.argento.askia</groupId>
-    <artifactId>CocoaToolkit</artifactId>
+    <artifactId>cocoa-java</artifactId>
     <packaging>pom</packaging>
     <version>0.0.1</version>
     <build>
@@ -21,11 +21,11 @@
         </plugins>
     </build>
     <modules>
-        <module>CocoaToolkit-Utilities</module>
-        <module>CocoaToolkit-DesignPatterns</module>
-        <module>CocoaToolkit-Annotations</module>
-        <module>CocoaToolkit-CommandToolsProviders</module>
-        <module>CocoaToolkit-LanguageExtends</module>
+        <module>cocoa-utilities</module>
+        <module>cocoa-annotations</module>
+        <module>cocoa-design-patterns</module>
+        <module>cocoa-command-tools-providers</module>
+        <module>cocoa-language-extends</module>
     </modules>
 
 
@@ -34,17 +34,17 @@
         <dependencies>
             <dependency>
                 <groupId>cn.argento.askia</groupId>
-                <artifactId>CocoaToolkit-Annotations</artifactId>
+                <artifactId>cocoa-annotations</artifactId>
                 <version>0.0.1</version>
             </dependency>
             <dependency>
                 <groupId>cn.argento.askia</groupId>
-                <artifactId>CocoaToolkit-DesignPatterns</artifactId>
+                <artifactId>cocoa-design-patterns</artifactId>
                 <version>0.0.1</version>
             </dependency>
             <dependency>
                 <groupId>cn.argento.askia</groupId>
-                <artifactId>CocoaToolkit-Utilities</artifactId>
+                <artifactId>cocoa-utilities</artifactId>
                 <version>0.0.1</version>
             </dependency>
         </dependencies>
