@@ -1,6 +1,7 @@
 package cn.argento.askia.utilities;
 
 import cn.argento.askia.exceptions.runtime.files.UnsupportedMimeTypeException;
+import cn.argento.askia.exceptions.runtime.scripts.CompilationException;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;

@@ -1,13 +1,18 @@
 package cn.argento.askia.utilities;
 
+import cn.argento.askia.exceptions.errors.lang.SystemError;
+import cn.argento.askia.utilities.algorithms.StringAlgorithmsUtility;
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class SystemUtility {
 

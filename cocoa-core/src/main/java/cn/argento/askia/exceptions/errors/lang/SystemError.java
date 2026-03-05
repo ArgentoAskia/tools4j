@@ -1,4 +1,4 @@
-package com.yumitoy.exceptions.errors.lang;
+package cn.argento.askia.exceptions.errors.lang;
 
 import java.util.Locale;
 

@@ -1,6 +1,9 @@
 package cn.argento.askia.utilities;
 
 
+import cn.argento.askia.exceptions.runtime.files.NotFileException;
+import cn.argento.askia.exceptions.runtime.files.UnsupportedFileTypeRuntimeException;
+
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -190,7 +193,7 @@ public class FileUtility {
                 return readAllLineFromZipFile(compressFiles, cs);
             }
             else{
-                throw new com.yumitoy.exceptions.runtime.files.UnsupportedFileTypeRuntimeException("目前仅支持zip文件和jar文件的内部文件读写，更多压缩文件支持敬请期待");
+                throw new UnsupportedFileTypeRuntimeException("目前仅支持zip文件和jar文件的内部文件读写，更多压缩文件支持敬请期待");
             }
         }
     }

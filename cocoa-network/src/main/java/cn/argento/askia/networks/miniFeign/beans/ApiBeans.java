@@ -1,6 +1,7 @@
 package cn.argento.askia.networks.miniFeign.beans;
 
 import cn.argento.askia.utilities.AnnotationUtility;
+import cn.argento.askia.utilities.ReflectUtility;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;

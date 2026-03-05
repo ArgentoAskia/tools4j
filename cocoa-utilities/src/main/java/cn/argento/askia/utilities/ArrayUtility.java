@@ -1,8 +1,6 @@
 package cn.argento.askia.utilities;
 
 
-import sun.nio.cs.US_ASCII;
-
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.BiFunction;
@@ -1034,7 +1032,7 @@ public final class ArrayUtility {
      * @param <T>
      * @return
      */
-    public static <T> boolean fastContain(T[] array, @NotNull Object target){
+    public static <T> boolean fastContain(T[] array, Object target){
         return Arrays.stream(array).parallel().anyMatch(target::equals);
     }
 

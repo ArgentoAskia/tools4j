@@ -21,7 +21,6 @@
         <dependency>
             <groupId>cn.argento.askia</groupId>
             <artifactId>cocoa-utilities</artifactId>
-            <version>0.0.1</version>
         </dependency>
     </dependencies>
 
