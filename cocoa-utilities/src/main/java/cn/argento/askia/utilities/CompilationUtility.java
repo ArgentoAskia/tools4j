@@ -1,6 +1,5 @@
 package cn.argento.askia.utilities;
 
-import cn.argento.askia.exceptions.CompilationException;
 import cn.argento.askia.exceptions.runtime.files.UnsupportedMimeTypeException;
 
 import javax.tools.JavaCompiler;

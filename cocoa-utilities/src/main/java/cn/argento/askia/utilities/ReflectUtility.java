@@ -1,16 +1,17 @@
 package cn.argento.askia.utilities;
 
 import java.lang.reflect.*;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  *  javadoc,代码习惯，hutool
- * @deprecated for some reasons, this class will be re-Build in next session!
+ *  包括反射、代理（基于反射）、cglib的使用
+ * @apiNote 此工具类需要在下个版本中重构！
  */
-@Deprecated
 public class ReflectUtility {
-    public static void main(String[] args) throws NoSuchMethodException {
+    public static void main(String[] args) throws NoSuchMethodException, ClassNotFoundException {
 //        boolean b = ReflectUtil.modifierJudge(ReflectUtil.class, isPublic);
 //        System.out.println(b);
 //        Class<String> strCl = String.class;
@@ -19,6 +20,16 @@ public class ReflectUtility {
 //        System.out.println(isPublic);
         String name = getName(ReflectUtility[].class, CLASS_SIMPLE_NAME);
         System.out.println(name);
+
+        Class<?> componentType = String[][].class.getComponentType();
+        System.out.println(componentType);
+        Object o = ArrayUtility.newArray(componentType, 3);
+        System.out.println(o);
+        System.out.println(ArrayUtility.getDimension(o));
+        System.out.println(getDeclaredCallerClassNameAndMethodName("getDeclaredCallerMethodName"));
+        System.out.println(getCallerClassName());
+        System.out.println(getCallerMethodName());
+
     }
 
     public static final String isAbstract = "isAbstract";
@@ -359,5 +370,167 @@ public class ReflectUtility {
     }
     public static boolean getOverloadMethods(String methodName){
         return false;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T newInstanceEnforced(Class<T> instanceClass, T defaultInstance,
+                                            Function<Set<Constructor<?>>, T> ifNotFoundConstructor,
+                                            Supplier<Integer> ifArrayType){
+        try {
+            return instanceClass.newInstance();
+        } catch (IllegalAccessException e) {
+
+            // 通过检查JDK newInstance()的方法，我们知道抛出IllegalAccessException的可能是因为套了Class，比如：Class<Class<String>>
+            // 这种我们直接返回Class.class就好
+            String name = instanceClass.getName();
+            if (name.equalsIgnoreCase(Class.class.getName())){
+                return (T) Class.class;
+            }
+            // if the class or its nullary constructor(无参构造器) is not accessible.
+            // 类不能访问, 可能是因为类不是public的！
+            int modifiers = instanceClass.getModifiers();
+            if (!Modifier.isPublic(modifiers)){
+                // 非 public 的类，需要考虑字节码修改并重新加载字节码
+                // 此时我们对类进行修改(添加 public), 以辅助创建这个对象, 但是我们只能返回Object
+            }
+
+            try {
+                // 无参构造器无法访问, 可能是因为不是public的, 所以我们先获取出来看看是什么原因导致的
+                Constructor<T> declaredConstructor = instanceClass.getDeclaredConstructor();
+                // declaredConstructor is not public, modify it to public
+                // 让他可以访问
+                if (!Modifier.isPublic(declaredConstructor.getModifiers()) || !declaredConstructor.isAccessible()){
+                    declaredConstructor.setAccessible(true);
+                }
+                T t = declaredConstructor.newInstance();
+                return t;
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException noSuchMethodException) {
+                noSuchMethodException.printStackTrace();
+            } // if this Constructor object is enforcing Java language access control and the underlying constructor is inaccessible.
+            // 如果这个构造函数对象正在强制执行 Java 语言访问控制，并且底层构造函数不可访问。
+            catch (InstantiationException instantiationException) {
+                instantiationException.printStackTrace();
+                // if the class that declares the underlying constructor represents an abstract class.
+                // 抽象类
+                // TODO: 2025/6/25 修改抽象类
+            } //  if the underlying constructor throws an exception.
+            //  如果类抛出了异常
+            // 自行选择构造器创建对象
+            Set<Constructor<?>> allConstructors = getAllConstructors(instanceClass);
+            T apply = ifNotFoundConstructor.apply(allConstructors);
+            return apply;
+        } catch (InstantiationException e) {
+            //  if this Class represents an abstract class, an interface, an array class, a primitive type, or void;
+            //  or if the class has no nullary constructor;
+            //  or if the instantiation fails for some other reason.
+            e.printStackTrace();
+            if (instanceClass.isArray()){
+                Class<?> componentType = instanceClass.getComponentType();
+                Integer integer = ifArrayType.get();
+                Object o = ArrayUtility.newArray(componentType, integer);
+                return (T) o;
+            }
+            // Void则我们创建Void对象
+            if (instanceClass == void.class){
+                // Void类一定会有一个构造器, 使用这种方法可以规避异常的发生
+                Constructor<?> declaredConstructor = Void.class.getDeclaredConstructors()[0];
+                declaredConstructor.setAccessible(true);
+                try {
+                    Object o = declaredConstructor.newInstance();
+                    return (T) o;
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException instantiationException) {
+                    instantiationException.printStackTrace();
+                    // 不会发生
+                }
+
+            }
+            // 基本类型
+            if (instanceClass.isPrimitive()){
+                // 进行基本类型的创建
+            }
+        }
+        return defaultInstance;
+    }
+
+
+
+    public static Set<Constructor<?>> getAllConstructors(Class<?> clz){
+        Constructor<?>[] constructors = clz.getConstructors();
+        Constructor<?> enclosingConstructor = clz.getEnclosingConstructor();
+        Constructor<?>[] declaredConstructors = clz.getDeclaredConstructors();
+        Set<Constructor<?>> constructorSet = new HashSet<>();
+        constructorSet.addAll(Arrays.asList(constructors));
+        constructorSet.addAll(Arrays.asList(declaredConstructors));
+        constructorSet.add(enclosingConstructor);
+        return constructorSet;
+    }
+
+    public static Object invokeMethod(Object obj, String methodName, Object... args) {
+        Class<?> objClass = obj.getClass();
+        Optional<Method> methodOnly = getAllMethods(objClass).parallelStream()
+                .filter(method -> method.getName().equals(methodName))
+                .findFirst();
+        if (methodOnly.isPresent()){
+            Method method = methodOnly.get();
+            try {
+                return method.invoke(obj, args);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                return e;
+            }
+        }
+        return new ReflectiveOperationException("无法找到方法：" + methodName + "在类：" + obj.getClass() + "中");
+    }
+
+    public static Set<Method> getAllMethods(Class<?> cl){
+        Method[] declaredMethods = cl.getDeclaredMethods();
+        Method[] methods = cl.getMethods();
+        HashSet<Method> hashSet = new HashSet<>();
+        hashSet.addAll(Arrays.asList(declaredMethods));
+        hashSet.addAll(Arrays.asList(methods));
+        return hashSet;
+    }
+
+    public static Map<Integer, String> getCallerMethodNames() {
+        Map<Integer, String> classMethodMap = new TreeMap<>();
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        for (int i = 0; i < stackTrace.length; i++) {
+            final String methodName = stackTrace[i].getMethodName();
+            final String className = stackTrace[i].getClassName();
+            String fullMethodName = className + "#" + methodName;
+            classMethodMap.put(i, fullMethodName);
+        }
+        return classMethodMap;
+    }
+    // 提供getDeclaredCallerMethodName时，在此之前的内容则是getDeclaredCallerMethodName方法调用了哪些方法，在此之后的内容则是哪些方法调用了getDeclaredCallerMethodName
+    public static String getDeclaredCallerClassNameAndMethodName(String calledMethod){
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        boolean found = false;
+        for (int i = 0; i < stackTrace.length; i++) {
+            final String methodName = stackTrace[i].getMethodName();
+            final String className = stackTrace[i].getClassName();
+            String fullMethodName = className + "#" + methodName;
+            if (found){
+                return fullMethodName;
+            }
+            if (methodName.equalsIgnoreCase(calledMethod)){
+                found = true;
+                continue;
+            }
+        }
+        return null;
+    }
+    public static String getCallerMethodName(){
+        final String getCallerMethodName = getDeclaredCallerClassNameAndMethodName("getCallerMethodName");
+        if (getCallerMethodName != null){
+            return getCallerMethodName.split("#")[1];
+        }
+        return null;
+    }
+    public static String getCallerClassName(){
+        final String getCallerMethodName = getDeclaredCallerClassNameAndMethodName("getCallerClassName");
+        if (getCallerMethodName != null){
+            return getCallerMethodName.split("#")[0];
+        }
+        return null;
     }
 }

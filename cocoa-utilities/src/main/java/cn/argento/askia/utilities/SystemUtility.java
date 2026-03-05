@@ -1,18 +1,13 @@
 package cn.argento.askia.utilities;
 
-import cn.argento.askia.exceptions.errors.SystemError;
-
-import javax.swing.text.Style;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 public class SystemUtility {
 
@@ -25,7 +20,7 @@ public class SystemUtility {
 
     /**
      * println the SYSTEM levels variables for the specified writeOut Object.
-     * <p>for more informations, you can touch with {@link System#getenv()} and {@link System#getProperties()}
+     * <p>for more information, you can touch with {@link System#getenv()} and {@link System#getProperties()}
      *
      * @param writeOut Output Object to output all these environments
      */
@@ -35,7 +30,8 @@ public class SystemUtility {
         writeOut.println("=============== system environments ===============");
         envs.forEach((s, s2) -> writeOut.println(s + " = " + s2));
         writeOut.println("=============== system properties ===============");
-        properties.list(writeOut);
+        System.out.println();
+        properties.forEach((o, o2) -> writeOut.println(o + "=" + o2));
         writeOut.println("=============== END OF LINE =============");
     }
 
@@ -163,17 +159,20 @@ public class SystemUtility {
         return ArrayUtility.computeForeach(splitClassPathTxt, String.class, functionForEachPath);
     }
 
+    // 将长classpath转为短classpath
     public static String[] getClassPath(Function<String, String> functionForEachClasspath){
         final String classPathText = getOriginalClassPathText();
         return splitPathTextToArray(classPathText, functionForEachClasspath,
                 "no CLASSPATHS? are you sure? so how you load this class ???");
     }
 
+    // 格式化classpath
     public static String getClassPath(MessageFormat formatter){
         final String classPathText = getOriginalClassPathText();
         return formatter == null? classPathText : formatter.format(classPathText);
     }
 
+    // 获取classpath
     public static String getClassPath(){
         final String[] classPaths = getClassPath((Function<String, String>) null);
         StringBuilder stringBuilder = new StringBuilder();
@@ -182,6 +181,14 @@ public class SystemUtility {
         });
         return stringBuilder.toString();
     }
+
+    // 过滤classpath
+    public static List<String> getClassPath(Predicate<String> condition){
+        String originalClassPathText = getOriginalClassPathText();
+        String[] split = originalClassPathText.split(";");
+        return Arrays.stream(split).filter(condition).collect(Collectors.toList());
+    }
+
 
     public static String[] getLibraryPath(Function<String, String> functionForEachLibraryPath){
         final String originalLibraryPathText = getOriginalLibraryPathText();
@@ -265,7 +272,9 @@ public class SystemUtility {
 //        final String set = exec("set");
 //        System.out.println(set);
 //        System.out.println(getSystemEnvironments());
-        SystemUtility.StdOut.print(new char[]{'a', '2'});
+        StdOut.print(new char[]{'a', '2'});
+        System.out.println(getMavenProjectRoot(new File("yumitoy-utilities/src/main/java/com/yumitoy/utilities/SystemUtility.java")));
+        System.out.println(getMavenProjectModules(new File("yumitoy-utilities/src/main/java/com/yumitoy/utilities/SystemUtility.java")));
     }
 
     public static class StdOut{
@@ -307,5 +316,162 @@ public class SystemUtility {
         }
     }
 
+    public static class StdIn{
+        private static final Scanner stdInScanner;
+        static {
+            stdInScanner = new Scanner(System.in);
+        }
+        private StdIn(){
 
+        }
+        public static String readLineBlock(){
+            if(stdInScanner.hasNextLine()){
+                return stdInScanner.nextLine();
+            }
+            throw new Error("这个地方不可能也绝对不能发生！");
+        }
+
+    }
+
+
+    // Maven工程相关的扫描
+
+    /**
+     * 获取Maven工程的顶级工程(父工程)目录
+     *
+     * <b>注意：此API仅限Maven项目使用, 非Maven项目失效！</b>
+     *
+     *
+     * @param path
+     * @return
+     */
+    public static File getMavenProjectRoot(File path){
+        File mavenRoot = null;
+        if (!path.isDirectory()){
+            // 不是目录则获取目录
+            path = path.getParentFile();
+        }
+        path = path.getAbsoluteFile();
+        // 如果用户提交的目录本身就是根目录, 则直接返回
+        mavenRoot = _getMavenProjectRoot(path, mavenRoot);
+        return mavenRoot;
+    }
+    private static File _getMavenProjectRoot(File path, File traverse){
+        // 如果用户提供的目录有pom.xml，则记录
+        if (isRoot(path.toPath())){
+            // 如果是根则直接返回即可
+            return traverse;
+        }
+        if (hasPomFile(path)){
+            // 替换maveRoot，设置下一个循环
+            return _getMavenProjectRoot(path.getParentFile(), path);
+        }
+        else{
+            return _getMavenProjectRoot(path.getParentFile(), traverse);
+        }
+    }
+    private static boolean hasPomFile(File path){
+        File pomFile = new File(path, "pom.xml");
+        return pomFile.exists();
+    }
+    private static boolean isRoot(Path path) {
+        return path != null && path.getParent() == null;
+    }
+
+    // todo 这个方法有问题！
+    public static List<File> getMavenProjectModules(File path){
+        File mavenRoot = null;
+        if (!path.isDirectory()){
+            // 不是目录则获取目录
+            path = path.getParentFile();
+        }
+        path = path.getAbsoluteFile();
+        List<File> list = new ArrayList<>();
+        // 如果用户提交的目录本身就是根目录, 则直接返回
+        _getMavenProjectRootList(path, mavenRoot, list);
+        return list;
+    }
+    private static void _getMavenProjectRootList(File path, File traverse, List<File> ret){
+        // 如果用户提供的目录有pom.xml，则记录
+        if (isRoot(path.toPath())){
+            // 如果是根则直接返回即可
+            return;
+        }
+        if (hasPomFile(path)){
+            // 替换maveRoot，设置下一个循环
+            ret.add(path);
+            _getMavenProjectRootList(path.getParentFile(), path, ret);
+        }
+        else{
+            _getMavenProjectRootList(path.getParentFile(), traverse, ret);
+        }
+    }
+
+    // 项目、项目依赖等相关
+
+    /**
+     * 此方法能够获取classPath中特定的依赖包.
+     * <p>方法能够判断当前项目中是否引入了某个第三方包.
+     * @param groupId 对应maven中的groupId, 如果提供的groupId为空，则采用artifactId + version进行搜索
+     * @param artifactId 对应maven中的artifactId, 如果提供的artifactId为空, 则采用groupId + version进行搜索
+     * @param version 对应maven中的version, 如果提供的version为空, 则采用groupId + artifactId进行搜索
+     * @return 返回相关的包所在的位置
+     * @since 2025.12.24
+     */
+    public static List<String> getDependencies(String groupId, String artifactId, String version){
+        if (StringUtility.isBlank(groupId) && StringUtility.isBlank(artifactId) && StringUtility.isBlank(version)){
+            throw new IllegalArgumentException("groupId, artifactId, version至少有一个不为null");
+        }
+        // 处理GroupId,
+        List<String> resultMap = new ArrayList<>();
+        if (!StringUtility.isBlank(groupId)){
+            // 提供的GroupId是 com.xyz.abc模式, 我们要替换掉
+            groupId = groupId.replace(".", File.separator);
+            String finalGroupId = groupId;
+            _getClassPathByAnyIdInternal(finalGroupId, resultMap);
+        }
+        // 处理artifactId
+        resultMap = _continueMatchClassPath(artifactId, resultMap);
+
+        // 处理Version
+        resultMap = _continueMatchClassPath(version, resultMap);
+
+        return resultMap;
+    }
+    // 继续Match ClassPath所用
+    private static List<String> _continueMatchClassPath(String artifactIdOrVersion, List<String> resultMap) {
+        if (!StringUtility.isBlank(artifactIdOrVersion)){
+            if (resultMap.size() > 0){
+                // 如果resultMap中有内容，则从resultMap中再次匹配
+                resultMap = resultMap.parallelStream().filter(s -> {
+                    //  过滤artifactId
+                    char[] versionChars = artifactIdOrVersion.toCharArray();
+                    char[] classPathChars = s.toCharArray();
+                    // KMP 算法模式匹配ClassPath 和 artifactId
+                    return StringAlgorithmsUtility.KMP(versionChars, classPathChars) != -1;
+                }).collect(Collectors.toList());
+            }
+            else{
+                // 第一次匹配直接按照getClassPath()进行
+                _getClassPathByAnyIdInternal(artifactIdOrVersion, resultMap);
+            }
+        }
+        return resultMap;
+    }
+    // 获取ClassPath通过Id
+    private static void _getClassPathByAnyIdInternal(String Id, List<String> resultMap) {
+        List<String> matchClassPath = getClassPath((Predicate<String>) s -> {
+            String classPath = s.replace("/", File.separator);
+            // KMP匹配
+            char[] finalGroupIdChars = Id.toCharArray();
+            char[] classPathChars = classPath.toCharArray();
+            int kmp = StringAlgorithmsUtility.KMP(finalGroupIdChars, classPathChars);
+            return kmp != -1;
+        });
+        resultMap.addAll(matchClassPath);
+    }
+
+
+
+    // 桌面、屏幕、系统事件、热键、截图等等
 }

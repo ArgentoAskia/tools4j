@@ -88,6 +88,11 @@ public class IOStreamUtility {
             return data;
         } catch (IOException e) {
             e.printStackTrace();
+            try {
+                inputStream.close();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
             return null;
         }
     }
@@ -224,5 +229,73 @@ public class IOStreamUtility {
      */
     public static long checkedOutputStream(byte[] context, File fileToWrite, Checksum checksum){
         return checksum.getValue();
+    }
+
+
+    public static boolean writeAllBytes(byte[] bytes, OutputStream outputStream){
+        try {
+            outputStream.write(bytes);
+            outputStream.flush();
+            outputStream.close();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            closeOutputStream(outputStream);
+            return false;
+        }
+    }
+
+    public static boolean writeAllBytesToExistsFile(byte[] bytes, File file){
+        if (!file.exists()){
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        try(FileOutputStream fileOutputStream = new FileOutputStream(file)){
+            fileOutputStream.write(bytes);
+            fileOutputStream.flush();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    private static void closeInputStream(InputStream inputStream){
+        try {
+            inputStream.close();
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+    }
+    private static void closeOutputStream(OutputStream outputStream){
+        try {
+            outputStream.close();
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+    }
+
+
+    public static boolean closeStream(InputStream stream){
+        try {
+            stream.close();
+            return true;
+        } catch (IOException ioException) {
+            return false;
+        }
+    }
+
+    public static boolean closeStream(OutputStream stream){
+        try {
+            stream.close();
+            return true;
+        } catch (IOException ioException) {
+            return false;
+        }
     }
 }

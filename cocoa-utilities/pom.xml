@@ -18,6 +18,13 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>cn.argento.askia</groupId>
+            <artifactId>cocoa-core</artifactId>
+        </dependency>
+    </dependencies>
+
 
 
 </project>

@@ -15,6 +15,13 @@ public class AssertionUtility {
        Objects.requireNonNull(t, message);
    }
 
+   public static <T, THROW extends Throwable> T requireNotNull(T t, THROW throwableIfNull) throws THROW{
+       if (t == null){
+           throw throwableIfNull;
+       }
+       return t;
+   }
+
    public static void requireNotPrimitive(Object o){
        if (o.getClass().isPrimitive()) {
            throw new IllegalArgumentException();
@@ -73,6 +80,12 @@ public class AssertionUtility {
    public static void AssertMaxIndex(int current, int maxIndex){
        if (current >= maxIndex){
            throw new IndexOutOfBoundsException("max = " + maxIndex + ", but current =" + current);
+       }
+   }
+
+   public static void requireEquals(Object o1, Object o2){
+       if (o1 != o2 && !o1.equals(o2)){
+           throw new RuntimeException("o1 != o2: [" + o1 + ", " + o2 + "]");
        }
    }
 

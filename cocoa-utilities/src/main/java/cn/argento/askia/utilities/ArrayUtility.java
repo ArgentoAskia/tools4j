@@ -42,6 +42,12 @@ public final class ArrayUtility {
         if (!isArray(arrayObj))
             throw new IllegalArgumentException(TARGET_OBJECT_NOT_ARRAY);
     }
+    private static void checkObjectIsArray(Object arrayObj, String paramName){
+        String message = TARGET_OBJECT_NOT_ARRAY.replace("arrayObj", paramName);
+        if (!isArray(arrayObj)){
+            throw new IllegalArgumentException(message);
+        }
+    }
 
     /**
      * 判断一个对象是否是数组.
@@ -85,11 +91,12 @@ public final class ArrayUtility {
     }
 
     /**
+     * 将一个Object类型的数组全部包装为特定泛型类型的数组.
      *
-     * @param arrayObj
-     * @param vClass
-     * @param <V>
-     * @return
+     * @param arrayObj 数组Object
+     * @param vClass 要转换成的类型
+     * @param <V> 类型参数
+     * @return 特定类型的数组结果
      */
     public static <V> V[] getAll(Object arrayObj, Class<V> vClass){
         final int length = getLength(arrayObj);
@@ -113,6 +120,7 @@ public final class ArrayUtility {
      * @param arrayObj arrayObj
      * @return Object[] 数组
      * @throws IllegalArgumentException 如果参数 {@code arrayObj} 不是是一个数组
+     * @see ArrayUtility#getAll(Object, Class)
      */
     public static Object[] getAll(Object arrayObj){
         checkObjectIsArray(arrayObj);
@@ -122,8 +130,234 @@ public final class ArrayUtility {
         return objects;
     }
 
+    /**
+     * 包装int基本类型数组成其对应的包装器类型{@link Integer}数组.
+     * @param array int类型数组
+     * @return 包装器类型 {@link Integer} 数组
+     */
+    public static Integer[] wrapPrimitiveIntArray(int[] array){
+        if (array == null){
+            return null;
+        }
+        if (array.length == 0){
+            return new Integer[0];
+        }
+        Integer[] box = new Integer[array.length];
+        for (int i = 0; i < array.length; i++) {
+            box[i] = array[i];
+        }
+        return box;
+    }
 
-    private static void checkPrimitiveAndBoxingType(){}
+    /**
+     * 包装long基本类型数组成其对应的包装器类型{@link Long}数组.
+     * @param array long类型数组
+     * @return 包装器类型 {@link Long} 数组
+     */
+    public static Long[] wrapPrimitiveLongArray(long[] array){
+        if (array == null){
+            return null;
+        }
+        if (array.length == 0){
+            return new Long[0];
+        }
+        Long[] box = new Long[array.length];
+        for (int i = 0; i < array.length; i++) {
+            box[i] = array[i];
+        }
+        return box;
+    }
+
+    /**
+     * 包装short基本类型数组成其对应的包装器类型{@link Short}数组.
+     * @param array short类型数组
+     * @return 包装器类型 {@link Short} 数组
+     */
+    public static Short[] wrapPrimitiveShortArray(short[] array){
+        if (array == null){
+            return null;
+        }
+        if (array.length == 0){
+            return new Short[0];
+        }
+        Short[] box = new Short[array.length];
+        for (int i = 0; i < array.length; i++) {
+            box[i] = array[i];
+        }
+        return box;
+    }
+
+    /**
+     * 包装byte基本类型数组成其对应的包装器类型{@link Byte}数组.
+     * @param array byte类型数组
+     * @return 包装器类型 {@link Byte} 数组
+     */
+    public static Byte[] wrapPrimitiveByteArray(byte[] array){
+        if (array == null){
+            return null;
+        }
+        if (array.length == 0){
+            return new Byte[0];
+        }
+        Byte[] box = new Byte[array.length];
+        for (int i = 0; i < array.length; i++) {
+            box[i] = array[i];
+        }
+        return box;
+    }
+
+    /**
+     * 包装double基本类型数组成其对应的包装器类型{@link Double}数组.
+     * @param array double类型数组
+     * @return 包装器类型 {@link Double} 数组
+     */
+    public static Double[] wrapPrimitiveDoubleArray(double[] array){
+        if (array == null){
+            return null;
+        }
+        if (array.length == 0){
+            return new Double[0];
+        }
+        Double[] box = new Double[array.length];
+        for (int i = 0; i < array.length; i++) {
+            box[i] = array[i];
+        }
+        return box;
+    }
+
+    /**
+     * 包装float基本类型数组成其对应的包装器类型{@link Float}数组.
+     * @param array float类型数组
+     * @return 包装器类型 {@link Float} 数组
+     */
+    public static Float[] wrapPrimitiveFloatArray(float[] array){
+        if (array == null){
+            return null;
+        }
+        if (array.length == 0){
+            return new Float[0];
+        }
+        Float[] box = new Float[array.length];
+        for (int i = 0; i < array.length; i++) {
+            box[i] = array[i];
+        }
+        return box;
+    }
+
+    /**
+     * 解包包装器类型 {@link Integer} 数组到对应的基本类型 int
+     * @param array Integer 包装器类型数组
+     * @return 基本类型 int 数组
+     */
+    public static int[] unwrapBoxingIntegerArray(Integer[] array){
+        if (array == null){
+            return null;
+        }
+        if (array.length == 0){
+            return new int[0];
+        }
+        int[] primitive = new int[array.length];
+        for (int i = 0; i < array.length; i++) {
+            primitive[i] = array[i];
+        }
+        return primitive;
+    }
+
+    /**
+     * 解包包装器类型 {@link Long} 数组到对应的基本类型 long
+     * @param array Long 包装器类型数组
+     * @return 基本类型 long 数组
+     */
+    public static long[] unwrapBoxingLongArray(Long[] array){
+        if (array == null){
+            return null;
+        }
+        if (array.length == 0){
+            return new long[0];
+        }
+        long[] primitive = new long[array.length];
+        for (int i = 0; i < array.length; i++) {
+            primitive[i] = array[i];
+        }
+        return primitive;
+    }
+
+    /**
+     * 解包包装器类型 {@link Short} 数组到对应的基本类型 short
+     * @param array Short 包装器类型数组
+     * @return 基本类型 short 数组
+     */
+    public static short[] unwrapBoxingShortArray(Short[] array){
+        if (array == null){
+            return null;
+        }
+        if (array.length == 0){
+            return new short[0];
+        }
+        short[] primitive = new short[array.length];
+        for (int i = 0; i < array.length; i++) {
+            primitive[i] = array[i];
+        }
+        return primitive;
+    }
+
+    /**
+     * 解包包装器类型 {@link Byte} 数组到对应的基本类型 byte
+     * @param array Byte 包装器类型数组
+     * @return 基本类型 byte 数组
+     */
+    public static byte[] unwrapBoxingByteArray(Byte[] array){
+        if (array == null){
+            return null;
+        }
+        if (array.length == 0){
+            return new byte[0];
+        }
+        byte[] primitive = new byte[array.length];
+        for (int i = 0; i < array.length; i++) {
+            primitive[i] = array[i];
+        }
+        return primitive;
+    }
+
+    /**
+     * 解包包装器类型 {@link Double} 数组到对应的基本类型 double
+     * @param array Double 包装器类型数组
+     * @return 基本类型 double 数组
+     */
+    public static double[] unwrapBoxingByteArray(Double[] array){
+        if (array == null){
+            return null;
+        }
+        if (array.length == 0){
+            return new double[0];
+        }
+        double[] primitive = new double[array.length];
+        for (int i = 0; i < array.length; i++) {
+            primitive[i] = array[i];
+        }
+        return primitive;
+    }
+
+    /**
+     * 解包包装器类型 {@link Float} 数组到对应的基本类型 float
+     * @param array Float 包装器类型数组
+     * @return 基本类型 float 数组
+     */
+    public static float[] unwrapBoxingByteArray(Float[] array){
+        if (array == null){
+            return null;
+        }
+        if (array.length == 0){
+            return new float[0];
+        }
+        float[] primitive = new float[array.length];
+        for (int i = 0; i < array.length; i++) {
+            primitive[i] = array[i];
+        }
+        return primitive;
+    }
+
 
 
     /**
@@ -157,8 +391,9 @@ public final class ArrayUtility {
 
     /**
      * 检查成员能否被放入到数组中，主要是一个类型匹配问题！
-     * @param arrayObj
-     * @param member
+     * @param arrayObj 数组
+     * @param member 成员
+     * @throws ClassCastException 如果不能放入则抛出此ClassCastException异常
      */
     private static void checkObjectCanPutInArray(Object arrayObj, Object member){
         Class<?> aClass = member.getClass();
@@ -191,7 +426,7 @@ public final class ArrayUtility {
      *
      * @param componentType 数组的原始类型
      * @param dimensions 数组的每个维度的成员长度
-     * @return
+     * @return 新数组对象
      * @since 1.0
      */
     public static Object newArray(Class<?> componentType, int ...dimensions){
@@ -199,12 +434,13 @@ public final class ArrayUtility {
     }
 
     /**
-     *
-     * @param componentType
-     * @param length
-     * @param <T>
-     * @return
+     * 创建一个一维且指定类型的数组.
+     * @param componentType 数组的原始类型
+     * @param length 数组长度
+     * @param <T> 数组类型
+     * @return 特定类型的数组
      * @deprecated 这个方法创建出来的数组可能并不是开发者想要的形式！并且可能会抛出莫名其妙的异常！
+     * @since 2026.2.9 此方法进内部API使用
      */
     @SuppressWarnings("unchecked")
     @Deprecated
@@ -221,7 +457,7 @@ public final class ArrayUtility {
      *
      * @param componentType 数组的原始类型
      * @param length 数组的长度
-     * @return
+     * @return {@link Object}类型的兼容数组对象
      */
     public static Object newArray(Class<?> componentType, int length){
         return Array.newInstance(componentType, length);
@@ -230,11 +466,11 @@ public final class ArrayUtility {
     /**
      * 创建一个对象矩阵(二维数组).
      *
-     * @param objectType
-     * @param m
-     * @param n
-     * @param <T>
-     * @return
+     * @param objectType 对象类型
+     * @param m 二位数组长度
+     * @param n 二维数组宽度
+     * @param <T> 类型
+     * @return 二维对象数组
      */
     @SuppressWarnings("unchecked")
     public static <T> T[][] newObjectMatrix(Class<T> objectType, int m, int n){
@@ -243,9 +479,9 @@ public final class ArrayUtility {
 
     /**
      * 创建一个矩阵.
-     * @param m
-     * @param n
-     * @return
+     * @param m 二位数组长度
+     * @param n 二维数组宽度
+     * @return 整数矩阵
      */
     public static Integer[][] newMatrix(int m, int n){
         return newObjectMatrix(Integer.class, m, n);
@@ -255,8 +491,8 @@ public final class ArrayUtility {
     /**
      * 数组扩容
      *
-     * @param arrayObj
-     * @param expandSize
+     * @param arrayObj 原始数组
+     * @param expandSize 扩容大小
      * @return
      * @since 1.0.5
      */
@@ -294,6 +530,70 @@ public final class ArrayUtility {
     }
 
     /**
+     * 增强版本 {@linkplain System#arraycopy(Object, int, Object, int, int) System.arraycopy}.
+     * <p>增强版本提供了：
+     * <ol>
+     *     <li></li>
+     * </ol>
+     *
+     * @param src
+     * @param srcOffset
+     * @param desc
+     * @param descOffset
+     * @param length
+     * @apiNote 原版 {@link System#arraycopy(Object, int, Object, int, int)} 的复制有如下的注意点：<ol>
+     *     <li>若src和dest参数指向同一数组对象，则执行的复制操作将按以下方式处理：首先将srcPos至srcPos+length-1位置的组件复制到长度为components的临时数组，随后将该临时数组的内容复制至目标数组的destPos至destPos+length-1位置</li>
+     *     <li>若dest为null值，则抛出NullPointerException异常。</li>
+     *     <li>若src为null值，则抛出NullPointerException异常且目标数组未被修改。</li>
+     *     <li>若src或者dest参数所指对象并非数组时抛出ArrayStoreException</li>
+     *     <li>src参数和dest参数所指数组的组件类型（ComponentType,即该数组的原始类型，比如int[]则是int）为不同的基本类型。抛出ArrayStoreException</li>
+     *     <li>src是基本类型数组而desc是引用类型数组或者反过来，desc是基本类型数组，src是引用类型数组时，抛出ArrayStoreException</li>
+     *     <li>srcPos或者destPos参数为负值，抛出IndexOutOfBoundsException</li>
+     *     <li>当srcPos+length大于src.length（即源数组的长度）或者destPos+length大于dest.length，即目标数组的长度，抛出IndexOutOfBoundsException</li>
+     *     <li>若源数组中从srcPos到srcPos+length-1位置的任何实际组件无法通过赋值转换转换为目标数组的组件类型，则会抛出ArrayStoreException异常。 此时，设k为小于length的最小非负整数，使得src[srcPos+k]无法转换为目标数组的组件类型；当异常发生时，源数组中从srcPos到srcPos+k-1位置的组件已全部复制到目标数组的destPos到destPos+k-1位置，且目标数组的其他位置未被修改。（由于已列出的限制条件，本段落实际上仅适用于两个数组的组件类型均为引用类型的情况。）</li>
+     * </ol>
+     */
+    public void arrayCopySuperbly(Object src, int srcOffset, Object desc, int descOffset, int length){
+        // 1. 首先先确认两个数据源是否是数组类型
+        checkObjectIsArray(src, "src");
+        checkObjectIsArray(desc, "desc");
+        // 全程都要考虑负向索引
+        int srcLength = getLength(src);
+        int descLength = getLength(desc);
+        int srcOffsetReal = srcOffset;
+        int descOffsetReal = descOffset;
+        // 如果索引是负的，则代表末端倒数第几个成员
+        if (srcOffset < 0){
+            srcOffsetReal = srcLength + srcOffset;
+        }
+        if (descOffset < 0){
+            descOffsetReal = descLength + descOffset;
+        }
+        // 2. 考虑包装器装箱和解包
+        try{
+            if (LangUtility.isAble2BoxingOrUnboxing(src.getClass(), desc.getClass(), false)){
+                // 此时src和desc要么一个包装器类，要么一个基本类型
+                // 转二进制代码再转换成数值
+            }
+            return;
+        }
+        catch (Exception e){
+            // 不是包装器类的成员Copy
+        }
+
+        // 3. 考虑兼容层，即小字节量基本类型转大字节量基本类型
+        try{
+
+            return;
+        }
+        catch (Exception e){
+
+        }
+        // 4. 最后委托System.arraycopy()
+        System.arraycopy(src, srcOffsetReal, desc, descOffsetReal, length);
+    }
+
+    /**
      * 复制数组。
      * @param arrayObj 待复制的数组
      * @return 返回一个新的数组引用,其大小和内容与 {@code arrayObj} 一模一样
@@ -306,14 +606,38 @@ public final class ArrayUtility {
         return newArray;
     }
 
+    /**
+     *
+     * @param arrayObj
+     * @param beginIndex
+     * @param length
+     * @return
+     */
     public static Object copyOfLength(Object arrayObj, int beginIndex, int length){
         return copyOfLength(arrayObj, beginIndex, length, 0 , 0);
     }
 
+    /**
+     *
+     * @param arrayObj
+     * @param beginIndex
+     * @param length
+     * @param newArrayLength
+     * @return
+     */
     public static Object copyOfLength(Object arrayObj, int beginIndex, int length, int newArrayLength){
         return copyOfLength(arrayObj, beginIndex, length, newArrayLength, 0);
     }
 
+    /**
+     *
+     * @param arrayObj
+     * @param beginIndex
+     * @param length
+     * @param newArrayLength
+     * @param newArrayCopyBeginIndex
+     * @return
+     */
     public static Object copyOfLength(Object arrayObj, int beginIndex, int length, int newArrayLength, int newArrayCopyBeginIndex){
         checkObjectIsArray(arrayObj);
         if (beginIndex < 0)                                             beginIndex = 0;
@@ -700,8 +1024,17 @@ public final class ArrayUtility {
         return false;
     }
 
-
-    public static <T> boolean fastContain(T[] array, Object target){
+    /**
+     * 使用并行流优化的Contain().
+     * 如果您的数据量很大, 达到百万级别, 千万级别时, 使用此方法替换传统的Contain()时会更加节省时间.
+     * 该方法在的处理在数据量处于百万和千万中间层时，效率最高，符合正态分布。
+     * <b>其他情况使用此方法可能会导致效率下降, 出于稳定性考虑我们不建议经常使用此方法, 在低数据量的时候此方法的表现远远低于普通的contain(), 即便数据量达到百万级别时，部分情况下仍然会远低于普通Contain()方法，出现此情况的原因是并行流要拆分、合并、线程调度，启动成本 > 计算节省</b>
+     * @param array
+     * @param target
+     * @param <T>
+     * @return
+     */
+    public static <T> boolean fastContain(T[] array, @NotNull Object target){
         return Arrays.stream(array).parallel().anyMatch(target::equals);
     }
 
@@ -841,7 +1174,31 @@ public final class ArrayUtility {
         return true;
     }
 
-    public static <T1, T2> boolean equalsStrictly(T1[] array1, T2[] array2, BiFunction<T1, T2, Boolean> equalFunction){
+    /**
+     * 严格的数组判等.
+     * <p>此方法要求数组的每一个成员都要完全匹配.例如, 对于下面两个数组时：<br>
+     * <pre>[1, 2, 3, 4, 5]</pre>
+     * <pre> ⬇  ⬇  ⬇  ⬇  ⬇ </pre>
+     * <pre>[1, 2, 3, 4, 5]</pre>
+     * <p>由于其每个成员之间都是相等的, 所以此方法会返回 {@code true} .而对于：<br>
+     * <pre>[1, 2, 3, 5, 4]</pre>
+     * <pre> ⬇  ⬇  ⬇  ×  × </pre>
+     * <pre>[1, 2, 3, 4, 5]</pre>
+     * <p>虽然在总体上来说，此数组中的所有元素是相同的, 但是由于其中的5和4顺序不同, 则不符合方法要求的【严格】判等, 所以方法返回 {@code false}
+     * <p><b>此方法比较的两个数组不要求类型相同, 只要你愿意, 你完全可以使用两种不同的类型的数组进行比较,
+     * 比如比较 {@linkplain java.net.InetAddress InetAddress} 和 {@linkplain java.net.SocketAddress SocketAddress},
+     * 你只需要指定他们之间的比较规则即可</b>
+     * <p><b>此方法的另外一个不足在于只能比较对象, 因此如果希望比较基本类型数组, 则只能使用他们的包装器类, 参考本工具类的{@link ArrayUtility#wrapPrimitiveByteArray(byte[])}等方法</b>
+     * @param array1 数组1
+     * @param array2 数组2
+     * @param equalFunction 数组1和数组2的原始类型比较函数, 返回boolean类型, 返回true代表相同, false代表不相同
+     * @param <T1> 类型1, 可以不和类型2相同
+     * @param <T2> 类型2, 可以不和类型1相同
+     * @return 如果两个数组相等则返回true, 否则返回false
+     * @since 2025.12.18
+     * @see ArrayUtility#equalsStrictly(Object, Object)
+     */
+    public static <T1, T2> boolean equalsStrictlyIgnoreTypeMatch(T1[] array1, T2[] array2, BiFunction<T1, T2, Boolean> equalFunction){
         if (array1.length != array2.length){
             return false;
         }
@@ -851,5 +1208,24 @@ public final class ArrayUtility {
             }
         }
         return true;
+    }
+
+    public static void main(String[] args) {
+        int[] ints = RandomUtility.randomIntArray(6000000);
+        long l = System.nanoTime();
+        boolean contain = ArrayUtility.contain(ints, 2);
+        long l1 = System.nanoTime();
+        System.out.println("contain = " + contain);
+        System.out.println("l0 = " + l + ", l1 = " + l1 + ", l1 - l1 = " + (l1 - l));
+
+        Integer[] integers = Arrays.stream(ints).boxed().toArray(Integer[]::new);
+
+        long l2 = System.nanoTime();
+        boolean contain2 = ArrayUtility.fastContain(integers, 2);
+        long l3 = System.nanoTime();
+        System.out.println("contain2 = " + contain2);
+        System.out.println("l2 = " + l2 + ", l3 = " + l3 + ", l3 - l2 = " + (l3 - l2));
+
+
     }
 }
