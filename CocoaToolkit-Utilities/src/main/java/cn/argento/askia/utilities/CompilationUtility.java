@@ -1,12 +1,12 @@
 package cn.argento.askia.utilities;
 
 import cn.argento.askia.exceptions.CompilationException;
-import cn.argento.askia.exceptions.file.UnsupportedFileMimeTypeException;
+import cn.argento.askia.exceptions.runtime.files.UnsupportedMimeTypeException;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 import java.io.*;
-
+// 实现动态编译代码并运行的框架（注解标记核心内容）
 /**
  * {@code javac.exe}、{@code java.exe}、{@code JavaScript脚本}相关编译API工具类
  *
@@ -83,7 +83,7 @@ public class CompilationUtility {
     private static void checkForCodeFileSuffix(String codeFile) {
         if (!codeFile.endsWith(".java")){
             final String fileType = codeFile.split("\\.")[1];
-            throw new UnsupportedFileMimeTypeException("text/java", fileType);
+            throw new UnsupportedMimeTypeException("text/java", fileType);
         }
     }
     private static File getByteCodeFileObj(String[] options, String codeFile) {

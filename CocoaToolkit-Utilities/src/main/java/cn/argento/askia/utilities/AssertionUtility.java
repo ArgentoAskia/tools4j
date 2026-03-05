@@ -22,11 +22,14 @@ public class AssertionUtility {
    }
 
    public static void requireTypeMatched(Object o, Class<?> matchType){
-
+       if (o.getClass() != matchType){
+           throw new AssertionError("type not match, param1 is " + o.getClass() + ", param2 is " + matchType);
+       }
    }
 
    public static void requireFileExisted(File file){
        if (!file.exists()){
+           // TODO: 2024/12/6 FileNotExistException(RuntimeType)
            throw new IllegalArgumentException();
        }
    }
@@ -70,6 +73,23 @@ public class AssertionUtility {
    public static void AssertMaxIndex(int current, int maxIndex){
        if (current >= maxIndex){
            throw new IndexOutOfBoundsException("max = " + maxIndex + ", but current =" + current);
+       }
+   }
+
+    /**
+     * 断言 o1 必定不等于 o2
+     * @param o1
+     * @param o2
+     */
+   public static void requireNotEquals(Object o1, Object o2){
+       // 引用相同，则肯定相同
+       if (o1 == o2){
+           // TODO: 2024/12/6 换成具体的异常类型
+           throw new AssertionError("o1 == o2: [" + o1 + ", " + o2 + "]");
+       }
+       if (o1.equals(o2)){
+           // TODO: 2024/12/6 换成具体的异常类型
+           throw new AssertionError("o1 == o2: [" + o1 + ", " + o2 + "]");
        }
    }
 

@@ -1,6 +1,8 @@
 package cn.argento.askia.utilities;
 
 
+import sun.nio.cs.US_ASCII;
+
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.BiFunction;
@@ -462,6 +464,96 @@ public final class ArrayUtility {
         return replace;
     }
 
+    /**
+     * 判断是否为空数组
+     * @param arrayObj
+     * @return
+     * @since 2024.11.17
+     */
+    public static boolean isEmpty(Object arrayObj){
+        checkObjectIsArray(arrayObj);
+        Objects.requireNonNull(arrayObj, "数组不能为null");
+        return getLength(arrayObj) == 0;
+    }
+
+    /**
+     * 判断数组不能为空！
+     * @param arrayObj
+     * @since 2024.11.17
+     */
+    private static void checkArrayNotEmpty(Object arrayObj){
+        if (isEmpty(arrayObj)){
+            throw new ArrayIndexOutOfBoundsException("数组为空");
+        }
+    }
+
+
+    private static int LARGE_STR_GAPS = 35;
+
+    /**
+     * toDelimiterString(arrayObj, ",");
+     * @param arrayObj
+     * @return
+     * @see #toDelimiterString(Object, String)
+     * @since 2024.11.17
+     */
+    public static String toDelimiterString(Object arrayObj){
+        return toDelimiterString(arrayObj, ",");
+    }
+
+    /**
+     * 输出带分隔符格式的字符串，如 [ 1, 2 ,3 ], 该方法会判断输出对象的长度, 当长度大于{@code LARGE_STR_GAPS}的时候，将会采用
+     * 一行一个的形式进行输出, 默认{@code LARGE_STR_GAPS}等于35
+     *
+     * @param arrayObj
+     * @param delimiter
+     * @return
+     * @since 2024.11.17
+     */
+    public static String toDelimiterString(Object arrayObj, String delimiter){
+        checkObjectIsArray(arrayObj);
+        checkArrayNotEmpty(arrayObj);
+        final int length = getLength(arrayObj);
+        boolean largeStr = false;
+        for (int i = 0; i < length; i++) {
+            // 大字符，则需要换行输出
+            if(get(arrayObj, i).toString().length() >= LARGE_STR_GAPS){
+                largeStr = true;
+                break;
+            }
+        }
+        if (largeStr){
+            // 一行一个数据
+            return toDelimiterString(arrayObj, delimiter + System.lineSeparator() + "\t",
+                    "[" + System.lineSeparator() + "\t" , System.lineSeparator() + "]");
+        }
+        else{
+            // for example ==> [ 1, 2 ,3 ]
+            return toDelimiterString(arrayObj, delimiter + " ", "[ ", " ]");
+        }
+    }
+
+    /**
+     * 输出带分隔符格式的字符串，如 [ 1, 2 ,3 ]
+     * @param arrayObj
+     * @param delimiter
+     * @param prefix
+     * @param suffix
+     * @return
+     * @since 2024.11.17
+     */
+    public static String toDelimiterString(Object arrayObj, String delimiter,
+                                           String prefix, String suffix){
+        checkObjectIsArray(arrayObj);
+        checkArrayNotEmpty(arrayObj);
+        StringJoiner delimiterString = new StringJoiner(delimiter, prefix, suffix);
+        final int length = getLength(arrayObj);
+        for (int i = 0; i < length; i++) {
+            final Object o = get(arrayObj, i);
+            delimiterString.add(o.toString());
+        }
+        return delimiterString.toString();
+    }
 
 
     public static <S, T extends S> void toList(T[] arrayObj, List<S> list){

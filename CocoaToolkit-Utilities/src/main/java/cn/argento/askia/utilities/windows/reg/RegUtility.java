@@ -1,11 +1,7 @@
 package cn.argento.askia.utilities.windows.reg;
 
 
-import cn.argento.askia.utilities.windows.reg.args.RegCommandArg;
-import cn.argento.askia.utilities.windows.reg.sub.RegAdd;
-import cn.argento.askia.utilities.windows.reg.sub.RegCompare;
-import cn.argento.askia.utilities.windows.reg.sub.RegCopy;
-import cn.argento.askia.utilities.windows.reg.sub.RegSubCommandManager;
+import cn.argento.askia.utilities.windows.reg.commands.*;
 
 /**
  * 注册表工具类！
@@ -36,6 +32,7 @@ public class RegUtility {
     }
 
     public static void main(String[] args) {
+        
     }
 
     private static boolean systemSupported(){
@@ -55,29 +52,31 @@ public class RegUtility {
             throw new UnsupportedOperationException("非 Windows NT 系统, 不支持注册表操作！");
     }
 
-    public enum Solver{
-        USE_LATEST, THROW_EXCEPTION
-    }
-    private static Solver solver;
-    public static void setCallingChainExceptionSolve(Solver solve){
-        RegUtility.solver = solve;
-    }
-    public static Solver getCallingChainExceptionSolve(){
-        return solver;
-    }
 
 
-    public RegAdd add(){
+//    public static RegQuery query(){
+//        return RegSubCommandManager.newRegSubCommandInstance(RegQuery.class);
+//    }
+
+    public static RegAdd add(){
         return RegSubCommandManager.newRegSubCommandInstance(RegAdd.class);
     }
 
-    public RegCopy copy(){
-        return RegSubCommandManager.newRegSubCommandInstance(RegCopy.class);
-    }
-
-    public RegCompare compare(){
-        return RegSubCommandManager.newRegSubCommandInstance(RegCompare.class);
-    }
-
+//    public static RegCopy copy(){
+//        return RegSubCommandManager.newRegSubCommandInstance(RegCopy.class);
+//    }
+//
+//    public static RegCompare compare(){
+//        return RegSubCommandManager.newRegSubCommandInstance(RegCompare.class);
+//    }
+//
+//    public static RegDelete delete(){
+//        return RegSubCommandManager.newRegSubCommandInstance(RegDelete.class);
+//    }
+//
+//
+//    public static RegLoad load(){
+//        return RegSubCommandManager.newRegSubCommandInstance(RegLoad.class);
+//    }
 
 }

@@ -1,8 +1,18 @@
 package cn.argento.askia.utilities.algorithms;
 
-public class StringAlgorithmsUtility {
+import java.util.*;
 
-    protected static int BF1(char[] pattern, char[] text){
+public class StringAlgorithmsUtility {
+    public static void main(String[] args) {
+        final int i = BF1("glk".toCharArray(), "agidgcjhggik".toCharArray());
+        System.out.println(i);
+
+        // 1 1 2 4 3 3 7 6 3
+        final int[] ints = buildNext("abcabdabe".toCharArray());
+        System.out.println(Arrays.toString(ints));
+    }
+
+    public static int BF1(char[] pattern, char[] text){
         int patternLength = pattern.length, i = 0;
         int textLength = text.length, j = 0;
         while(i < patternLength && j < textLength){
@@ -61,6 +71,8 @@ public class StringAlgorithmsUtility {
     }
 
 
+
+
     // next 字符表无非下面的情况
     // C A B C ,第一位错，移动全部， 第二位、第三位错，但它们还有可能是c，所以对准C，第四位错，移动全部
     // C C C D，第一、二、三位错，移动全部，第四位错，但它有可能是C，所以让最后一个C对准它进行判断！
@@ -85,9 +97,9 @@ public class StringAlgorithmsUtility {
             if (t < 0 || pattern[t] == pattern[j]){
                 j++;
                 t++;
-                // next[j] = t;
+                next[j] = t;
                 // 优化...
-                next[j] = (pattern[t] != pattern[j]? t : next[t]);
+//                next[j] = (pattern[t] != pattern[j]? t : next[t]);
             }
             // 出现失配
             // 则需要回退t
@@ -98,8 +110,65 @@ public class StringAlgorithmsUtility {
         return next;
     }
 
-    // ? do like this?
-    public static int match(String pattern, String text, int algo){
-        return BF1(pattern.toCharArray(), text.toCharArray());
+
+    /**
+     * 找出两个有序的字符串数组中的共同部分，第一个字符串数组有而第二个字符串数组没有的以及第一个字符串数组有而第二个字符串数组没有的
+     *
+     * Linux comm指令实现, 对比两个有序的行字符串.
+     *
+     * // find out what means AST?
+     *
+     * @param str1Array
+     * @param str2Array
+     * @param result1
+     * @param result2
+     * @param commonResult
+     */
+    public static boolean comm(final String[] str1Array, final String[] str2Array,
+                            String[] result1, String[] result2, String[] commonResult){
+        // 判断是否有序，无序返回false;
+        int strArray1Pointer = 0;
+        int strArray2Pointer = 0;
+        Set<String> commonResultList = new HashSet<>();
+        Set<String> str1ArrayAlongList = new HashSet<>();
+        Set<String> str2ArrayAlongList = new HashSet<>();
+        while (strArray1Pointer < str1Array.length && strArray2Pointer < str2Array.length){
+            if (str1Array[strArray1Pointer].equals(str2Array[strArray2Pointer])){
+                commonResultList.add(str1Array[strArray1Pointer]);
+                // 跳过相同的部分
+                // strArray1Pointer + 1可能会引发ArrayIndexOfOutBoundException，所以需要判断
+                if (strArray1Pointer + 1 < str1Array.length){
+                    while(str1Array[strArray1Pointer].equals(str1Array[strArray1Pointer + 1])){
+                        strArray1Pointer++;
+                    }
+                }
+                if (strArray2Pointer + 1 < str2Array.length){
+                    while(str2Array[strArray2Pointer].equals(str2Array[strArray2Pointer + 1])){
+                        strArray2Pointer++;
+                    }
+                }
+                strArray2Pointer++;
+                strArray1Pointer++;
+            }
+            else if (str1Array[strArray1Pointer].compareTo(str2Array[strArray2Pointer]) < 0){
+                str1ArrayAlongList.add(str1Array[strArray1Pointer]);
+                strArray1Pointer++;
+            }
+            else if (str1Array[strArray1Pointer].compareTo(str2Array[strArray2Pointer]) > 0){
+                str2ArrayAlongList.add(str2Array[strArray2Pointer]);
+                strArray2Pointer++;
+            }
+        }
+        // 下面的if满足其一
+        if (strArray1Pointer < str1Array.length){
+            str1ArrayAlongList.addAll(Arrays.asList(str1Array).subList(strArray1Pointer, str1Array.length));
+        }
+        if (strArray2Pointer < str2Array.length){
+            str2ArrayAlongList.addAll(Arrays.asList(str2Array).subList(strArray2Pointer, str2Array.length));
+        }
+        commonResultList.toArray(commonResult);
+        str2ArrayAlongList.toArray(result2);
+        str1ArrayAlongList.toArray(result1);
+        return true;
     }
 }

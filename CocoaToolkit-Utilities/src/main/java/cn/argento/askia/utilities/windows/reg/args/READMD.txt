@@ -1,0 +1,36 @@
+1. Arg接口标志这是一个参数
+2. ArgInfo代表当前参数的快照（包含参数 + 参数需要的数据 + 额外数据）
+3. ArgManager负责拼接ArgInfo---> String, 解析RegCommandArg
+4. RegCommandArg注解主要储存该参数字符串化时的格式、java类型到String的转换器实现、参数名、扩展实现、额外参数
+
+
+// 注解
+// 反射读取包名?创建参数！
+
+1.为了解决参数不一致，比如/reg:64,实际上无法创建reg:64方法名 --> 引用@RegCommandArg解决
+2.决定在build的时候通过解析叠层所有参数的形式，创建REG指令的字符串形式
+3.trace输出格式：指令是否合法，是否可执行等等？
+4.toString将打印字符串命令本身！
+
+build()移到Arg接口，因为所有的参数都是可选的，所以不需要参数的时候可以直接在Arg接口上进行build调用
+
+所有的Arg子接口只负责两件事情：注册参数位（防止重复参数调用）、添加ArgInfo对象到AbstractRegCommand、返回OptionalArg子实现
+
+所有的子命令类（如RegAdd）中，必须要自行指定好新的Arg内部类，如RegAddOptionalArg(public)，
+其中这个类必须是OptionalArgs子类，并且实现必要的Arg子接口（适配参数），如ArgV<RegAddOptionalArg>、ArgVE<RegAddOptionalArg>
+
+ArgManager负责创建具体的字符串指令
+
+
+
+采用泛型来决定下一个调用的对象
+KeyName<FileName>{
+    p
+}
+
+
+
+// 多次调用相同参数的处理方式！如调用ve之后再调用va，抛出异常？采纳最后的结果？
+
+
+

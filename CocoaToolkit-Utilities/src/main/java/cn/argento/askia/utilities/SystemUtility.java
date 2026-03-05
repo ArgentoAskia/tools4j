@@ -21,24 +21,28 @@ public class SystemUtility {
         environments(System.out);
     }
 
-    // TODO: 2024/5/4  格式化？
-    public static void environments(OutputStream writeOut){
+    // TODO: 2024/5/4  格式化=false
+
+    /**
+     * println the SYSTEM levels variables for the specified writeOut Object.
+     * <p>for more informations, you can touch with {@link System#getenv()} and {@link System#getProperties()}
+     *
+     * @param writeOut Output Object to output all these environments
+     */
+    public static void environments(PrintStream writeOut){
         final Map<String, String> envs = System.getenv();
         final Properties properties = System.getProperties();
-        envs.forEach(new BiConsumer<String, String>() {
-            @Override
-            public void accept(String s, String s2) {
-                System.out.println(s + " = " + s2);
-            }
-        });
-        System.out.println("==============");
-        properties.list(System.out);
+        writeOut.println("=============== system environments ===============");
+        envs.forEach((s, s2) -> writeOut.println(s + " = " + s2));
+        writeOut.println("=============== system properties ===============");
+        properties.list(writeOut);
+        writeOut.println("=============== END OF LINE =============");
     }
 
     /**
      * 该方法用于判断当前系统是否属于 {@code Windows NT} 族, 如 {@code Windows 7}、 {@code Windows 8}等
      *
-     * @return
+     * @return 如果当前系统是Windows NT族, 则返回true，否则返回false
      */
     public static boolean isWindowsNTOS(){
         // bug here!
@@ -260,6 +264,48 @@ public class SystemUtility {
 //        System.out.println(getClassPath());
 //        final String set = exec("set");
 //        System.out.println(set);
-        System.out.println(getSystemEnvironments());
+//        System.out.println(getSystemEnvironments());
+        SystemUtility.StdOut.print(new char[]{'a', '2'});
     }
+
+    public static class StdOut{
+
+        private StdOut(){}
+
+        public static void print(Object o){
+            System.out.print(o);
+        }
+
+        public static void print(char[] chars){
+            System.out.println(chars);
+        }
+
+        public static void println(){
+            System.out.println();
+        }
+
+        public static void println(Object o){
+            System.out.println(o);
+        }
+
+        public static void println(char[] a){
+            System.out.println(a);
+        }
+
+        // print Delimiter line
+        public static <T> void printDln(T[] o){
+            final String s = ArrayUtility.toDelimiterString(o);
+            System.out.println(s);
+        }
+
+        public static void main(String[] args) {
+            String[] st = {
+                    "cn.argento.askia.bean.Person{name='Neo', age=45, country='USA'}",
+                    "cn.argento.askia.bean.Person{name='Alex', age=20, country='UK'}",
+                    "cn.argento.askia.bean.Person{name='Sebastian', age=40, country='FR'}"};
+            printDln(st);
+        }
+    }
+
+
 }

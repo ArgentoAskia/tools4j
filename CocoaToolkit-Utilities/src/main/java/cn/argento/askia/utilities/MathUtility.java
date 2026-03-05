@@ -62,23 +62,22 @@ public class MathUtility {
      * @param b
      * @return
      */
-    public static BigDecimal fastPow(BigDecimal a, BigDecimal b){
-        if (b.compareTo(BigDecimal.ZERO) == 0){
+    public static BigDecimal fastPow(BigDecimal a, BigDecimal b) {
+        if (b.compareTo(BigDecimal.ZERO) == 0) {
             return BigDecimal.valueOf(1);
         }
         //  0.1 0.001...
-        if (b.compareTo(BigDecimal.ZERO) > 0 && b.compareTo(BigDecimal.ONE) < 0){
+        if (b.compareTo(BigDecimal.ZERO) > 0 && b.compareTo(BigDecimal.ONE) < 0) {
             // 计算a的0.1 -0.9次方
             return BigDecimal.valueOf(1);
         }
         final BigDecimal[] bigDecimals = b.divideAndRemainder(BigDecimal.valueOf(2));
         // 偶数情况，a/2 再平方
-        if (bigDecimals[1].equals(BigDecimal.ZERO)){
+        if (bigDecimals[1].equals(BigDecimal.ZERO)) {
             // 偶数，记录a/2，直接(a/2)平方即可！
             BigDecimal divideHalf = fastPow(a, bigDecimals[0]);
             return divideHalf.multiply(divideHalf);
-        }
-        else {
+        } else {
             // 奇数情况变偶数继续乘，ans = ans^n-1 * ans
             // 0.01 0.1的情况
             return fastPow(a, b.subtract(bigDecimals[1])).multiply(fastPow(a, bigDecimals[1]));
