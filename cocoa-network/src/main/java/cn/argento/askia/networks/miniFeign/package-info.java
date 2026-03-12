@@ -26,26 +26,57 @@ package cn.argento.askia.networks.miniFeign;
     // 请求：Body、Header、QueryParam、PathVariable
     // 响应：响应头、响应体、响应行
 
+    // 注解：@MiniFeign
     // 结合步骤1 和步骤2进行设计 注解设计
     类名：标记@HttpApi ==> Api名称, host, port, protocol[协议]
             @HttpApi.Status ==> 当前状态，当前版本，发布时间
             @HttpApi.Update ==> 版本，时间，更新内容
 
+    @MFDeclaredApi ==> @MFGet、@MFPost...
+    @MFRetry ==> 重试注解
+    @MFRequestPathVariable
+    @MFRequestQueryParam
+    @MFRequestBody
+    @MFRequestHeader
+    @MFBreaker      ==> 熔断器
     方法标记：标记@HttpCaller ==> 此方法是一个Http请求，请求URL, 请求方式
             返回值：
                    特殊响应体：CommonResponse ==> 携带，响应码，响应信息，数据，时间戳
                              HttpResponse   ==> 包含响应头部分
                    非特殊响应头：
                              响应码为200:    ==> 响应体
-                             响应码为非200    ==> 如果配置了异常<==>响应状态码，抛出异常
-                                                如果没有对应异常或者没有配置异常 ==> 触发熔断?Breaker设计
+                             响应码为非200    ==> 如果配置了异常<==>响应状态码，抛出异常【添加一个默认抛出】
+                                                如果没有对应异常或者没有配置异常 ==> -触发熔断?Breaker设计，返回预定的内容【默认熔断器】 【配置，独立注解，@HttpCaller注解配置】
+                                                                               |                                                ==> 交给用户选择
+                                                                               - 默认异常兜底！【默认】
             扩展注解：@Get、@Post等等
 
     参数标记：@HttpRequestPathVariable @HttpRequestQueryParam @HttpRequestBody @HttpRequestHeader
             除了@HttpRequestBody之外，其他的都支持常量自定义
 
 
-    步骤3：确定调用过程中的额外功能参数配置：切面记录？请求请求前后事件响应，异常处理，使用哪些Http框架、熔断参数配置等
+    响应注解：@MFResponseCode ==> 标记在异常处
+
+
+//    步骤3：确定调用过程中的额外功能参数配置：切面记录？请求请求前后事件响应，异常处理，使用哪些Http框架、熔断参数配置等
+
+    参数配置Bean类
+    1. 是否支持类级别代理 ==> supportClassesProxy
+    2. 是否支持继承性接口 ==> supportExtendedApi
+    3. 是否支持默认方法 ==> supportDefaultMethodApi
+    4. 是否支持静态方法 ==> supportStaticMethodApi
+
+    5. 开启Response结果缓存 ==> cacheResponse【默认关闭】 ==> @Cacheable
+    6. 开启Http缓存        ==> cacheDeclareApi【默认开启】
+
+    7. 自动扫描当前目录和子目录下的所有HttpApi ==> autoScanDeclareApi
+    8. 注册Declare API
+
+    9. 如何响应请求异常
+
+    10. 使用哪个Http框架【框架优先级】
+
+    11. 注册事件接口、切面接口
 
     事件驱动切面 (对于声明式调用, 调用前, 调用时, 调用后) ==> 扩展更多选择【组装参数时】
     通用响应处理 ==> 异常处理
