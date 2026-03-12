@@ -1,4 +1,4 @@
-package cn.argento.askia.networks.miniFeign.supports;
+package cn.argento.askia.networks.miniFeign.supports.http;
 
 
 import cn.argento.askia.networks.miniFeign.caller.HttpCaller;

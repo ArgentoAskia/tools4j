@@ -2,7 +2,7 @@ package cn.argento.askia.networks.miniFeign.annotations;
 
 
 import cn.argento.askia.networks.miniFeign.internal.annotations.AliasFor;
-import cn.argento.askia.networks.miniFeign.supports.HttpRequestMethod;
+import cn.argento.askia.networks.miniFeign.supports.http.HttpRequestMethod;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

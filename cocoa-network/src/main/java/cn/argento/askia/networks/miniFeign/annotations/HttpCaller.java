@@ -1,6 +1,6 @@
 package cn.argento.askia.networks.miniFeign.annotations;
 
-import cn.argento.askia.networks.miniFeign.supports.HttpRequestMethod;
+import cn.argento.askia.networks.miniFeign.supports.http.HttpRequestMethod;
 
 import java.lang.annotation.*;
 

@@ -1,7 +1,7 @@
 package cn.argento.askia.networks.miniFeign.caller;
 
-import cn.argento.askia.networks.miniFeign.supports.HttpClient;
-import cn.argento.askia.networks.miniFeign.supports.HttpRequestMethod;
+import cn.argento.askia.networks.miniFeign.supports.http.HttpClient;
+import cn.argento.askia.networks.miniFeign.supports.http.HttpRequestMethod;
 
 public interface HttpCaller<HEADERS, BODY> extends Caller{
 
