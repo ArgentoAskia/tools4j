@@ -266,7 +266,6 @@ public class FileUtility {
        return readAllLines(path, StandardCharsets.UTF_8);
     }
 
-
     public static void main(String[] args) {
         ArrayList<File> filesRef = new ArrayList<>();
         ArrayList<File> dirsRef = new ArrayList<>();
@@ -275,4 +274,113 @@ public class FileUtility {
         System.out.println(filesRef);
         System.out.println(dirsRef);
     }
+
+    // MIMEType <==> fileSuffix
+
+    private static final Map<String, String> MIME_TO_EXT = new HashMap<>();
+    private static final String UNKNOWN_MIME_TYPE = "unknown";
+    static {
+        // MIME 类型大全，参考：https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Guides/MIME_types/Common_types
+        // IMAGE组别
+        MIME_TO_EXT.put("image/gif", "gif");
+        MIME_TO_EXT.put("image/apng", "apng");
+        MIME_TO_EXT.put("image/avif", "avif");
+        MIME_TO_EXT.put("image/jpeg", "jpg");
+        MIME_TO_EXT.put("image/jp2", "jpg2");
+        MIME_TO_EXT.put("image/png", "png");
+        MIME_TO_EXT.put("image/tiff", "tif");
+        MIME_TO_EXT.put("image/bmp", "bmp");
+        MIME_TO_EXT.put("image/svg+xml", "svg");
+        MIME_TO_EXT.put("image/webp", "webp");
+        MIME_TO_EXT.put("image/x-icon", "ico");
+        MIME_TO_EXT.put("image/vnd.microsoft.icon", "ico");
+
+        // audio组
+        MIME_TO_EXT.put("audio/aac", "aac");
+        MIME_TO_EXT.put("audio/midi", "midi");
+        MIME_TO_EXT.put("audio/mpeg", "mp3");
+        MIME_TO_EXT.put("audio/ogg", "ogg");
+        MIME_TO_EXT.put("audio/opus", "opus");
+        MIME_TO_EXT.put("audio/wav", "wav");
+        MIME_TO_EXT.put("audio/webm", "weba");
+        MIME_TO_EXT.put("audio/3gpp", "3gp");
+        MIME_TO_EXT.put("audio/3gpp2", "3g2");
+
+        // application 组
+        MIME_TO_EXT.put("application/x-abiword", "abw");
+        MIME_TO_EXT.put("application/x-freearc", "arc");
+        MIME_TO_EXT.put("application/vnd.amazon.ebook", "azw");
+        MIME_TO_EXT.put("application/octet-stream", "bin");
+        MIME_TO_EXT.put("application/x-bzip", "bz");
+        MIME_TO_EXT.put("application/x-bzip2", "bz2");
+        MIME_TO_EXT.put("application/x-cdf", "cda");
+        MIME_TO_EXT.put("application/x-csh", "csh");
+        MIME_TO_EXT.put("application/msword", "doc");
+        MIME_TO_EXT.put("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx");
+        MIME_TO_EXT.put("application/vnd.ms-fontobject", "eot");
+        MIME_TO_EXT.put("application/epub+zip", "epub");
+        MIME_TO_EXT.put("application/gzip", "gz");
+        MIME_TO_EXT.put("application/java-archive", "jar");
+        MIME_TO_EXT.put("application/json", "json");
+        MIME_TO_EXT.put("application/ld+json", "jsonld");
+        MIME_TO_EXT.put("application/vnd.apple.installer+xml", "mpkg");
+        MIME_TO_EXT.put("application/vnd.oasis.opendocument.presentation", "odp");
+        MIME_TO_EXT.put("application/vnd.oasis.opendocument.spreadsheet", "ods");
+        MIME_TO_EXT.put("application/vnd.oasis.opendocument.text", "odt");
+        MIME_TO_EXT.put("application/ogg", "ogx");
+        MIME_TO_EXT.put("application/pdf", "pdf");
+        MIME_TO_EXT.put("application/x-httpd-php", "php");
+        MIME_TO_EXT.put("application/vnd.ms-powerpoint", "ppt");
+        MIME_TO_EXT.put("application/vnd.openxmlformats-officedocument.presentationml.presentation", "pptx");
+        MIME_TO_EXT.put("application/vnd.rar", "rar");
+        MIME_TO_EXT.put("application/rtf", "rtf");
+        MIME_TO_EXT.put("application/x-sh", "sh");
+        MIME_TO_EXT.put("application/x-tar", "tar");
+        MIME_TO_EXT.put("application/vnd.visio", "vsd");
+        MIME_TO_EXT.put("application/xhtml+xml", "xhtml");
+        MIME_TO_EXT.put("application/vnd.ms-excel", "xls");
+        MIME_TO_EXT.put("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx");
+        MIME_TO_EXT.put("application/xml", "xml");
+        MIME_TO_EXT.put("application/vnd.mozilla.xul+xml", "xul");
+        MIME_TO_EXT.put("application/zip", "zip");
+        MIME_TO_EXT.put("application/x-7z-compressed", "7z");
+
+        //  text组
+        MIME_TO_EXT.put("text/css", "css");
+        MIME_TO_EXT.put("text/csv", "csv");
+        MIME_TO_EXT.put("text/html", "html");
+        MIME_TO_EXT.put("text/calendar", "ics");
+        MIME_TO_EXT.put("text/javascript", "js");
+        MIME_TO_EXT.put("text/plain", "txt");
+        MIME_TO_EXT.put("text/xml", "xml");
+
+        // video组
+        MIME_TO_EXT.put("video/x-msvideo", "avi");
+        MIME_TO_EXT.put("video/mp4", "mp4");
+        MIME_TO_EXT.put("video/mpeg", "mpeg");
+        MIME_TO_EXT.put("video/ogg", "ogv");
+        MIME_TO_EXT.put("video/mp2t", "ts");
+        MIME_TO_EXT.put("video/webm", "webm");
+        MIME_TO_EXT.put("video/3gpp", "3gp");
+        MIME_TO_EXT.put("video/3gpp2", "3g2");
+    }
+
+    /**
+     * 根据提供的MIME Type尝试获取对应的扩展名(Extension)
+     * <p><b>此方法获取扩展名基于预先缓存的MIMEType_TO_EXT的哈希Map, 因此不能提供完全准确且完整的类型获取</b></p>
+     * <p><b>此方法优先保证获取和解析的MIME Type为标准定义的, 一些历史遗留的MIME Type和非标准MIME Type可能无法解析, 如需要考虑更加精准的解析, 请使用本系列的其他包或者其他第三方库</b></p>
+     * <p>当找不到匹配的Extension时, 此方法将返回{@link FileUtility#UNKNOWN_MIME_TYPE}, 该常量是一个字符串常量, 您在比较是为了节省性能，可以直接对比引用即可</p>
+     *
+     * @param mimeType 提供的Mime Type字符串，或者从content-type中获取的带; charset=UTF-8部分的MimeType字符串
+     * @return 如果找到符合的Extension, 则返回，否则返回{@link FileUtility#UNKNOWN_MIME_TYPE}
+     * @see FileUtility#UNKNOWN_MIME_TYPE
+     * @since 2026.3.19
+     */
+    public static String getExtension(String mimeType) {
+        if (mimeType == null) return null;
+        // 去除可能的分号参数部分，如 "image/jpeg; charset=UTF-8"
+        String baseType = mimeType.split(";")[0].trim().toLowerCase();
+        return MIME_TO_EXT.getOrDefault(baseType, UNKNOWN_MIME_TYPE);
+    }
+
 }
