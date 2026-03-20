@@ -5,6 +5,7 @@ import sun.reflect.ReflectionFactory;
 
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.function.Function;
 
 public class LangUtility {
 
@@ -568,6 +569,90 @@ public class LangUtility {
     }
     public static double safetyUnboxing(Double floatBoxingType){
         return safetyUnboxing(floatBoxingType, 0.0);
+    }
+
+
+    // 各类基本类型，包装器类，以及Number类的字符串转化方法
+    private static final Map<Class<?>, Function<String, ?>> STRING_PARSER = new HashMap<>();
+    static {
+        STRING_PARSER.put(int.class, Integer::parseInt);
+        STRING_PARSER.put(Integer.class, Integer::valueOf);
+        STRING_PARSER.put(Byte.class, Byte::valueOf);
+        STRING_PARSER.put(byte.class, Byte::parseByte);
+        STRING_PARSER.put(short.class, Short::parseShort);
+        STRING_PARSER.put(Short.class, Short::valueOf);
+        STRING_PARSER.put(long.class, Long::parseLong);
+        STRING_PARSER.put(Long.class, Long::valueOf);
+
+        STRING_PARSER.put(Float.class, Float::valueOf);
+        STRING_PARSER.put(float.class, Float::parseFloat);
+
+        STRING_PARSER.put(Double.class, Double::valueOf);
+        STRING_PARSER.put(double.class, Double::parseDouble);
+
+        STRING_PARSER.put(Character.class, s -> {
+            if (s.isEmpty()){
+                return Character.valueOf(Character.MIN_VALUE);
+            }
+            else{
+                return s.charAt(0);
+            }
+        });
+        STRING_PARSER.put(char.class, s -> {
+            if (s.isEmpty()){
+                return Character.MIN_VALUE;
+            }
+            else{
+                return s.charAt(0);
+            }
+        });
+        STRING_PARSER.put(Boolean.class, Boolean::valueOf);
+        STRING_PARSER.put(boolean.class, Boolean::parseBoolean);
+
+        STRING_PARSER.put(String.class, String::valueOf);
+
+    }
+
+    /**
+     * 提供所有基础类型，包装器类型，Number类的所有子类的字符串parse方法.
+     *
+     * <h3>字符串值类型转化问题</h3>
+     * <p>我们都知道几乎所有的包装器类型除了{@link Character}都有对应的parseXXX()方法, 比如{@link  Integer#parseInt(String)}、{@link Double#parseDouble(String)},而开发中有一个很困难的点在于, 你已经得到一个{@link Class}对象了，你也确定他基本是一个基础类型或者是一个具体的值类型，并且该类型的对象的字符串表示形式你也有了，而此时你在纠结这个{@link Class}到底具体是什么类型，你应该使用什么parse()方法来转化这个字符串，正常的做法是你基本要把所有的值类型都判断一边，而本方法将这段枯燥的代码封装起来了</p>
+     *
+     * <h3>实现细节</h3>
+     * <p>本方法使用一个map将所有字符串到值类型(包括字符串本身)的parse()缓存起来，调用本方法时, 将会从这个map中查询相应的parse(), 然后调用此parse()方法并返回转化后的结果，如果查找不到相应的parse(), 则抛出异常{@link UnsupportedOperationException}</p>
+     * <p>目前方法支持的parse有：
+     * <ol>
+     *     <li>所有基础类型：int、byte、long、short、double、float、char、boolean，这些基础类型采用其对应的包装器类的{@code parse()}静态方法, 唯一特殊的char则判断提供的字符串是否是空串，如果是，则返回{@link Character#MIN_VALUE}, 否则返回<b>字符串的第一个字符</b></li>
+     *     <li>对于包装器类型：{@link Character}的处理方式同上, 其他则调用对应包装器类型的{@code valueOf()}</li>
+     *     <li>字符串类型：返回本身</li>
+     * </ol>
+     * </p>
+     *
+     *
+     * @param str 字符串形式的值，可以为null
+     * @param type 要转化为的类型
+     * @return 实际转化对象, 如果str对象为null时, 则返回null
+     * @param <T> 具体的可转化类型，比如包装器类型，基本类型，Number类等
+     * @throws UnsupportedOperationException 当提供的值类型当前方法不支持时，抛出此异常
+     * @since 2026.3.19
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T parse(String str, Class<T> type){
+        if (str == null) return null;
+        Function<String, ?> stringFunction = STRING_PARSER.get(type);
+        if (stringFunction == null){
+            throw new UnsupportedOperationException("系统不支持当前类型" + type + "的parse操作, 更多转换方式敬请期待");
+        }
+        Object apply = stringFunction.apply(str);
+        System.out.println(apply.getClass());
+        if (type.isPrimitive()){
+            // 基本类型直接转即可
+            return (T)apply;
+        }
+        else{
+            return type.cast(apply);
+        }
     }
 
 }
