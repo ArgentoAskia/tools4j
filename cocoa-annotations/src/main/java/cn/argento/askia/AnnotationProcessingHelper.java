@@ -4,7 +4,7 @@ import cn.argento.askia.annotations.Utility;
 import cn.argento.askia.processors.AnnotationProcessor;
 import cn.argento.askia.supports.AnnotationKeyValue;
 import cn.argento.askia.supports.proxy.AnnotationInvocationHandler;
-import cn.argento.askia.utilities.AnnotationUtility;
+import cn.argento.askia.utilities.annotation.AnnotationUtility;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.AnnotationFormatError;

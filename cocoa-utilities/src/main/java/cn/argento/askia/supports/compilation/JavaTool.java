@@ -1,16 +1,12 @@
 package cn.argento.askia.supports.compilation;
 
-import cn.argento.askia.utilities.ArrayUtility;
-import cn.argento.askia.utilities.IOStreamUtility;
-import sun.awt.CharsetString;
+import cn.argento.askia.utilities.collection.ArrayUtility;
+import cn.argento.askia.utilities.io.IOStreamUtility;
 
 import javax.lang.model.SourceVersion;
 import javax.tools.Tool;
 import java.io.*;
-import java.lang.reflect.Array;
-import java.nio.charset.Charset;
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * Java.exe Tool simple Wrapper

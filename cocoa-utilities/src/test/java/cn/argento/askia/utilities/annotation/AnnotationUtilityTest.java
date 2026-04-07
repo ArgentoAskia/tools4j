@@ -1,7 +1,5 @@
 package cn.argento.askia.utilities.annotation;
 
-import cn.argento.askia.utilities.AnnotationUtility;
-
 import java.lang.reflect.Method;
 
 public class AnnotationUtilityTest {

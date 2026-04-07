@@ -1,5 +1,6 @@
 package cn.argento.askia.utilities;
 
+import cn.argento.askia.utilities.lang.AssertionUtility;
 import org.junit.Test;
 
 import java.util.Comparator;

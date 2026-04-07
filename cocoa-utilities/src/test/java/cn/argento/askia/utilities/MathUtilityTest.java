@@ -1,8 +1,8 @@
 package cn.argento.askia.utilities;
 
+import cn.argento.askia.utilities.calc.MathUtility;
 import org.junit.Test;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class MathUtilityTest {

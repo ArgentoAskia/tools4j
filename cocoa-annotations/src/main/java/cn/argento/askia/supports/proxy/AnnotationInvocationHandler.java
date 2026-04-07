@@ -1,7 +1,7 @@
 package cn.argento.askia.supports.proxy;
 
 import cn.argento.askia.supports.AnnotationKeyValue;
-import cn.argento.askia.utilities.AnnotationUtility;
+import cn.argento.askia.utilities.annotation.AnnotationUtility;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;

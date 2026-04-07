@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>cocoa-core</artifactId>
+    <description>此包为cocoa系列包的所有顶层核心包, 内部包含基础的语言支持, 扩展异常等内容</description>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

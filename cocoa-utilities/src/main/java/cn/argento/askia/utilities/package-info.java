@@ -1,10 +1,27 @@
 /**
  All Useful Utilities, including annotation, reflection, compilation, beans, keys, random, IOStream and so on.
- <p>
- 类列表如下：
+ <p>工具类列表如下：
      <ol>
-         <li>{@link cn.argento.askia.utilities.AnnotationUtility}: 注解工具类, 提供了获取注解的通用方法</li>
-         <li>{@link cn.argento.askia.utilities.ArrayUtility}: 数组工具类, 用于处理数组</li>
+         <li>{@code cn.argento.askia.utilities.algorithms.*} 此为算法包，包含各类算法总结，以及各类算法的原始方法</li>
+         <li>{@code cn.argento.askia.utilities.annotation.*} 此为注解包，内含各种处理注解的工具类</li>
+         <li>{@code cn.argento.askia.utilities.bean.*} 此为JavaBean包，内含JavaBean相关的内容如JavaBean内省，Bean反射，值访问，值编辑器等相关的工具类</li>
+         <li>{@code cn.argento.askia.utilities.calc.*} 计算工具类包，包含各类数值计算工具类</li>
+         <li>{@code cn.argento.askia.utilities.classes.*} 包含类文件，字节码，类加载，资源加载等工具类</li>
+         <li>{@code cn.argento.askia.utilities.collection.*} 数据结构相关工具类，包含集合框架JCF, 数组工具类等</li>
+         <li>{@code cn.argento.askia.utilities.database.*} 数据库相关工具类, 包含数据库元素据, Datasource, SQLBuilder等工具类</li>
+         <li>{@code cn.argento.askia.utilities.datetime.*} 日期时间相关工具类, 包含时间对象创建、计算、判别、表达和转换，注意此包不包含任何时间格式化相关的内容, 如需格式化请查看text包</li>
+         <li>{@code cn.argento.askia.utilities.files.*} 各类文件的相关处理工具类，比如Json, pdf等, 以及文件信息相关的工具类, 比如File, Files</li>
+         <li>{@code cn.argento.askia.utilities.functional.*} 函数式编程相关的工具类, 包含操作流Stream, MapReduce封装, 函数式接口调用, 回调等相关工具类</li>
+         <li>{@code cn.argento.askia.utilities.generate.*} 各类生成式内容的工具类, 比如UUID, CDK, 随机内容(文本, 数值)等等</li>
+         <li>{@code cn.argento.askia.utilities.graphic.*} 图形动画相关的工具类, 包括Java2D的封装, 动画等等</li>
+         <li>{@code cn.argento.askia.utilities.io.*} io和nio相关的所有工具类, 包括IOStream, Buffer, channel, tcp Socket, udp Socket等</li>
+         <li>{@code cn.argento.askia.utilities.lang.*} 语言层面的工具类, 包括字符串, java数据类型转换, 断言等等</li>
+         <li>{@code cn.argento.askia.utilities.network.*} 网络相关的工具类, 包括网络接口信息(网卡), 应用层协议如HTTP, FTP等等</li>
+         <li>{@code cn.argento.askia.utilities.reflect.*} 反射相关的工具类</li>
+         <li>{@code cn.argento.askia.utilities.script.*} 脚本相关的工具类，包括脚本执行和本地方法执行(JNI、JNA等)</li>
+         <li>{@code cn.argento.askia.utilities.security.*} 安全相关工具类, 如加密解密，hash等</li>
+         <li>{@code cn.argento.askia.utilities.system.*} 系统相关的工具类，包括系统信息, 平台信息, 桌面操作等等</li>
+         <li>{@code cn.argento.askia.utilities.text.*} 文本处理和格式化相关的工具类, 包含各类信息的格式化方法</li>
      </ol>
  <hr>
  <h2>特别说明：</h2>

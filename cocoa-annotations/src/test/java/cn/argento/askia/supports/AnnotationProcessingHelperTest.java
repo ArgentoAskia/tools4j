@@ -2,7 +2,7 @@ package cn.argento.askia.supports;
 
 import cn.argento.askia.AnnotationProcessingHelper;
 import cn.argento.askia.annotations.Utility;
-import cn.argento.askia.utilities.AnnotationUtility;
+import cn.argento.askia.utilities.annotation.AnnotationUtility;
 import org.junit.Test;
 
 import java.lang.annotation.Annotation;

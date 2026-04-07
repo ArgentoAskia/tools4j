@@ -1,6 +1,6 @@
 package cn.argento.askia.supports;
 
-import cn.argento.askia.utilities.AnnotationUtility;
+import cn.argento.askia.utilities.annotation.AnnotationUtility;
 
 import java.lang.annotation.Annotation;
 import java.util.Objects;

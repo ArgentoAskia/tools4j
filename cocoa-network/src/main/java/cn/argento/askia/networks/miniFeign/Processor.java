@@ -2,7 +2,7 @@ package cn.argento.askia.networks.miniFeign;
 
 import cn.argento.askia.networks.miniFeign.annotations.Delete;
 import cn.argento.askia.networks.miniFeign.annotations.Post;
-import cn.argento.askia.utilities.AnnotationUtility;
+import cn.argento.askia.utilities.annotation.AnnotationUtility;
 
 import java.io.IOException;
 import java.lang.annotation.ElementType;

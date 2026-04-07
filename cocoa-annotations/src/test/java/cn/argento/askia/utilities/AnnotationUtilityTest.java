@@ -1,6 +1,7 @@
 package cn.argento.askia.utilities;
 
 import cn.argento.askia.annotations.Utility;
+import cn.argento.askia.utilities.annotation.AnnotationUtility;
 import org.junit.Test;
 
 import java.lang.annotation.ElementType;

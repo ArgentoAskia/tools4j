@@ -1,6 +1,7 @@
 package cn.argento.askia.utilities;
 
 import cn.argento.askia.exceptions.runtime.scripts.CompilationException;
+import cn.argento.askia.utilities.script.CompilationUtility;
 
 import java.util.Arrays;
 
