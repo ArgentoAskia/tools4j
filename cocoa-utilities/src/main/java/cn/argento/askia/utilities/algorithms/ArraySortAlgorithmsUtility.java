@@ -91,19 +91,193 @@ public class ArraySortAlgorithmsUtility {
         }
     }
 
-    // 冒泡排序
-    public static <T extends Comparable<? super T>> void bubble(T[] target, int lo, int hi, Order orderBy){
+    // ============================= 冒泡排序 =============================
 
+    /**
+     * 冒泡排序
+     *
+     * @param target 待排序的目标, 数组原始类型必须是实现了 {@link Comparable} 接口
+     * @param lo 下界, 最小为0, 最大为数组成员数减1
+     * @param hi 上界, 最小为0, 最大为数组成员数减1
+     * @param orderBy {@link Order#ASC}代表升序, {@link Order#DESC}代表降序
+     * @param <T> 所有实现了 {@link Comparable} 接口的类
+     * @since 2026.4.7
+     * @see ArraySortAlgorithmsUtility#bubble(Comparable[])
+     * @see ArraySortAlgorithmsUtility#bubble(Comparable[], Order)
+     *
+     * @see ArraySortAlgorithmsUtility#bubble(Object[], Comparator)
+     * @see ArraySortAlgorithmsUtility#bubble(Object[], Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#bubble(Object[], int, int, Order, Comparator)
+     */
+    public static <T extends Comparable<? super T>> void bubble(T[] target, int lo, int hi, Order orderBy){
+        checkRange(lo, hi, target.length);
+        // 外层循环是要冒泡的规模，因为每次排好一个数所以最后会剩下一个数，因此最后一趟不用排，因此总共需要循环n-1次，这也是为什么从1开始的原因
+        // 上一次发生交换的位置
+        int k = hi;
+        for (int i = (lo + 1); i <= hi; i++) {
+            // 设定一个标记，若为true，则表示此次循环没有进行交换，也就是待排序列已经有序，排序已经完成。
+            boolean flag = true;
+            // 标记交换位置
+            int pos = lo;
+            // 冒泡过程
+            for (int j = lo; j < k; j++) {
+                if (ordered(target[j + 1], target[j], orderBy)) {
+                    exchange(target, j, j + 1);
+                    flag = false;
+                    // 设置为当前发生交换的位置
+                    pos = j;
+                }
+            }
+            // 如果flag仍然是true，则代表当前数组已没有发生过交换，此时退出循环即可
+            if (flag) {
+                break;
+            }
+            // 下一次比较到记录位置即可
+            k = pos;
+        }
     }
 
+    /**
+     * 冒泡排序
+     *
+     * @param target  待排序的目标, 数组原始类型必须是实现了 {@link Comparable} 接口
+     * @param orderBy {@link Order#ASC}代表升序, {@link Order#DESC}代表降序
+     * @param <T> 所有实现了 {@link Comparable} 接口的类
+     * @since 2026.4.7
+     * @see ArraySortAlgorithmsUtility#bubble(Comparable[])
+     * @see ArraySortAlgorithmsUtility#bubble(Comparable[], int, int, Order)
+     *
+     * @see ArraySortAlgorithmsUtility#bubble(Object[], Comparator)
+     * @see ArraySortAlgorithmsUtility#bubble(Object[], Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#bubble(Object[], int, int, Order, Comparator)
+     */
+    public static <T extends Comparable<? super T>> void bubble(T[] target, Order orderBy){
+        bubble(target, 0, target.length - 1, orderBy);
+    }
+
+    /**
+     * 冒泡排序
+     *
+     * @param target 待排序的目标, 数组原始类型必须是实现了 {@link Comparable} 接口
+     * @param <T> 所有实现了 {@link Comparable} 接口的类
+     * @since 2026.4.7
+     * @see ArraySortAlgorithmsUtility#bubble(Comparable[], Order)
+     * @see ArraySortAlgorithmsUtility#bubble(Comparable[], int, int, Order)
+     *
+     * @see ArraySortAlgorithmsUtility#bubble(Object[], Comparator)
+     * @see ArraySortAlgorithmsUtility#bubble(Object[], Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#bubble(Object[], int, int, Order, Comparator)
+     */
+    public static <T extends Comparable<? super T>> void bubble(T[] target){
+        bubble(target, 0, target.length - 1, Order.ASC);
+    }
+
+    /**
+     * 冒泡排序
+     *
+     * <p>此方法提供给那些没有实现了{@link Comparable} 接口的类, 因此需要提供一个 {@link Comparator} 比较器来进行比较</p>
+     *
+     * @param target 待排序的目标, 数组原始类型不限制
+     * @param lo 下界, 最小为0, 最大为数组成员数减1
+     * @param hi 上界, 最小为0, 最大为数组成员数减1
+     * @param orderBy {@link Order#ASC}代表升序, {@link Order#DESC}代表降序
+     * @param comparator 比较器对象
+     * @param <T> 任何类型
+     * @since 2026.4.7
+     * @see ArraySortAlgorithmsUtility#bubble(Comparable[])
+     * @see ArraySortAlgorithmsUtility#bubble(Comparable[], Order)
+     * @see ArraySortAlgorithmsUtility#bubble(Comparable[], int, int, Order)
+     *
+     * @see ArraySortAlgorithmsUtility#bubble(Object[], Comparator)
+     * @see ArraySortAlgorithmsUtility#bubble(Object[], Order, Comparator)
+     */
+    public static <T> void bubble(T[] target, int lo, int hi, Order orderBy, Comparator<T> comparator){
+        checkRange(lo, hi, target.length);
+        // 外层循环是要冒泡的规模，因为每次排好一个数所以最后会剩下一个数，因此最后一趟不用排，因此总共需要循环n-1次，这也是为什么从1开始的原因
+        // 上一次发生交换的位置
+        int k = hi;
+        for (int i = (lo + 1); i <= hi; i++) {
+            // 设定一个标记，若为true，则表示此次循环没有进行交换，也就是待排序列已经有序，排序已经完成。
+            boolean flag = true;
+            // 标记交换位置
+            int pos = lo;
+            // 冒泡过程
+            for (int j = lo; j < k; j++) {
+                if (ordered(target[j + 1], target[j], orderBy, comparator)) {
+                    exchange(target, j, j + 1);
+                    flag = false;
+                    // 设置为当前发生交换的位置
+                    pos = j;
+                }
+            }
+            // 如果flag仍然是true，则代表当前数组已没有发生过交换，此时退出循环即可
+            if (flag) {
+                break;
+            }
+            // 下一次比较到记录位置即可
+            k = pos;
+        }
+    }
+
+    /**
+     * 冒泡排序
+     *
+     * <p>此方法提供给那些没有实现了{@link Comparable} 接口的类, 因此需要提供一个 {@link Comparator} 比较器来进行比较</p>
+     *
+     * <p>此方法默认将整个数组排序, 即排序范围为 {@code [0, array.length - 1]}
+     *
+     * @param target 待排序的目标, 数组原始类型不限制
+     * @param orderBy {@link Order#ASC}代表升序, {@link Order#DESC}代表降序
+     * @param comparator 比较器对象
+     * @param <T> 任何类型
+     * @since 2026.4.7
+     * @see ArraySortAlgorithmsUtility#bubble(Comparable[])
+     * @see ArraySortAlgorithmsUtility#bubble(Comparable[], Order)
+     * @see ArraySortAlgorithmsUtility#bubble(Comparable[], int, int, Order)
+     *
+     * @see ArraySortAlgorithmsUtility#bubble(Object[], int, int, Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#bubble(Object[], Comparator)
+     */
+    public static <T> void bubble(T[] target, Order orderBy, Comparator<T> comparator){
+        bubble(target, 0, target.length - 1, orderBy, comparator);
+    }
+
+    /**
+     * 冒泡排序
+     *
+     * <p>此方法提供给那些没有实现了{@link Comparable} 接口的类, 因此需要提供一个 {@link Comparator} 比较器来进行比较</p>
+     *
+     * <p>此方法默认将整个数组按照升序顺序排序, 即排序范围为 {@code [0, array.length - 1]}, 顺序使用 {@link Order#ASC}
+     *
+     * @param target 待排序的目标, 数组原始类型不限制
+     * @param comparator 比较器对象
+     * @param <T> 任何类型
+     * @since 2026.4.7
+     * @see ArraySortAlgorithmsUtility#bubble(Comparable[])
+     * @see ArraySortAlgorithmsUtility#bubble(Comparable[], Order)
+     * @see ArraySortAlgorithmsUtility#bubble(Comparable[], int, int, Order)
+     *
+     * @see ArraySortAlgorithmsUtility#bubble(Object[], int, int, Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#bubble(Object[], Order, Comparator)
+     */
+    public static <T> void bubble(T[] target, Comparator<T> comparator){
+        bubble(target, 0, target.length - 1, Order.ASC, comparator);
+    }
+
+    // ============================= 冒泡排序 =============================
+
+    // ============================= 插入排序 =============================
     // 插入排序
     public static <T extends Comparable<? super T>> void insertion(T[] target, int lo, int hi, Order orderBy){
 
     }
+    // ============================= 插入排序 =============================
 
     // ========================= 选择排序 =========================
     /**
      * 选择排序
+     *
+     * <p>代码来源自普林斯顿老爷子的《算法4》
      *
      * @param target 待排序的目标, 数组原始类型必须是实现了 {@link Comparable} 接口
      * @param lo 下界, 最小为0, 最大为数组成员数减1
@@ -114,7 +288,9 @@ public class ArraySortAlgorithmsUtility {
      * @see ArraySortAlgorithmsUtility#selection(Comparable[])
      * @see ArraySortAlgorithmsUtility#selection(Comparable[], Order)
      *
+     * @see ArraySortAlgorithmsUtility#selection(Object[], Comparator)
      * @see ArraySortAlgorithmsUtility#selection(Object[], int, int, Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#selection(Object[], Order, Comparator)
      */
     public static <T extends Comparable<? super T>> void selection(T[] target, int lo, int hi, Order orderBy) {
         checkRange(lo, hi, target.length);
@@ -150,7 +326,9 @@ public class ArraySortAlgorithmsUtility {
      * @see ArraySortAlgorithmsUtility#selection(Comparable[])
      * @see ArraySortAlgorithmsUtility#selection(Comparable[], int, int, Order)
      *
+     * @see ArraySortAlgorithmsUtility#selection(Object[], Comparator)
      * @see ArraySortAlgorithmsUtility#selection(Object[], int, int, Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#selection(Object[], Order, Comparator)
      */
     public static <T extends Comparable<? super T>> void selection(T[] target, Order orderBy) {
         selection(target, 0, target.length - 1, orderBy);
@@ -167,7 +345,9 @@ public class ArraySortAlgorithmsUtility {
      * @see ArraySortAlgorithmsUtility#selection(Comparable[], Order)
      * @see ArraySortAlgorithmsUtility#selection(Comparable[], int, int, Order)
      *
+     * @see ArraySortAlgorithmsUtility#selection(Object[], Comparator)
      * @see ArraySortAlgorithmsUtility#selection(Object[], int, int, Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#selection(Object[], Order, Comparator)
      */
     public static <T extends Comparable<? super T>> void selection(T[] target) {
         selection(target, 0, target.length - 1, Order.ASC);
@@ -185,6 +365,12 @@ public class ArraySortAlgorithmsUtility {
      * @param comparator 比较器对象
      * @param <T> 任何类型
      * @since 2026.4.7
+     * @see ArraySortAlgorithmsUtility#selection(Object[], Comparator)
+     * @see ArraySortAlgorithmsUtility#selection(Object[], Order, Comparator)
+     *
+     * @see ArraySortAlgorithmsUtility#selection(Comparable[])
+     * @see ArraySortAlgorithmsUtility#selection(Comparable[], Order)
+     * @see ArraySortAlgorithmsUtility#selection(Comparable[], int, int, Order)
      */
     public static <T> void selection(T[] target, int lo, int hi, Order orderBy, Comparator<T> comparator){
         checkRange(lo, hi, target.length);
@@ -220,6 +406,12 @@ public class ArraySortAlgorithmsUtility {
      * @param comparator 比较器对象
      * @param <T> 任何类型
      * @since 2026.4.7
+     * @see ArraySortAlgorithmsUtility#selection(Object[], Comparator)
+     * @see ArraySortAlgorithmsUtility#selection(Object[], int, int, Order, Comparator)
+     *
+     * @see ArraySortAlgorithmsUtility#selection(Comparable[])
+     * @see ArraySortAlgorithmsUtility#selection(Comparable[], Order)
+     * @see ArraySortAlgorithmsUtility#selection(Comparable[], int, int, Order)
      */
     public static <T> void selection(T[] target, Order orderBy, Comparator<T> comparator) {
         selection(target, 0, target.length - 1, orderBy, comparator);
@@ -236,6 +428,12 @@ public class ArraySortAlgorithmsUtility {
      * @param comparator 比较器对象
      * @param <T> 任何类型
      * @since 2026.4.7
+     * @see ArraySortAlgorithmsUtility#selection(Object[], Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#selection(Object[], int, int, Order, Comparator)
+     *
+     * @see ArraySortAlgorithmsUtility#selection(Comparable[])
+     * @see ArraySortAlgorithmsUtility#selection(Comparable[], Order)
+     * @see ArraySortAlgorithmsUtility#selection(Comparable[], int, int, Order)
      */
     public static <T> void selection(T[] target, Comparator<T> comparator) {
         selection(target, 0, target.length - 1, Order.ASC, comparator);
