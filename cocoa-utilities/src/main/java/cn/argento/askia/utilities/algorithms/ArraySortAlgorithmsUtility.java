@@ -24,6 +24,73 @@ public class ArraySortAlgorithmsUtility {
         ASC, DESC
     }
 
+    private static <T> void exchange(T[] target, int i, int j){
+        T temp = target[i];
+        target[i] = target[j];
+        target[j] = temp;
+    }
+
+    /**
+     *
+     * @param t1
+     * @param t2
+     * @param order
+     * @return
+     * @param <T>
+     */
+    private static <T extends Comparable<? super T>> boolean ordered(T t1, T t2, Order order){
+        if (order == Order.ASC){
+            // 升序则判断t1是否小于t2
+            return t1.compareTo(t2) < 0;
+        }
+        else{
+            // 降序则判断是否大于t2
+            return t1.compareTo(t2) > 0;
+        }
+    }
+
+    private static <T> boolean ordered(T t1, T t2, Order order, Comparator<? super T> comparator){
+        if (order == Order.ASC){
+            return comparator.compare(t1, t2) < 0;
+        }
+        else{
+            return comparator.compare(t1, t2) > 0;
+        }
+    }
+
+    /**
+     * 满足顺序返回1，如果相等返回0，不满足顺序返回-1
+     * @param t1
+     * @param t2
+     * @param order
+     * @return
+     * @param <T>
+     */
+    private static <T extends Comparable<? super T>> int orderedEquals(T t1, T t2, Order order){
+        if (order == Order.ASC){
+            return Integer.compare(0, t1.compareTo(t2));
+        }
+        else{
+            return Integer.compare(t1.compareTo(t2), 0);
+        }
+    }
+    private static void checkRange(int lo, int hi, int length){
+        if (lo < 0){
+            throw new IllegalArgumentException("lo < 0");
+        }
+        if (hi < 0){
+            throw new IllegalArgumentException("hi < 0");
+        }
+        if (lo > hi)
+            throw new IllegalArgumentException("下届不能大于上届, lo = " + lo + ", hi = " + hi);
+        if (lo >= length){
+            throw new ArrayIndexOutOfBoundsException("下届越界, 必须小于等于"+ (length - 1) +", lo = " + lo + ", length = " + length);
+        }
+        if (hi >= length){
+            throw new ArrayIndexOutOfBoundsException("上届越界, 必须小于等于"+ (length - 1) +", hi = " + hi + ", length = " + length);
+        }
+    }
+
     // 冒泡排序
     public static <T extends Comparable<? super T>> void bubble(T[] target, int lo, int hi, Order orderBy){
 
@@ -34,13 +101,152 @@ public class ArraySortAlgorithmsUtility {
 
     }
 
-    // 选择排序
-    public static <T extends Comparable<? super T>> void selection(T[] target, int lo, int hi, Order orderBy){
-
+    // ========================= 选择排序 =========================
+    /**
+     * 选择排序
+     *
+     * @param target 待排序的目标, 数组原始类型必须是实现了 {@link Comparable} 接口
+     * @param lo 下界, 最小为0, 最大为数组成员数减1
+     * @param hi 上界, 最小为0, 最大为数组成员数减1
+     * @param orderBy {@link Order#ASC}代表升序, {@link Order#DESC}代表降序
+     * @param <T> 所有实现了 {@link Comparable} 接口的类
+     * @since 2026.4.7
+     * @see ArraySortAlgorithmsUtility#selection(Comparable[])
+     * @see ArraySortAlgorithmsUtility#selection(Comparable[], Order)
+     *
+     * @see ArraySortAlgorithmsUtility#selection(Object[], int, int, Order, Comparator)
+     */
+    public static <T extends Comparable<? super T>> void selection(T[] target, int lo, int hi, Order orderBy) {
+        checkRange(lo, hi, target.length);
+        // 第一趟用于判断需要循环的规模
+        for (int i = lo; i < hi; i++) {
+            // 默认使用第一个元素作为最小(最大)
+            int min = i;
+            // 第二趟，从第一趟的后一个元素开始遍历，找到一个最小(最大)的元素索引
+            for (int j = i + 1; j <= hi; j++) {
+                // 如果j元素比min的小(大)，重新更新下标
+                if (ordered(target[j], target[min], orderBy)) {
+                    min = j;
+                }
+            }
+            // 内层循环结束，得到一个最小(最大的下标), 确定最开始位置应该放什么数字, 进行交换
+            if (i != min) {
+                // 最小已经改变, 此时我们再进行交换
+                exchange(target, i, min);
+            }
+            // 一轮结束
+        }
     }
+
+    /**
+     * 选择排序
+     *
+     * <p>此方法默认将整个数组排序, 即排序范围为 {@code [0, array.length - 1]}
+     *
+     * @param target 待排序的目标, 数组原始类型必须是实现了 {@link Comparable} 接口
+     * @param orderBy {@link Order#ASC}代表升序, {@link Order#DESC}代表降序
+     * @param <T> 所有实现了 {@link Comparable} 接口的类
+     * @since 2026.4.7
+     * @see ArraySortAlgorithmsUtility#selection(Comparable[])
+     * @see ArraySortAlgorithmsUtility#selection(Comparable[], int, int, Order)
+     *
+     * @see ArraySortAlgorithmsUtility#selection(Object[], int, int, Order, Comparator)
+     */
+    public static <T extends Comparable<? super T>> void selection(T[] target, Order orderBy) {
+        selection(target, 0, target.length - 1, orderBy);
+    }
+
+    /**
+     * 选择排序
+     *
+     * <p>此方法默认将整个数组按照升序顺序排序, 即排序范围为 {@code [0, array.length - 1]}, 顺序使用 {@link Order#ASC}
+     *
+     * @param target 待排序的目标, 数组原始类型必须是实现了 {@link Comparable} 接口
+     * @param <T> 所有实现了 {@link Comparable} 接口的类
+     * @since 2026.4.7
+     * @see ArraySortAlgorithmsUtility#selection(Comparable[], Order)
+     * @see ArraySortAlgorithmsUtility#selection(Comparable[], int, int, Order)
+     *
+     * @see ArraySortAlgorithmsUtility#selection(Object[], int, int, Order, Comparator)
+     */
+    public static <T extends Comparable<? super T>> void selection(T[] target) {
+        selection(target, 0, target.length - 1, Order.ASC);
+    }
+
+    /**
+     * 选择排序
+     *
+     * <p>此方法提供给那些没有实现了{@link Comparable} 接口的类, 因此需要提供一个 {@link Comparator} 比较器来进行比较</p>
+     *
+     * @param target 待排序的目标, 数组原始类型不限制
+     * @param lo 下界, 最小为0, 最大为数组成员数减1
+     * @param hi 上界, 最小为0, 最大为数组成员数减1
+     * @param orderBy {@link Order#ASC}代表升序, {@link Order#DESC}代表降序
+     * @param comparator 比较器对象
+     * @param <T> 任何类型
+     * @since 2026.4.7
+     */
+    public static <T> void selection(T[] target, int lo, int hi, Order orderBy, Comparator<T> comparator){
+        checkRange(lo, hi, target.length);
+        // 第一趟用于判断需要循环的规模
+        for (int i = lo; i < hi; i++){
+            // 默认使用第一个元素作为最小(最大)
+            int min = i;
+            // 第二趟，从第一趟的后一个元素开始遍历，找到一个最小(最大)的元素索引
+            for (int j = i + 1; j <= hi; j++){
+                // 如果j元素比min的小(大)，重新更新下标
+                if (ordered(target[j], target[min], orderBy, comparator)) {
+                    min = j;
+                }
+            }
+            // 内层循环结束，得到一个最小(最大的下标), 确定最开始位置应该放什么数字, 进行交换
+            if (i != min){
+                // 最小已经改变, 此时我们再进行交换
+                exchange(target, i, min);
+            }
+            // 一轮结束
+        }
+    }
+
+    /**
+     * 选择排序
+     *
+     * <p>此方法提供给那些没有实现了{@link Comparable} 接口的类, 因此需要提供一个 {@link Comparator} 比较器来进行比较</p>
+     *
+     * <p>此方法默认将整个数组排序, 即排序范围为 {@code [0, array.length - 1]}
+     *
+     * @param target 待排序的目标, 数组原始类型不限制
+     * @param orderBy {@link Order#ASC}代表升序, {@link Order#DESC}代表降序
+     * @param comparator 比较器对象
+     * @param <T> 任何类型
+     * @since 2026.4.7
+     */
+    public static <T> void selection(T[] target, Order orderBy, Comparator<T> comparator) {
+        selection(target, 0, target.length - 1, orderBy, comparator);
+    }
+
+    /**
+     * 选择排序
+     *
+     * <p>此方法提供给那些没有实现了{@link Comparable} 接口的类, 因此需要提供一个 {@link Comparator} 比较器来进行比较</p>
+     *
+     * <p>此方法默认将整个数组按照升序顺序排序, 即排序范围为 {@code [0, array.length - 1]}, 顺序使用 {@link Order#ASC}
+     *
+     * @param target 待排序的目标, 数组原始类型不限制
+     * @param comparator 比较器对象
+     * @param <T> 任何类型
+     * @since 2026.4.7
+     */
+    public static <T> void selection(T[] target, Comparator<T> comparator) {
+        selection(target, 0, target.length - 1, Order.ASC, comparator);
+    }
+    // ========================= 选择排序 =========================
 
     // 希尔排序
     public static <T extends Comparable<? super T>> void shell(T[] target, int lo, int hi, Order orderBy){
+
+    }
+    public static <T extends Comparable<? super T>> void shell(){
 
     }
     // 快速排序
@@ -70,7 +276,7 @@ public class ArraySortAlgorithmsUtility {
      *
      * @param target 待排序的目标, 数组原始类型必须是实现了 {@link Comparable} 接口
      * @param orderBy {@link Order#ASC}代表升序, {@link Order#DESC}代表降序
-     * @param <T> 所有实现了 {@link Comparable} 接口的泛型类
+     * @param <T> 所有实现了 {@link Comparable} 接口的类
      * @return 如果已排好序则返回 {@code true} 否则返回 {@code false}
      * @since 2026.4.7
      * @see ArraySortAlgorithmsUtility#isSorted(Object[], Comparator, Order)
