@@ -394,8 +394,23 @@ public final class ArrayUtility {
      * @throws ClassCastException 如果不能放入则抛出此ClassCastException异常
      */
     private static void checkObjectCanPutInArray(Object arrayObj, Object member){
-        Class<?> aClass = member.getClass();
         Class<?> componentType = arrayObj.getClass().getComponentType();
+        if (member == null){
+            // 成员是null,  则arrayObject的原始类型只要基础类型都能救
+            if (componentType.isPrimitive()){
+                // 基础类型，则我们无法放入
+                throw new ArrayStoreException("我们无法将null放入到基本类型数组中, 此为Java语言限制, 如果提供的arrayObj是基础类型的数组, 则请一定要确保提供的要放入数组的成员非null");
+            }
+            else{
+                // 引用类型则任何的都可以放入
+                return;
+            }
+        }
+        else if (LangUtility.isBoxingObject(member) && componentType.isPrimitive() || LangUtility.isBoxingType(componentType) && LangUtility.isPrimitiveObject(member)){
+            // 如果member对象是包装器类，而数组是基本类型, 则可以直接装箱、拆箱
+            return;
+        }
+        Class<?> aClass = member.getClass();
         boolean assignableFrom = componentType.isAssignableFrom(aClass);
         if (!assignableFrom)
             throw new ClassCastException(
@@ -1089,15 +1104,27 @@ public final class ArrayUtility {
     // TODO: 2024/4/16 范围乱序，无限缩小乱序
 
     public static void permute(Object arrayObj){
-
+        checkObjectIsArray(arrayObj);
+        permute(arrayObj, 0, getLength(arrayObj) - 1);
     }
 
     public static void permute(Object arrayObj, int lo, int hi){
-
-    }
-
-    public static void unsorted(Object arrayObj){
-
+        checkObjectIsArray(arrayObj);
+        if (lo < 0){
+            throw new IllegalArgumentException("数组上届不能小于0");
+        }
+        if (hi >= getLength(arrayObj)){
+            throw new IllegalArgumentException("数组下届最多等于数组长度-1");
+        }
+        while(hi > lo){
+            int i = RandomUtility.randomInt(lo, hi, true, true);
+            // swap
+            Object swap1 = get(arrayObj, i);
+            Object swap2 = get(arrayObj, hi);
+            set(arrayObj, i, swap2);
+            set(arrayObj, hi, swap1);
+            hi--;
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -1206,6 +1233,26 @@ public final class ArrayUtility {
             }
         }
         return true;
+    }
+
+    public static void swap(Object array1, int index1, Object array2, int index2){
+        checkObjectIsArray(array1);
+        checkObjectIsArray(array2);
+        int length1 = getLength(array1);
+        if (index1 >= length1) {
+            throw new ArrayIndexOutOfBoundsException("array1的长度只有" + length1 + ", 而你的index1为" + index1);
+        }
+        int length2 = getLength(array2);
+        if (index2 >= length2){
+            throw new ArrayIndexOutOfBoundsException("array2的长度只有" + length2 + ", 而你的index2为" + index2);
+        }
+        Object swap1 = get(array1, index1);
+        Object swap2 = get(array2, index2);
+        if (swap2.getClass() != swap1.getClass()){
+            throw new ClassCastException("不兼容的类型, 类型1为" + swap1.getClass().getName() + ", 类型2为" + swap2.getClass().getName());
+        }
+        set(array1, index1, swap2);
+        set(array2, index2, swap1);
     }
 
     public static void main(String[] args) {
