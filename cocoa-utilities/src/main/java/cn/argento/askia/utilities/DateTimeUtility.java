@@ -330,7 +330,7 @@ public class DateTimeUtility {
     }
 
     private static boolean checkForDateTimeClass(Class<?> tClass){
-        return ArrayUtility.fastContain(dateTimeClasses, tClass);
+        return ArrayUtility.contain(dateTimeClasses, tClass);
     }
 
     // ======================= 对象创建 API 结束 =============================

@@ -6,6 +6,9 @@ import java.text.MessageFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * 所有网络相关的API工具类
+ */
 public class NetworkUtility {
     public static void main(String[] args) {
         final String s = MBitToMByte("60MBit/ps", null);

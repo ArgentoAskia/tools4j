@@ -7,6 +7,9 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.Function;
 
+/**
+ * 此工具类对标Objects
+ */
 public class LangUtility {
 
 
@@ -257,10 +260,14 @@ public class LangUtility {
         return data;
     }
 
+    public static boolean isBinaryString(String binaryString){
+        return FormatUtility.matchBinaryString(binaryString);
+    }
+
     // binaryString 转为各种数值
     static <T extends Number> T binaryStringExchange(String binaryString, Class<T> tClass, boolean checkBinaryString){
         if (checkBinaryString){
-            if (!FormatUtility.isBinaryString(binaryString)){
+            if (!FormatUtility.matchBinaryString(binaryString)){
                 throw new IllegalArgumentException("参数：" + binaryString + "不是二进制字符串");
             }
         }
@@ -287,7 +294,7 @@ public class LangUtility {
         throw new UnsupportedOperationException("暂未支持非Java核心库下的Number类子类实现，您的需要的实现：" + tClass + "代码无法处理");
     }
     public static byte binaryStringToByte(String binaryString){
-        if (FormatUtility.isBinaryString(binaryString)){
+        if (FormatUtility.matchBinaryString(binaryString)){
             return binaryStringExchange(binaryString, byte.class, false);
         }
         throw new IllegalArgumentException("参数：" + binaryString + "不是二进制字符串");

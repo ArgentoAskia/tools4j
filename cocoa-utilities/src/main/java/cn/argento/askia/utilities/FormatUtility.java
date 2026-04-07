@@ -11,7 +11,8 @@ import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 /**
- * 格式化工具类
+ * 格式化工具类.
+ * <p>提供数据格式化和格式化数据判别两大功能, 此类中, 所有将数据按照某个格式进行格式化的方法均以format开头, 比如：formatTime, 而所有的判别方法均以match开头</p>
  * @author Askia
  */
 public class FormatUtility {
@@ -36,7 +37,7 @@ public class FormatUtility {
      * @param str 任意字符串
      * @return 如果是二进制字符串则返回true, 否则返回false
      */
-    public static boolean isBinaryString(String str){
+    public static boolean matchBinaryString(String str){
         return binaryStringExpPattern.matcher(str).matches();
     }
 
@@ -288,7 +289,7 @@ public class FormatUtility {
 
 
     public static void main(String[] args) {
-        System.out.println(isBinaryString("00000001"));
+        System.out.println(matchBinaryString("00000001"));
         System.out.println(matchCamelCasePattern("checkAbout2"));
         System.out.println(FormatUtility.formatCamelCaseToSnakeCase("connectedAccountId", false));
         System.out.println(Double.class.isPrimitive());

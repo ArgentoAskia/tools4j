@@ -23,6 +23,7 @@ import java.util.function.Function;
  *     <li>统计一个数组的维度</li>
  * </ol>
  * <p>
+ * <p>此工具类基于{@link Arrays}进行增强，我们先对{@link Arrays}进行总结，然后再介绍此工具类进行的扩展</p>
  *
  * @author Askia
  * @version 1.2
@@ -841,7 +842,6 @@ public final class ArrayUtility {
         String replace = template.replace(memberFields, templateString);
         if (indentation > 0 && replace.contains("\n"))
             replace = replace.replace("\n", "\n" + indentationStr);
-        System.out.println(replace);
         return replace;
     }
 
@@ -1100,9 +1100,6 @@ public final class ArrayUtility {
         }
     }
 
-    // TODO: 2024/4/16  乱序数组方法
-    // TODO: 2024/4/16 范围乱序，无限缩小乱序
-
     public static void permute(Object arrayObj){
         checkObjectIsArray(arrayObj);
         permute(arrayObj, 0, getLength(arrayObj) - 1);
@@ -1180,7 +1177,10 @@ public final class ArrayUtility {
      * @param array1
      * @param array2
      * @return
+     * @see Arrays#equals(byte[], byte[]) ...
      */
+    // TODO: 2026/3/20 此方法需要改为deepEquals版本, 很多时候我们再底层的代码中拿到的数组是一个Object而非Object[]，随意转换可能会抛出异常
+    // 我们需要一个类型无关的数组
     public static boolean equalsStrictly(Object array1, Object array2){
         checkObjectIsArray(array1);
         checkObjectIsArray(array2);
@@ -1199,8 +1199,76 @@ public final class ArrayUtility {
         return true;
     }
 
+    private static Object[] getAllIterator(Object array){
+        checkObjectIsArray(array);
+        int length = getLength(array);
+        Object[] ret = new Object[length];
+        for (int i = 0; i < length; i++) {
+            Object o = get(array, i);
+            ret[i]  = o;
+        }
+        return ret;
+    }
+
     /**
-     * 严格的数组判等.
+     * 顺序无关，可选长度无关的数组Equals方法.
+     *
+     * 对象的equals()方法比较可以从两个维度来进行，值和类型, 而在数组中, 除了值和类型之外，还会有顺序和长度比较
+     * @param array1
+     * @param array2
+     * @return
+     */
+    public static boolean equalsWidely(Object array1, Object array2, boolean ignoreLengthCheck){
+        checkObjectIsArray(array1);
+        checkObjectIsArray(array2);
+        int length1 = 0;
+        int length2 = 0;
+        Set<Object> array1Set = new HashSet<>();
+        Set<Object> array2Set = new HashSet<>();
+        // 将所有元素添加到集合
+        Queue<Object> queue1 = new LinkedList<>();
+        Queue<Object> queue2 = new LinkedList<>();
+        queue1.offer(array1);
+        queue2.offer(array2);
+        // 递归遍历添加成员到Set
+        while(!queue1.isEmpty()){
+            Object poll = queue1.poll();
+            if (isArray(poll)){
+                Object[] all = getAllIterator(poll);
+                queue1.addAll(Arrays.asList(all));
+            }
+            else{
+                // 不是数组了，则此时我们添加对象到set
+                array1Set.add(poll);
+                length1++;
+            }
+        }
+        // 递归遍历添加成员到Set
+        while(!queue2.isEmpty()){
+            Object poll = queue2.poll();
+            if (isArray(poll)){
+                Object[] all = getAllIterator(poll);
+                queue2.addAll(Arrays.asList(all));
+            }
+            else{
+                // 不是数组了，则此时我们添加对象到set
+                array2Set.add(poll);
+                length2++;
+            }
+        }
+
+        if (!ignoreLengthCheck && length1 != length2){
+            return false;
+        }
+        //  如果两个集合进行添加之后，没有任何元素变动，则addAll()会返回false, 此时我们反过来就代表两个集合相同
+        if (array1Set.size() > 0 && array2Set.size() > 0){
+            return !array1Set.addAll(array2Set);
+        }
+        else return array1Set.size() == 0 && array2Set.size() == 0;
+    }
+
+    /**
+     * 严格的数组判等.(提供非类型对称的数组判等)
      * <p>此方法要求数组的每一个成员都要完全匹配.例如, 对于下面两个数组时：<br>
      * <pre>[1, 2, 3, 4, 5]</pre>
      * <pre> ⬇  ⬇  ⬇  ⬇  ⬇ </pre>

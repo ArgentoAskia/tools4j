@@ -83,4 +83,8 @@ public class MathUtility {
             return fastPow(a, b.subtract(bigDecimals[1])).multiply(fastPow(a, bigDecimals[1]));
         }
     }
+
+
+    // 基本的加减乘除计算
+
 }

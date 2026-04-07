@@ -166,7 +166,7 @@ public class StringUtility {
     // 火星文转简体和繁体
     private static Map<Character, Character[]> huoxingChineseWordMapping;
 
-    // todo 词库有重复, 需要修正
+    // todo 词库有重复, 需要修正(√)
     private static void initDictionary(){
         huoxingChineseWordMapping = new HashMap<>();
         traditionalChineseWordMapping = new HashMap<>();
