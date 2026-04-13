@@ -20,10 +20,27 @@ import java.util.Objects;
 @Utility(value = "数组排序算法工具类", author = "Askia")
 public class ArraySortAlgorithmsUtility {
 
+    /**
+     * 顺序常量.
+     *
+     * <p>决定了排序算法使用什么顺序进行排序, 其中{@link Order#ASC}代表升序, {@link Order#DESC}代表降序</p>
+     *
+     * @author Admin
+     * @since 2026.4.7
+     */
     public enum Order{
         ASC, DESC
     }
 
+    /**
+     * 数组内交换函数.
+     * <p>用于交换数组内两个下标位置的数据</p>
+     *
+     * @param target 数组变量, 数组引用
+     * @param i 交换位置1
+     * @param j 交换位置2
+     * @param <T> 任何除了基本类型之外的数据类型
+     */
     private static <T> void exchange(T[] target, int i, int j){
         T temp = target[i];
         target[i] = target[j];
@@ -31,12 +48,15 @@ public class ArraySortAlgorithmsUtility {
     }
 
     /**
-     *
-     * @param t1
-     * @param t2
-     * @param order
-     * @return
-     * @param <T>
+     * 数据有序性函数.
+     * <p>判断两个数据是否已经按照特定的顺序排好序, 例如, 提供了数据{@code 2}和{@code 3}, 我们希望判断这两个数据的顺序是否已经按照{@code ASC}排序, 则此函数返回{@code true}</p>
+     * <p>此函数为双向切分函数, 即结果只有两个, 要么已有序, 要么非有序, 此函数将相等的情况划分到非有序集中, 因此在实际数组比较时, 需要减少比较次数的时候可以考虑使用后一个数据来比较前一个数据的有序性, 这样会省略掉相等情况下的数据交换, 例如你有一个数组{@code [2, 3, 5, 7]}, 你希望判断有序性为{@code ASC}来决定是否需要进行成员交换, 此时调用{@code ordered(3, 2, ASC)}返回{@code true}时才进行交换会更优于调用{@code !ordered(2, 3, ASC)}, 因为后者会让相等时也进行交换</p>
+     * @param t1 数据1
+     * @param t2 数据2
+     * @param order 顺序枚举量, 参考{@link Order}
+     * @return 如果有序, 则返回{@code true}, 否则返回{@code false}
+     * @param <T> 任何实现了{@link Comparable}接口的类
+     * @see ArraySortAlgorithmsUtility#ordered(Object, Object, Order, Comparator)
      */
     private static <T extends Comparable<? super T>> boolean ordered(T t1, T t2, Order order){
         if (order == Order.ASC){
@@ -49,6 +69,20 @@ public class ArraySortAlgorithmsUtility {
         }
     }
 
+    /**
+     * 数据有序性函数(双向切分).
+     * <p>判断两个数据是否已经按照特定的顺序排好序</p>
+     * <p>此函数为双向切分函数, 即结果只有两个, 要么已有序, 要么非有序, 此函数将相等的情况划分到非有序集中, 因此在实际数组比较时, 需要减少比较次数的时候可以考虑使用后一个数据来比较前一个数据的有序性, 这样会省略掉相等情况下的数据交换, 例如你有一个数组{@code [2, 3, 5, 7]}, 你希望判断有序性为{@code ASC}来决定是否需要进行成员交换, 此时调用{@code ordered(3, 2, ASC)}返回{@code true}时才进行交换会更优于调用{@code !ordered(2, 3, ASC)}, 因为后者会让相等时也进行交换</p>
+     * @param t1 数据1
+     * @param t2 数据2
+     * @param order 顺序枚举量, 参考{@link Order}
+     * @param comparator 比较器
+     * @param <T> 任何非基础类型, 不要求一定实现{@link Comparable}
+     * @return 如果有序, 则返回{@code true}, 否则返回{@code false}
+     * @author Admin
+     * @since 2026.4.7
+     * @see ArraySortAlgorithmsUtility#ordered(Comparable, Comparable, Order)
+     */
     private static <T> boolean ordered(T t1, T t2, Order order, Comparator<? super T> comparator){
         if (order == Order.ASC){
             return comparator.compare(t1, t2) < 0;
@@ -59,12 +93,22 @@ public class ArraySortAlgorithmsUtility {
     }
 
     /**
-     * 满足顺序返回1，如果相等返回0，不满足顺序返回-1
-     * @param t1
-     * @param t2
-     * @param order
-     * @return
-     * @param <T>
+     * 数据有序性函数(三向切分).
+     * <p>判断两个数据是否已经按照特定的顺序排好序</p>
+     * <p>此函数为三向切分函数, 会单独考虑等于的情况, 当满足顺序时返回{@code 1}, 相等时返回{@code 0}, 不满足顺序时返回{@code -1}</p>
+     * <p>此函数满足以下注意点：</p>
+     * <ul>
+     *     <li>{@link ArraySortAlgorithmsUtility#ordered(Comparable, Comparable, Order)} 返回{@code true}时此函数必返回{@code 1}</li>
+     *     <li>{@link ArraySortAlgorithmsUtility#ordered(Comparable, Comparable, Order)} 返回{@code false}时此函数可能是{@code 0}或者{@code -1}</li>
+     *     <li>{@link ArraySortAlgorithmsUtility#ordered(Comparable, Comparable, Order)} 的反向比较对此函数仍然有效</li>
+     * </ul>
+     * @param t1 数据1
+     * @param t2 数据2
+     * @param order 顺序枚举量, 参考{@link Order}
+     * @return 当满足顺序时返回{@code 1}, 相等时返回{@code 0}, 不满足顺序时返回{@code -1}
+     * @param <T> 任何实现了{@link Comparable}接口的类
+     * @author Askia
+     * @since 2026.4.7
      */
     private static <T extends Comparable<? super T>> int orderedEquals(T t1, T t2, Order order){
         if (order == Order.ASC){
@@ -74,6 +118,21 @@ public class ArraySortAlgorithmsUtility {
             return Integer.compare(t1.compareTo(t2), 0);
         }
     }
+
+    /**
+     * 基础数组检查函数.
+     * <p>检查项目包括：</p>
+     * <ul>
+     *     <li>下界是否小于{@code 0}, 正常数组的最小下标只能是{@code 0}</li>
+     *     <li>上界是否小于{@code 0}</li>
+     *     <li>下界是否大于上界</li>
+     *     <li>下界是否大于等于数组长度</li>
+     *     <li>上界是否大于等于数组长度</li>
+     * </ul>
+     * @param lo lo下界
+     * @param hi hi上界
+     * @param length 数组长度
+     */
     private static void checkRange(int lo, int hi, int length){
         if (lo < 0){
             throw new IllegalArgumentException("lo < 0");
