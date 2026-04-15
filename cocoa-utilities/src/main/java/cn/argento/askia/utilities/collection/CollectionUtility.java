@@ -130,7 +130,7 @@ public class CollectionUtility {
      * @param withSize 指定是否携带集合大小信息, 会在toString()结果的头部添加大小信息
      * @param withType 指定是否携带类型信息, 会在toString()结果的末尾添加类型信息
      * @param <C>  集合类型
-     * @return
+     * @return 经过格式化的美观?的toString输出
      */
     public static <C extends Collection<?>> String toBeautifulString(C collectionTypeObj, boolean withSize, boolean withType){
         final int size = collectionTypeObj.size();
