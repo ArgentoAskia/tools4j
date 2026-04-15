@@ -1,5 +1,7 @@
 package cn.argento.askia.utilities.algorithms;
 
+import cn.argento.askia.annotations.Utility;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -7,7 +9,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@Utility(value = "字符串相关算法工具类")
 public class StringAlgorithmsUtility {
+
+    private StringAlgorithmsUtility(){
+        throw new IllegalAccessError("StringAlgorithmsUtility为工具类, 无法创建该类的对象");
+    }
+
 //    public static void main(String[] args) {
 //        final int i = BF1("glk".toCharArray(), "agidgcjhggik".toCharArray());
 //        System.out.println(i);

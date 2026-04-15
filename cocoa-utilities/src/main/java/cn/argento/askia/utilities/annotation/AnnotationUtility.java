@@ -2,6 +2,8 @@ package cn.argento.askia.utilities.annotation;
 
 
 
+import cn.argento.askia.annotations.Utility;
+
 import java.lang.annotation.*;
 import java.lang.reflect.*;
 import java.util.*;
@@ -14,11 +16,14 @@ import java.util.function.BiFunction;
  * @version 1.0.2024-05-14
  * @since 1.0.X
  */
+@Utility(value = "通用注解处理工具类")
 public final class AnnotationUtility {
 
 
     // 请不要创建工具类的对象
-    private AnnotationUtility(){}
+    private AnnotationUtility(){
+        throw new IllegalAccessError("AnnotationUtility为工具类, 无法创建该类的对象");
+    }
 
     // ------------------------ AnnotatedElement‘s api and it's extension ------------------------
     /**

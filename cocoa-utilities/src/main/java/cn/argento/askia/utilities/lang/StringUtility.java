@@ -122,7 +122,7 @@ public class StringUtility {
     }
 
     public static void main(String[] args) {
-        System.out.println(Character.isLetter('中'));
+//        System.out.println(Character.isLetter('中'));
         final String s = simpleChinese2HuoXingChinese("购买商品前，请先仔细阅读商品订购须知。订单支付确认将被视為您已理解并接受了定购须知的内容，定金/尾款一经支付，概不退还。");
         final String s1 = simpleChinese2TraditionalChinese("购买商品前，请先仔细阅读商品订购须知。订单支付确认将被视為您已理解并接受了定购须知的内容，定金/尾款一经支付，概不退还。");
         final String s2 = traditionalChinese2HuoXingChinese(s1);

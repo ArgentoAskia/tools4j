@@ -1,6 +1,7 @@
 package cn.argento.askia.utilities.bean;
 
 
+import cn.argento.askia.annotations.Utility;
 import cn.argento.askia.utilities.lang.StringUtility;
 
 import java.beans.*;
@@ -17,9 +18,13 @@ import java.util.stream.Stream;
 /**
  * java.bean.*封装, 提供JavaBean属性复制, JavaBean序列化等功能, propertiesManager等功能
  */
+
+@Utility("JavaBean工具类")
 public final class BeanUtility {
 
-    private BeanUtility() {}
+    private BeanUtility() {
+        throw new IllegalAccessError("BeanUtility为工具类, 无法创建该类的对象");
+    }
     // 获取JavaBean property的值！
     public static <V> V getProperty(Object bean, String propertyName, Class<V> valueClass){
         final Object propertyValue = getProperty(bean, propertyName);

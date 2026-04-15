@@ -20,6 +20,10 @@ import java.util.Objects;
 @Utility(value = "数组排序算法工具类", author = "Askia")
 public class ArraySortAlgorithmsUtility {
 
+    private ArraySortAlgorithmsUtility(){
+        throw new IllegalAccessError("ArraySortAlgorithmsUtility为工具类, 无法创建该类的对象");
+    }
+
     /**
      * 顺序常量.
      *

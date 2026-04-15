@@ -1,10 +1,18 @@
 package cn.argento.askia.utilities.calc;
 
+import cn.argento.askia.annotations.Utility;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 
+
+@Utility("数学计算工具类")
 public class MathUtility {
+
+    private MathUtility() {
+        throw new IllegalAccessError("MathUtility为工具类, 无法创建该类的对象");
+    }
 
 
     public static long fastPow(int a, int b){
