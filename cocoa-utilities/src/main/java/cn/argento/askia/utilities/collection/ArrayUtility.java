@@ -456,7 +456,7 @@ public final class ArrayUtility {
      * @param length 数组长度
      * @param <T> 数组类型
      * @return 特定类型的数组
-     * @deprecated 这个方法创建出来的数组可能并不是开发者想要的形式！并且可能会抛出莫名其妙的异常！
+     * @deprecated 这个方法创建出来的数组可能并不是开发者想要的形式！并且可能会抛出莫名其妙的异常！请使用{@link ArrayUtility#newArrayInstance(Class, int, Object[])}
      * @since 2026.2.9 此方法进内部API使用
      */
     @SuppressWarnings("unchecked")
@@ -468,6 +468,40 @@ public final class ArrayUtility {
         }
         return (T[]) Array.newInstance(componentType, length);
     }
+
+    /**
+     *
+     * @param componentType
+     * @param length
+     * @param fill
+     * @param <T>
+     * @return
+     */
+    @SafeVarargs
+    public static <T> T[] newArrayInstance(Class<T> componentType, int length, T... fill){
+        Objects.requireNonNull(componentType);
+        if (componentType.isPrimitive()){
+            throw new IllegalArgumentException("组件类型不能是基本类型: " + componentType);
+        }
+        if (length < 0) {
+            throw new IllegalArgumentException("数组长度不能为负数：" + length);
+        }
+        if (length > Integer.MAX_VALUE - 8) {
+            throw new IllegalArgumentException("请求的数组长度过大：" + length);
+        }
+        @SuppressWarnings("unchecked")
+        final T[] result = (T[]) Array.newInstance(componentType, length);
+        if (fill != null && fill.length > 0){
+            int maxLength = fill.length;
+            Arrays.setAll(result, value -> {
+                if (value >= maxLength) return null;
+                else return fill[value];
+            });
+        }
+        return result;
+    }
+
+
 
     /**
      * 创建一个一维数组并指定长度.
@@ -735,12 +769,38 @@ public final class ArrayUtility {
     }
 
 
+
+
+    /**
+     * 判断是否为空数组
+     * @param arrayObj
+     * @return
+     * @since 2024.11.17
+     */
+    public static boolean isEmpty(Object arrayObj){
+        checkObjectIsArray(arrayObj);
+        Objects.requireNonNull(arrayObj, "数组不能为null");
+        return getLength(arrayObj) == 0;
+    }
+
+    /**
+     * 判断数组不能为空！
+     * @param arrayObj
+     * @since 2024.11.17
+     */
+    private static void checkArrayNotEmpty(Object arrayObj){
+        if (isEmpty(arrayObj)){
+            throw new ArrayIndexOutOfBoundsException("数组为空");
+        }
+    }
+
+
     public static final String TO_STRING_TEMPLATE_PRIMITIVE_ARRAY = "[[ {{arrayMember}}, {{arrayMember}} ]]";
     public static final String TO_STRING_TEMPLATE_REFERENCE_ARRAY =
             "[[\n" +
-            "    {{arrayMember}},\n" +
-            "    {{arrayMember}}\n" +
-            "]]";
+                    "    {{arrayMember}},\n" +
+                    "    {{arrayMember}}\n" +
+                    "]]";
     public static final String TO_STRING_TEMPLATE_TWO_DIMENSIONAL_ARRAY = TO_STRING_TEMPLATE_REFERENCE_ARRAY;
     public static final String TO_STRING_TEMPLATE_ARRAY_TYPE = "{{arrayType}}";
     public static final String TO_STRING_TEMPLATE_ARRAY_LENGTH = "{{arrayLength}}";
@@ -751,18 +811,19 @@ public final class ArrayUtility {
      * @param arrayObj
      * @return
      */
-    public static String toString(Object arrayObj){
+    public static String toTemplateString(Object arrayObj){
         String template = "ArrayType：" + TO_STRING_TEMPLATE_ARRAY_TYPE + "\n"
                 + "ArrayLength：" + TO_STRING_TEMPLATE_ARRAY_LENGTH + "\n"
                 + TO_STRING_TEMPLATE_REFERENCE_ARRAY;
-        return toString(arrayObj, template);
+        return toTemplateString(arrayObj, template);
     }
-    public static String toString(Object arrayObj, String template){
+    public static String toTemplateString(Object arrayObj, String template){
+        Arrays.toString(new Object[0]);
         checkObjectIsArray(arrayObj);
         if (template == null){
             throw new NullPointerException("模板不能为null!");
         }
-        return toString(arrayObj, template, 0);
+        return toTemplateString(arrayObj, template, 0);
     }
 
     /**
@@ -777,7 +838,7 @@ public final class ArrayUtility {
      * @param template 模板
      * @return
      */
-    private static String toString(Object arrayObj, String template, int indentation){
+    private static String toTemplateString(Object arrayObj, String template, int indentation){
         template = template.toLowerCase();
         if (template.contains("{{arraytype}}")){
             String simpleName = arrayObj.getClass().getComponentType().getSimpleName();
@@ -794,9 +855,9 @@ public final class ArrayUtility {
             if (o.getClass().isArray()){
                 // 如果一个一维数组是基本类型
                 if (o.getClass().getComponentType().isPrimitive()){
-                    template = template.replace("{{arraymember" + i + "}}", toString(o, TO_STRING_TEMPLATE_PRIMITIVE_ARRAY, indentation + DEFAULT_ADD_INDENTATION));
+                    template = template.replace("{{arraymember" + i + "}}", toTemplateString(o, TO_STRING_TEMPLATE_PRIMITIVE_ARRAY, indentation + DEFAULT_ADD_INDENTATION));
                 }else{
-                    template = template.replace("{{arraymember" + i + "}}", toString(o, TO_STRING_TEMPLATE_TWO_DIMENSIONAL_ARRAY, indentation + DEFAULT_ADD_INDENTATION));
+                    template = template.replace("{{arraymember" + i + "}}", toTemplateString(o, TO_STRING_TEMPLATE_TWO_DIMENSIONAL_ARRAY, indentation + DEFAULT_ADD_INDENTATION));
                 }
             }
             template = template.replace("{{arraymember" + i + "}}", o.toString());
@@ -848,31 +909,6 @@ public final class ArrayUtility {
         return replace;
     }
 
-    /**
-     * 判断是否为空数组
-     * @param arrayObj
-     * @return
-     * @since 2024.11.17
-     */
-    public static boolean isEmpty(Object arrayObj){
-        checkObjectIsArray(arrayObj);
-        Objects.requireNonNull(arrayObj, "数组不能为null");
-        return getLength(arrayObj) == 0;
-    }
-
-    /**
-     * 判断数组不能为空！
-     * @param arrayObj
-     * @since 2024.11.17
-     */
-    private static void checkArrayNotEmpty(Object arrayObj){
-        if (isEmpty(arrayObj)){
-            throw new ArrayIndexOutOfBoundsException("数组为空");
-        }
-    }
-
-
-    private static int LARGE_STR_GAPS = 35;
 
     /**
      * toDelimiterString(arrayObj, ",");
@@ -880,7 +916,9 @@ public final class ArrayUtility {
      * @return
      * @see #toDelimiterString(Object, String)
      * @since 2024.11.17
+     * @deprecated 此方法已被 {@link ArrayUtility#toFoldedString(Object, String, String, String, int)}完美替代
      */
+    @Deprecated
     public static String toDelimiterString(Object arrayObj){
         return toDelimiterString(arrayObj, ",");
     }
@@ -893,7 +931,9 @@ public final class ArrayUtility {
      * @param delimiter
      * @return
      * @since 2024.11.17
+     * @deprecated 此方法已被 {@link ArrayUtility#toFoldedString(Object, String, String, String, int)}完美替代
      */
+    @Deprecated
     public static String toDelimiterString(Object arrayObj, String delimiter){
         checkObjectIsArray(arrayObj);
         checkArrayNotEmpty(arrayObj);
@@ -908,8 +948,8 @@ public final class ArrayUtility {
         }
         if (largeStr){
             // 一行一个数据
-            return toDelimiterString(arrayObj, delimiter + System.lineSeparator() + "\t",
-                    "[" + System.lineSeparator() + "\t" , System.lineSeparator() + "]");
+            return toDelimiterString(arrayObj, delimiter + System.lineSeparator() + "\t\t",
+                    "[" + System.lineSeparator() + "\t\t" , System.lineSeparator() + "]");
         }
         else{
             // for example ==> [ 1, 2 ,3 ]
@@ -919,6 +959,7 @@ public final class ArrayUtility {
 
     /**
      * 输出带分隔符格式的字符串，如 [ 1, 2 ,3 ]
+     *
      * @param arrayObj
      * @param delimiter
      * @param prefix
@@ -938,6 +979,148 @@ public final class ArrayUtility {
         }
         return delimiterString.toString();
     }
+
+    // toFolderString
+    private static int LARGE_STR_GAPS = 35;
+    private static String toFoldedString0(Object arrayObj, String delimiter,
+                                          String prefix, String suffix, int foldedLimit, int deep){
+        checkObjectIsArray(arrayObj);
+        checkArrayNotEmpty(arrayObj);
+        StringBuilder toStringResultBuilder = new StringBuilder();
+        // 拼接前缀的\t
+        for (int i = 0; i < deep; i++){
+            toStringResultBuilder.append("\t\t");
+        }
+        //拼接前缀
+        toStringResultBuilder.append(prefix).append(System.lineSeparator());
+        final int length = getLength(arrayObj);
+        boolean lastFolded = true;
+        for (int i = 0; i < length; i++) {
+            final Object o = get(arrayObj, i);
+            String s = o.toString();
+            boolean joinArray = false;
+            if (isArray(o)){
+                // 如果o仍然是数组，则继续迭代, 但深度+1
+                s = toFoldedString0(o, delimiter, prefix, suffix, foldedLimit, deep + 1);
+                // 默认返回带拼接深度的字符串
+                joinArray = true;
+            }
+            // 处理拼接问题
+            if (joinArray){
+                // 拼接数组直接拼
+                if (!lastFolded){
+                    // 补一个折叠符号
+                    toStringResultBuilder.append(System.lineSeparator());
+                }
+                toStringResultBuilder.append(s);
+                if (i != length - 1){
+                    toStringResultBuilder.append(delimiter);
+                    toStringResultBuilder.append(System.lineSeparator());
+                }
+                lastFolded = true;      // 折叠了
+                continue;
+            }
+            if (foldedLimit == 0){
+                // 永远都折叠
+                // 先拼接\t
+                for (int j = 0; j <= deep; j++) {
+                    toStringResultBuilder.append("\t\t");
+                }
+                // 拼接内容, delimiter和换行
+                toStringResultBuilder.append(s);
+                // 不等于最后的一个元素，则拼接上分隔符
+                if (i != length - 1){
+                    toStringResultBuilder.append(delimiter);
+                    //  拼接分割符号
+                    toStringResultBuilder.append(System.lineSeparator());
+                }
+
+            }
+            else{
+                // 处理折叠问题
+                // 先判断文本长度看下是否需要折叠
+                boolean folded = s.length() > foldedLimit;
+                if (folded){
+                    // 需要折叠
+                    if (!lastFolded){
+                        // 还有一个问题就是一直不需要折叠然后突然需要换行折叠怎么办？[√]
+                        // 上一次不需要折叠，但是此次需要折叠，则我们嗯需要补充换行符
+                        toStringResultBuilder.append(System.lineSeparator());
+                    }
+                    // 先拼接\t
+                    for (int j = 0; j <= deep; j++) {
+                        toStringResultBuilder.append("\t\t");
+                    }
+                    // 拼接内容, delimiter和换行
+                    toStringResultBuilder.append(s);
+                    // 不等于最后的一个元素，则拼接上分隔符
+                    if (i != length - 1){
+                        toStringResultBuilder.append(delimiter);
+                        //  拼接分割符号
+                        toStringResultBuilder.append(System.lineSeparator());
+                    }
+                }
+                else{
+                    // 不需要折叠
+                    // 记录上一次是否折叠了
+                    // 先拼接\t
+                    if (lastFolded){
+                        // 上一次是折叠了，本次不需要折叠,  则需要补\t\t
+                        for (int j = 0; j <= deep; j++) {
+                            toStringResultBuilder.append("\t\t");
+                        }
+                    }
+                    // 拼接内容, delimiter和换行
+                    toStringResultBuilder.append(s);
+                    // 不等于最后的一个元素，则拼接上分隔符
+                    if (i != length - 1){
+                        toStringResultBuilder.append(delimiter).append(" ");
+                    }
+                }
+                lastFolded = folded;
+            }
+        }
+        // 拼接前缀的\t
+        toStringResultBuilder.append(System.lineSeparator());
+        for (int i = 0; i < deep; i++){
+            toStringResultBuilder.append("\t\t");
+        }
+        // 拼接后缀
+        toStringResultBuilder.append(suffix);
+        return toStringResultBuilder.toString();
+    }
+
+    /**
+     * 折叠方式美化打印数组.
+     *
+     * @param arrayObj
+     * @param delimiter
+     * @param prefix
+     * @param suffix
+     * @param foldedLimit
+
+     * @return
+     */
+    public static String toFoldedString(Object arrayObj, String delimiter,
+                                        String prefix, String suffix, int foldedLimit){
+        checkObjectIsArray(arrayObj);
+        checkArrayNotEmpty(arrayObj);
+        return toFoldedString0(arrayObj, delimiter, prefix, suffix, foldedLimit, 0);
+    }
+
+    public static String toFoldedString(Object arrayObj, int foldedLimit){
+        return toFoldedString(arrayObj, ",", "[", "]", foldedLimit);
+    }
+
+    public static String toFoldedString(Object arrayObj){
+        return toFoldedString(arrayObj, LARGE_STR_GAPS);
+    }
+
+    public static String toBeautifulString(Object arrayObj){
+        return toFoldedString(arrayObj, 0);
+    }
+
+
 
 
     public static <S, T extends S> void toList(T[] arrayObj, List<S> list){
@@ -1327,21 +1510,33 @@ public final class ArrayUtility {
     }
 
     public static void main(String[] args) {
-        int[] ints = RandomUtility.randomIntArray(6000000);
-        long l = System.nanoTime();
-        boolean contain = ArrayUtility.contain(ints, 2);
-        long l1 = System.nanoTime();
-        System.out.println("contain = " + contain);
-        System.out.println("l0 = " + l + ", l1 = " + l1 + ", l1 - l1 = " + (l1 - l));
+//        int[] ints = RandomUtility.randomIntArray(6000000);
+//        long l = System.nanoTime();
+//        boolean contain = ArrayUtility.contain(ints, 2);
+//        long l1 = System.nanoTime();
+//        System.out.println("contain = " + contain);
+//        System.out.println("l0 = " + l + ", l1 = " + l1 + ", l1 - l1 = " + (l1 - l));
+//
+//        Integer[] integers = Arrays.stream(ints).boxed().toArray(Integer[]::new);
+//
+//        long l2 = System.nanoTime();
+//        boolean contain2 = ArrayUtility.fastContain(integers, 2);
+//        long l3 = System.nanoTime();
+//        System.out.println("contain2 = " + contain2);
+//        System.out.println("l2 = " + l2 + ", l3 = " + l3 + ", l3 - l2 = " + (l3 - l2));
 
-        Integer[] integers = Arrays.stream(ints).boxed().toArray(Integer[]::new);
-
-        long l2 = System.nanoTime();
-        boolean contain2 = ArrayUtility.fastContain(integers, 2);
-        long l3 = System.nanoTime();
-        System.out.println("contain2 = " + contain2);
-        System.out.println("l2 = " + l2 + ", l3 = " + l3 + ", l3 - l2 = " + (l3 - l2));
-
+        Object[] objects = new Object[]{
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "bbbbbbbbbbbbbbbbbbbb",
+                2,23,98,100,
+                'a',
+                7231723712731737L,
+                new String[]{"123", "456", "4545454545454545"},
+                new Object[]{"12aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa3", RandomUtility.randomIntArray(5), "31323131312"},
+                new String[]{"12aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa3", "12aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa3", "45454545454545453412313123131213131"},
+        };
+        System.out.println(toBeautifulString(objects));
+        System.out.println(getDimension(objects));
 
     }
 }
