@@ -522,25 +522,33 @@ public class CollectionUtility {
     }
 
     /**
-     * 将一个List转为Map
+     * 将一个{@link List}转为{@link Map}.
+     *
+     * <p>该方法能将一个{@link List}结构转为一个{@link Map}, 比如你有你一个{@code List<Student>} 结构, 你希望通过按照姓名进行映射, 则可以使用此方法</p>
+     *
+     * <p><b>注意，该方法不负责处理重复{@code key}的问题, 调用方必须在{@code keyFunction}中自己保证{@code key}的唯一性, 否则会存在后{@code key}的{@code value}把前面的覆盖掉的情况</b></p>
      *
      * @param list list列表
-     * @param keyFunction 转为哪种key
-     * @param valueFunction
-     * @param <K>
-     * @param <V>
-     * @param <O>
-     * @return
+     * @param keyFunction key函数
+     * @param valueFunction value函数
+     * @param <K> key类型
+     * @param <V> value类型
+     * @param <O> List结构原始类型
+     * @return 转化后的{@code Map}
      */
     public static <K, V, O> Map<K, V> listToMap(List<O> list,
-                                                Function<O, K> keyFunction,
+                                                BiFunction<O, Map<K, V>, K> keyFunction,
                                                 Function<O, V> valueFunction){
         if (list == null || list.size() == 0){
             return new HashMap<>();
         }
-        else{
-           return list.parallelStream().collect(Collectors.toMap(keyFunction, valueFunction));
+        Map<K, V> retMap = new HashMap<>();
+        for (O element : list){
+            final K key = keyFunction.apply(element, retMap);
+            final V value = valueFunction.apply(element);
+            retMap.put(key, value);
         }
+        return retMap;
     }
 
     public static <K, V, O, C extends Collection<V>> Map<K, C> listToMultiValueMap(List<O> list,
