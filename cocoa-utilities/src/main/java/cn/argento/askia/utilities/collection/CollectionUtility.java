@@ -522,7 +522,7 @@ public class CollectionUtility {
     }
 
     /**
-     * 将一个{@link List}转为{@link Map}.
+     * 将一个{@link List}转为一个单层{@link Map}.
      *
      * <p>该方法能将一个{@link List}结构转为一个{@link Map}, 比如你有你一个{@code List<Student>} 结构, 你希望通过按照姓名进行映射, 则可以使用此方法</p>
      *
@@ -551,14 +551,33 @@ public class CollectionUtility {
         return retMap;
     }
 
-    public static <K, V, O, C extends Collection<V>> Map<K, C> listToMultiValueMap(List<O> list,
+    // List<Student> ==> Map<String, List<Student2>>
+
+    /**
+     * 提供将一个{@link List}结构转为一个多值{@link Map}结构.
+     * <p>所谓多值(MultiValueMap), 就是那些value是集合的Map, 比如：{@code Map<String, List<String>>}、{@code Map<String, Set<String>>}、{@code Map<String, Queue<String>>}等</p>
+     *
+     * @param list list结构
+     * @param keyFunction key函数, 不需要考虑唯一性
+     * @param multiSup MultiValue生成函数, 使用此函式定义如何生成集合结构
+     * @param multiValueFunction 聚合函数, 规定如何聚合值到MultiValue的集合结构中
+     * @param <O> list的原始泛型类型
+     * @param <K> Map的key类型
+     * @param <V> Map的MultiValue的值类型
+     * @param <C> MultiValue类型, 一般是{@link Collection}接口的子类或子接口
+     * @return 聚合完成的{@code Map}结构
+     */
+    public static <O, K, V, C extends Collection<V>> Map<K, C> listToMultiValueMap(List<O> list,
                                                                                    Function<O, K> keyFunction,
-                                                                                   Function<? super K, C> multiSup,
+                                                                                   BiFunction<? super K, O, C> multiSup,
                                                                                    BiFunction<O, C, C> multiValueFunction){
+        if (list == null || list.size() == 0){
+            return new HashMap<>();
+        }
         Map<K, C> map = new HashMap<>();
         for (O object : list){
             final K key = keyFunction.apply(object);
-            final C vs = map.computeIfAbsent(key, multiSup);
+            final C vs = map.computeIfAbsent(key, k -> multiSup.apply(key, object));
             final C apply = multiValueFunction.apply(object, vs);
             map.put(key, apply);
         }
