@@ -160,7 +160,7 @@ public final class AnnotationUtility {
         boolean overrideSuperMethodMarked = isOverrideSuperMethodMarked(method, superclass, interfaces, annotationClass);
         if (!overrideSuperMethodMarked){
             // go on for superClass
-            Class<?> superclassAgain = null;
+            Class<?> superclassAgain;
             // 循环遍历父类链
             while ((superclassAgain = superclass.getSuperclass()) != null) {
                 final Class<?>[] superclassInterfaces = superclass.getInterfaces();
@@ -175,15 +175,15 @@ public final class AnnotationUtility {
             travelingInterfaces.offer(interfaces);
             while(travelingInterfaces.size() != 0){
                 final Class<?>[] pollInterfaces = travelingInterfaces.poll();
-                for (int i = 0; i < pollInterfaces.length; i++) {
-                    Class<?>[] superInterfacesAgain = pollInterfaces[i].getInterfaces();
+                for (Class<?> pollInterface : pollInterfaces) {
+                    Class<?>[] superInterfacesAgain = pollInterface.getInterfaces();
                     // 有父接口！
                     if (superInterfacesAgain.length != 0) {
                         overrideSuperMethodMarked = isOverrideSuperMethodMarked(method, null, superInterfacesAgain, annotationClass);
                         // 没有标记，则继续遍历父接口！
                         if (!overrideSuperMethodMarked) {
                             travelingInterfaces.offer(superInterfacesAgain);
-                        }else{
+                        } else {
                             return true;
                         }
                     }
@@ -492,8 +492,6 @@ public final class AnnotationUtility {
 
 
     // --------------------------------------------------------------------
-
-    // TODO: 2024/2/12 测试！
 
     /**
      * 扫描 {@code annotatedElement} 上的所有注解, 包括注解上的注解.
@@ -1065,7 +1063,7 @@ public final class AnnotationUtility {
     /**
      * 获取注解的所有属性名
      * @param annotationClass 注解的{@linkplain Class}对象
-     * @retur 一个字符串数组, 返回所有属性值！
+     * @return 一个字符串数组, 返回所有属性值！
      */
     public static String[] getAnnotationAllAttributes(Class<? extends Annotation> annotationClass){
         final Method[] attributes = annotationClass.getDeclaredMethods();
