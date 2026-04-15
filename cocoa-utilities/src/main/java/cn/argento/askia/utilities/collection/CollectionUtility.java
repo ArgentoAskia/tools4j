@@ -415,7 +415,14 @@ public class CollectionUtility {
         return isInclusionOriginal(shallowCloneList1, shallowCloneList2);
     }
 
-    // 判断两个集合是否拥有交集
+    /**
+     * 判断两个{@code List}是否有交集.
+     * <p>此方法借助 {@link CollectionUtility#intersection(List, List)}</p>
+     * @param list List结构
+     * @param list2 List结构
+     * @param <T> 类型
+     * @return 如果存在包含关系则返回{@code true} 否则返回{@code false}
+     */
     public static <T> boolean hasIntersection(List<T> list, List<T> list2){
         final List<T> intersection = intersection(list, list2);
         return intersection.size() > 0;
