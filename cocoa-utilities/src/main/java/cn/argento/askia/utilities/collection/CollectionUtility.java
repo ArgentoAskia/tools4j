@@ -192,6 +192,8 @@ public class CollectionUtility {
      * @param <V2> 类型2
      * @return 另外一种类型的List
      * @since 2026.1.19
+     * @see CollectionUtility#exchangeMap(Map, Function, Function)
+     * @see CollectionUtility#exchangeMapKey(Map, Function)
      */
     public static <V1, V2> List<V2> exchangeList(List<V1> list, Function<V1, V2> function, boolean parallel){
         if (list == null){
@@ -217,6 +219,12 @@ public class CollectionUtility {
     /**
      * 将一种类型的Map转为另外一种类型的Map，比如将Map&lt;Integer, String&gt;转为Map&lt;String, Object&gt;.
      *
+     * <p>此方法需要提供两个转换函数: {@code key}转换函数和 {@code value}转换函数</p>
+     *
+     * <p><b>需要注意：此方法不会保留相同的{@code key}, 当出现相同{@code key}时, 将会保留最后获得的{@code value}, 因此方法得出的转换后的{@link Map}的大小肯定小于等于作为参数提供的待转换的{@link Map}的大小</b></p>
+     *
+     * <p>例如您提供的{@link Map}结构中, 有两个键值对：{@code "type1" = "apple"}、{@code "type2" = "pear"}, 经过{@code keyFunction}转化后得到：{@code "type" = "apple"}、{@code "type" = "pear"},  则后面的{@code "type" = "pear"}会覆盖掉前面的{@code "type" = "apple"}</p>
+     *
      * @param map 原始Map
      * @param keyFunction key转换函数
      * @param valueFunction value转换函数
@@ -228,6 +236,8 @@ public class CollectionUtility {
      * @see CollectionUtility#exchangeMapKey(Map, Function)
      * @see CollectionUtility#reverseMap(Map, boolean)
      * @since 1.0
+     * @see CollectionUtility#exchangeList(List, Function, boolean)
+     * @see CollectionUtility#exchangeMapKey(Map, Function)
      */
     public static <K1, V1, K2, V2> Map<K2, V2>exchangeMap(Map<K1, V1> map, Function<K1, K2> keyFunction,
                                                           Function<V1, V2> valueFunction){
