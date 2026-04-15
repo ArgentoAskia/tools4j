@@ -123,6 +123,15 @@ public class CollectionUtility {
         return toString(collectionTypeObj, ", ", prefix, suffix);
     }
 
+    /**
+     * 输出经过格式化的集合toString().
+     *
+     * @param collectionTypeObj 任何集合类型
+     * @param withSize 指定是否携带集合大小信息, 会在toString()结果的头部添加大小信息
+     * @param withType 指定是否携带类型信息, 会在toString()结果的末尾添加类型信息
+     * @param <C>  集合类型
+     * @return
+     */
     public static <C extends Collection<?>> String toBeautifulString(C collectionTypeObj, boolean withSize, boolean withType){
         final int size = collectionTypeObj.size();
         final String collectionTypeClassName = collectionTypeObj.getClass().getName();
@@ -160,25 +169,37 @@ public class CollectionUtility {
     // 实现将List进行转换
 
     /**
-     * 实现将一种类型的List转为另外一种类型的List
+     * 实现将一种类型的List转为另外一种类型的List.
+     *
+     * <p>比如你需要将一个{@code List<Integer>}按照某种规则转为{@code List<String>}时可以考虑此方法</p>
+     *
+     * <p>此方法的实现基于{@code stream api}, 可以指定参数{@code parallel}决定是否使用并行流, 如果您的{@code List}结构数据量很大, 我们建议您使用并行处理</p>
      *
      * @param list 列表
      * @param function 转换函数
+     * @param parallel 是否使用并行处理
      * @param <V1> 类型1
      * @param <V2> 类型2
      * @return 另外一种类型的List
      * @since 2026.1.19
      */
-    public static <V1, V2> List<V2> exchangeList(List<V1> list, Function<V1, V2> function){
+    public static <V1, V2> List<V2> exchangeList(List<V1> list, Function<V1, V2> function, boolean parallel){
         if (list == null){
             return null;
         }
         if (list.size() == 0){
             return new ArrayList<>();
         }
-        return list.parallelStream()
-                .map(function)
-                .collect(Collectors.toList());
+        if (parallel){
+            return list.parallelStream()
+                    .map(function)
+                    .collect(Collectors.toList());
+        }
+        else{
+            return list.stream()
+                    .map(function)
+                    .collect(Collectors.toList());
+        }
     }
 
     //  实现将Map的类型转换
