@@ -459,17 +459,31 @@ public class CollectionUtility {
     }
 
     /**
-     * 合并多个List为一个
+     * 合并多个List为一个大{@code List}.
      *
-     * @param listCollection
-     * @param <T>
-     * @return
+     * <p>此操作也被称之为<b>扁平化</b></p>
+     *
+     * @param listCollection 复合List结构
+     * @param <T> 元素类型
+     * @return 扁平化后的List结构
+     * @see CollectionUtility#combine(List[])
      */
     public static <T> List<T> combine(Collection<List<T>> listCollection){
         return listCollection.parallelStream()      // Stream<List<T>>
                 .flatMap(List::stream)  // 把每个 List<T> 展平成 Stream<T>
                 .collect(Collectors.toList());
     }
+
+    /**
+     * 合并多个List为一个大{@code List}.
+     *
+     * <p>此操作也被称之为<b>扁平化</b></p>
+     *
+     * @param lists 多个List结构参数
+     * @param <T> 元素类型
+     * @return 扁平化后的List结构
+     * @see CollectionUtility#combine(Collection)
+     */
     @SafeVarargs
     public static <T> List<T> combine(List<T>... lists){
         if (lists == null){
@@ -485,13 +499,13 @@ public class CollectionUtility {
 
 
     @Deprecated
-    protected static <T extends Cloneable> List<T> deepCopy(List<T> list, Function<? super T, T> function){
+    protected static <T extends Cloneable> List<T> deepCopy(List<T> list, Function<? super T, T> copyFunction){
         if (list == null){
             return null;
         }
         ArrayList<T> deepCopyList = new ArrayList<>();
         for (T t : list) {
-            T apply = function.apply(t);
+            T apply = copyFunction.apply(t);
             deepCopyList.add(apply);
         }
         return deepCopyList;
