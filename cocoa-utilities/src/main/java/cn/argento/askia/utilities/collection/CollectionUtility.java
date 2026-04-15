@@ -553,6 +553,23 @@ public class CollectionUtility {
 
     // List<Student> ==> Map<String, List<Student2>>
 
+    private static <O, K, C> Map<K, C> listToMultiValueMap0(List<O> list,
+                                                  Function<O, K> keyFunction,
+                                                  BiFunction<? super K, O, C> multiSup,
+                                                  BiFunction<O, C, C> multiValueFunction){
+        if (list == null || list.size() == 0){
+            return new HashMap<>();
+        }
+        Map<K, C> map = new HashMap<>();
+        for (O object : list){
+            final K key = keyFunction.apply(object);
+            final C vs = map.computeIfAbsent(key, k -> multiSup.apply(key, object));
+            final C apply = multiValueFunction.apply(object, vs);
+            map.put(key, apply);
+        }
+        return map;
+    }
+
     /**
      * 提供将一个{@link List}结构转为一个多值{@link Map}结构.
      * <p>所谓多值(MultiValueMap), 就是那些value是集合的Map, 比如：{@code Map<String, List<String>>}、{@code Map<String, Set<String>>}、{@code Map<String, Queue<String>>}等</p>
@@ -571,31 +588,14 @@ public class CollectionUtility {
                                                                                    Function<O, K> keyFunction,
                                                                                    BiFunction<? super K, O, C> multiSup,
                                                                                    BiFunction<O, C, C> multiValueFunction){
-        if (list == null || list.size() == 0){
-            return new HashMap<>();
-        }
-        Map<K, C> map = new HashMap<>();
-        for (O object : list){
-            final K key = keyFunction.apply(object);
-            final C vs = map.computeIfAbsent(key, k -> multiSup.apply(key, object));
-            final C apply = multiValueFunction.apply(object, vs);
-            map.put(key, apply);
-        }
-        return map;
+        return listToMultiValueMap0(list, keyFunction, multiSup, multiValueFunction);
     }
 
-    public static <K, V, O, K3,  C extends Map<K3, V>> Map<K, C> listToRedisHashMap(List<O> list,
+    public static <O, K, SK, V, C extends Map<SK, V>> Map<K, C> listToRedisHashMap(List<O> list,
                                                                                     Function<O, K> keyFunction,
-                                                                                    Function<? super K, C> multiSup,
+                                                                                    BiFunction<? super K, O ,C> multiSup,
                                                                                     BiFunction<O, C, C> multiValueFunction){
-        Map<K, C> map = new HashMap<>();
-        for (O object : list){
-            final K key = keyFunction.apply(object);
-            final C vs = map.computeIfAbsent(key, multiSup);
-            final C apply = multiValueFunction.apply(object, vs);
-            map.put(key, apply);
-        }
-        return map;
+        return listToMultiValueMap0(list, keyFunction, multiSup, multiValueFunction);
     }
 
 
