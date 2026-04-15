@@ -380,11 +380,13 @@ public class CollectionUtility {
 
     /**
      * 判断两个集合是否是包含关系.
-     * <p>比如
+     * <p>此方法会修改原{@code List}结构</p>
+     * <p>此方法会判断两个{@code List}结构哪个更大, 然后来判别两个{@code List}是否存在包含关系, 因此不需要考虑提供的参数的顺序问题</p>
      * @param list List结构
-     * @param list2
-     * @param <T>
-     * @return
+     * @param list2 List结构
+     * @param <T> 类型
+     * @return 如果存在包含关系则返回{@code true} 否则返回{@code false}
+     * @see CollectionUtility#isInclusion(List, List)
      */
     public static <T> boolean isInclusionOriginal(List<T> list, List<T> list2){
         if (list.size() < list2.size()){
@@ -394,6 +396,18 @@ public class CollectionUtility {
             return !list2.retainAll(list);
         }
     }
+
+    /**
+     * 判断两个集合是否是包含关系.
+     * <p>此方法会拷贝{@code List}结构的成员, 使用{@link ArrayList#ArrayList(Collection)}来创建一个{@code shallow}拷贝，所有的操作都基于这个{@code shallow}拷贝来进行</p>
+     * <p>此方法会判断两个{@code List}结构哪个更大, 然后来判别两个{@code List}是否存在包含关系, 因此不需要考虑提供的参数的顺序问题</p>
+     *
+     * @param list List结构
+     * @param list2 List结构
+     * @param <T> 类型
+     * @return 如果存在包含关系则返回{@code true} 否则返回{@code false}
+     * @see CollectionUtility#isInclusionOriginal(List, List)
+     */
     public static <T> boolean isInclusion(List<T> list, List<T> list2){
         // List浅拷贝
         List<T> shallowCloneList1 = new ArrayList<>(list);
