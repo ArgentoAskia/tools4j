@@ -15,7 +15,11 @@ import java.util.regex.Pattern;
 
 /**
  * 格式化工具类.
- * <p>提供数据格式化和格式化数据判别两大功能, 此类中, 所有将数据按照某个格式进行格式化的方法均以format开头, 比如：formatTime, 而所有的判别方法均以match开头</p>
+ * <p>提供数据格式化(格式化、获取等)和格式化数据判别两大功能, 此类中:
+ * <ul>
+ *     <li>所有将数据按照某个格式进行格式化的方法均以format开头, 比如：formatTime代表格式化时间</li>
+ *     <li>所有的判别方法均以match开头, 比如matchEmail代表提供的字符串是否符合Email格式</li>
+ * </ul>
  * @author Askia
  */
 @Utility("内容格式化工具类")
@@ -23,22 +27,53 @@ public class FormatUtility {
     private FormatUtility() {
         throw new IllegalAccessError("FormatUtility为工具类, 无法创建该类的对象");
     }
-    // 预先缓存好Pattern, 不要每次都要重新compile()
-    // 预先进行缓存的Pattern对象
+    // =============================== 正则表达式格式化部分 =====================================
+    // ==================== 预先缓存好的Pattern ====================
+    // 采用文本表达式+预先缓存的Pattern对象的方式
+    // 邮件判别
     private static final String emailExp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
     private static final Pattern emailExpPattern = Pattern.compile(emailExp);
+    /**
+     * 判断字符串是否是一个合法的 {@code Email}
+     * @param emailStr 邮箱字符串
+     * @return 如果符合邮箱字符串的格式，则返回 {@code true}，否则返回{@code false}
+     */
+    public static boolean matchEmail(String emailStr){
+        return emailExpPattern.matcher(emailStr).matches();
+    }
 
-    // 小驼峰Pattern
+    // 严格小驼峰
     private static final String camelCaseExp = "^[a-z]+([A-Z][a-z0-9]+)*$"; // 小驼峰
     private static final Pattern camelCaseExpPattern = Pattern.compile(camelCaseExp);
-
+    // 非严格小驼峰
     private static final String camelCaseNotStrictExp = "^[a-z][a-zA-Z0-9]*$";
     private static final Pattern camelCaseNotStrictExpPattern = Pattern.compile(camelCaseNotStrictExp);
+    /**
+     * 判断字符是否符合严格小驼峰命名法.
+     * @param str 字符串
+     * @return 如果符合则输出{@code true}, 否则输出{@code false}
+     */
+    public static boolean matchCamelCasePattern(String str){
+        // 检查驼峰命名法的正则表达式
+        return camelCaseExpPattern.matcher(str).matches();
+    }
+    /**
+     * 判断字符是否符合小驼峰命名法.
+     * <p>此方法参数二可以指定是否使用严格小驼峰</p>
+     * @param str 字符串
+     * @param strictMode 是否开启严格模式
+     * @return 如果符合则输出{@code true}, 否则输出{@code false}
+     */
+    public static boolean matchCamelCasePattern(String str, boolean strictMode){
+        return strictMode?  matchCamelCasePattern(str):
+                camelCaseNotStrictExpPattern.matcher(str).matches();
+    }
 
-    // binaryStringPattern
+
+
+    // 二进制文本
     private static final String binaryStringExp = "[0-1]+";
     private static final Pattern binaryStringExpPattern = Pattern.compile(binaryStringExp);
-
     /**
      * 判断一个字符串是否是二进制字符串, 比如：010101010101
      * @param str 任意字符串
@@ -48,15 +83,6 @@ public class FormatUtility {
         return binaryStringExpPattern.matcher(str).matches();
     }
 
-
-    /**
-     * 判断字符串是否是一个合法的 {@code Email}
-     * @param emailStr 邮箱字符串
-     * @return 如果符合邮箱字符串的格式，则返回 {@code true}，否则返回{@code false}
-     */
-    public static boolean matchEmail(String emailStr){
-        return emailExpPattern.matcher(emailStr).matches();
-    }
 
     /**
      * 判断字符串是否是一个合法的手机号.
@@ -77,76 +103,67 @@ public class FormatUtility {
         return matchPascalCasePattern(str) || matchCamelCasePattern(str);
     }
 
+    // 全限定类名
+    private static final String classNameExp = "([A-Za-z_]\\w*(\\.[A-Za-z_]\\w*)*)";
+    private static final Pattern classNameExpPattern = Pattern.compile(classNameExp);
     /**
-     * 符合小驼峰命名法
-     * @param str
-     * @return
-     */
-    public static boolean matchCamelCasePattern(String str){
-        // 检查驼峰命名法的正则表达式
-        return camelCaseExpPattern.matcher(str).matches();
-    }
-
-    /**
-     *
-     * @param str
-     * @param strictMode 是否开启严格模式
-     * @return
-     */
-    public static boolean matchCamelCasePattern(String str, boolean strictMode){
-        return strictMode?  matchCamelCasePattern(str):
-                            camelCaseNotStrictExpPattern.matcher(str).matches();
-    }
-
-    /**
-     * 是否符合类名
-     * @param str
-     * @return
+     * 是否符合全限定类名格式
+     * @param str 字符串
+     * @return 如果符合则输出{@code true}, 否则输出{@code false}
      */
     public static boolean matchClassName(String str) {
-        return Pattern.matches("([A-Za-z_]\\w*(\\.[A-Za-z_]\\w*)*)", str);
+       return classNameExpPattern.matcher(str).matches();
     }
 
+    // 严格大驼峰
+    private static final String pascalCasePatternExp = "^[A-Z][a-z0-9]*([A-Z][a-z0-9]+)*$";
+    private static final Pattern pascalCasePatternExpPattern = Pattern.compile(pascalCasePatternExp);
+    // 非严格大驼峰
+    private static final String pascalCaseNotStrictExp = "^[A-Z][a-zA-Z0-9]*$";
+    private static final Pattern pascalCaseNotStrictExpPattern = Pattern.compile(pascalCaseNotStrictExp);
     /**
-     * 符合大驼峰命名法
-     * @param str
-     * @return
+     * 符合严格的大驼峰命名法
+     * @param str 字符串
+     * @return 如果符合则输出{@code true}, 否则输出{@code false}
      */
     public static boolean matchPascalCasePattern(String str){
-        String pascalCasePattern = "^[A-Z][a-z0-9]*([A-Z][a-z0-9]+)*$"; // 大驼峰
-        return Pattern.matches(pascalCasePattern, str);
+       return pascalCasePatternExpPattern.matcher(str).matches();
     }
 
     /**
-     *
-     * @param str
-     * @param strictMode
-     * @return
+     * 判断字符是否符合大驼峰命名法.
+     * <p>此方法参数二可以指定是否使用严格大驼峰</p>
+     * @param str 字符串
+     * @param strictMode 是否开启严格模式
+     * @return 如果符合则输出{@code true}, 否则输出{@code false}
      */
     public static boolean matchPascalCasePattern(String str, boolean strictMode){
-        if (strictMode){
-            return matchPascalCasePattern(str);
-        }
-        else{
-            String pascalCasePattern = "^[A-Z][a-zA-Z0-9]*$";
-            return Pattern.matches(pascalCasePattern, str);
-        }
+        return strictMode? matchPascalCasePattern(str):
+                pascalCaseNotStrictExpPattern.matcher(str).matches();
     }
+    // =============================== 正则表达式格式化部分 =====================================
 
     /**
      * 货币数字格式化.
      *
-     * @param locale locale
-     * @param amount 金额
+     * @param locale locale本地化
+     * @param amount 金额, {@code  double}类型
      * @return 带格式的金额字符串
      */
-    public static String formatToCurrency(Locale locale, double amount){
+    public static String formatToCurrency(double amount, Locale locale){
         // 指定货币格式化
         NumberFormat usCurrencyFormat = NumberFormat.getCurrencyInstance(locale);
         return usCurrencyFormat.format(amount);
     }
 
-    public static String formatToCurrency(Locale locale, BigDecimal amount){
+    /**
+     * 货币数字格式化.
+     *
+     * @param amount 金额, {@link BigDecimal}类型
+     * @param locale locale本地化
+     * @return 带格式的金额字符串
+     */
+    public static String formatToCurrency(BigDecimal amount, Locale locale){
         final NumberFormat usCurrencyFormat = NumberFormat.getCurrencyInstance(locale);
         return usCurrencyFormat.format(amount);
     }
@@ -269,28 +286,31 @@ public class FormatUtility {
         return camelCaseStr.replaceAll("(?<=[a-z])(?=[A-Z])", replacement);
     }
 
+    //                    ============== 时间格式化 ===========
     /**
-     * 格式化时间{@code LocalDateTime},准备移动到DateTimeUtility
+     * 格式化输出{@link LocalDateTime}本地日期时间对象
      *
-     * @param pattern
-     * @param dateTime
-     * @return
+     * @param pattern 要格式化的格式
+     * @param dateTime {@link LocalDateTime}对象
+     * @return 格式化后的{@link LocalDateTime}字符串
      */
-    public static String formatLocalDateTime(String pattern, LocalDateTime dateTime){
+    public static String formatLocalDateTime(LocalDateTime dateTime, String pattern){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         return formatter.format(dateTime);
     }
 
     /**
-     *
-     * @param pattern
-     * @param date
-     * @return
+     * 格式化输出{@link java.util.Date}日期时间对象
+     * @param pattern 要格式化的格式
+     * @param date {@link java.util.Date}对象
+     * @return 格式化后的{@link java.util.Date}字符串
      */
-    public static String formatUtilDate(String pattern, Date date){
+    public static String formatUtilDate(Date date, String pattern){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         return simpleDateFormat.format(date);
     }
+    //                    ============== 时间格式化 ===========
+
 
 
 
