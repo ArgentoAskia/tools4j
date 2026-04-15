@@ -161,6 +161,16 @@ public class CollectionUtility {
         }
         return joiner.toString();
     }
+
+    /**
+     * 输出经过格式化的集合toString().
+     *
+     * <p>此方法是{@link CollectionUtility#toBeautifulString(Collection, boolean, boolean)}的默认版本, 默认不带大小信息和类型信息</p>
+     *
+     * @param collectionTypeObj 任何集合类型
+     * @param <C> 集合类型
+     * @return 经过格式化的美观?的toString输出
+     */
     public static <C extends Collection<?>> String toBeautifulString(C collectionTypeObj){
         return toBeautifulString(collectionTypeObj, false, false);
     }
