@@ -1,5 +1,7 @@
 package cn.argento.askia.utilities.functional;
 
+import cn.argento.askia.annotations.Utility;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -10,11 +12,14 @@ import java.util.function.Function;
 /**
  * 流式工具类，包含Map Reduce等步骤
  */
+@Utility("Stream流工具类")
 public class StreamUtility {
 
 
 
-    private StreamUtility(){}
+    private StreamUtility(){
+        throw new IllegalAccessError("StreamUtility为工具类, 无法创建该类的对象");
+    }
 
     // mapper-reducer Utilities
     public static <K, V, O, C extends Collection<V>> Map<K, V> simpleMapReduce(List<O> originalData,

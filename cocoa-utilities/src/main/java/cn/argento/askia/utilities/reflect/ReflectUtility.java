@@ -1,5 +1,6 @@
 package cn.argento.askia.utilities.reflect;
 
+import cn.argento.askia.annotations.Utility;
 import cn.argento.askia.utilities.collection.ArrayUtility;
 
 import java.lang.reflect.*;
@@ -12,7 +13,11 @@ import java.util.function.Supplier;
  *  包括反射、代理（基于反射）、cglib的使用
  * @apiNote 此工具类需要在下个版本中重构！
  */
+@Utility("反射工具类")
 public class ReflectUtility {
+    private ReflectUtility(){
+        throw new IllegalAccessError("ReflectUtility为工具类, 无法创建该类的对象");
+    }
     public static void main(String[] args) throws NoSuchMethodException, ClassNotFoundException {
 //        boolean b = ReflectUtil.modifierJudge(ReflectUtil.class, isPublic);
 //        System.out.println(b);

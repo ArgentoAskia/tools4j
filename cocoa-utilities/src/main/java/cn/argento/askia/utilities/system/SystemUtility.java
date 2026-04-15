@@ -1,5 +1,6 @@
 package cn.argento.askia.utilities.system;
 
+import cn.argento.askia.annotations.Utility;
 import cn.argento.askia.exceptions.errors.lang.SystemError;
 import cn.argento.askia.utilities.algorithms.StringAlgorithmsUtility;
 import cn.argento.askia.utilities.collection.ArrayUtility;
@@ -17,8 +18,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Utility("系统支持工具类")
 public class SystemUtility {
 
+    private SystemUtility(){
+        throw new IllegalAccessError("SystemUtility为工具类, 无法创建该类的对象");
+    }
 
     public static void environments(){
         environments(System.out);

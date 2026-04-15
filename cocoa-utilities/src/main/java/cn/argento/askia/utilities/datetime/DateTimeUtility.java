@@ -1,5 +1,6 @@
 package cn.argento.askia.utilities.datetime;
 
+import cn.argento.askia.annotations.Utility;
 import cn.argento.askia.utilities.collection.ArrayUtility;
 import cn.argento.askia.utilities.text.FormatUtility;
 
@@ -40,6 +41,7 @@ import java.util.Objects;
  * @see FormatUtility
  *
  */
+@Utility("日期时间工具类")
 public class DateTimeUtility {
 
     public static void main(String[] args) {
@@ -66,7 +68,9 @@ public class DateTimeUtility {
         System.out.println(LocalDateTime.now());
     }
 
-    private DateTimeUtility(){}
+    private DateTimeUtility(){
+        throw new IllegalAccessError("DateTimeUtility为工具类, 无法创建该类的对象");
+    }
 
     // localdatetime本身不好含时区信息，所以需要先转为包含时区信息的ZonedDateTime
     // 不建议转为毫秒再到Date，会丢失nano time

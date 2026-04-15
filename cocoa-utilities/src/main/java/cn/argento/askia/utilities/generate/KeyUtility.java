@@ -1,5 +1,7 @@
 package cn.argento.askia.utilities.generate;
 
+import cn.argento.askia.annotations.Utility;
+
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +15,13 @@ import java.util.UUID;
  * @version 1.3
  * @since 1.0
  */
+@Utility("ID生成工具类")
 public class KeyUtility {
+
+    private KeyUtility(){
+        throw new IllegalAccessError("KeyUtility为工具类, 无法创建该类的对象");
+    }
+
     public static void main(String[] args) {
         System.out.println(newUUID());
         System.out.println(KeyUtility.newUUID(false, true));

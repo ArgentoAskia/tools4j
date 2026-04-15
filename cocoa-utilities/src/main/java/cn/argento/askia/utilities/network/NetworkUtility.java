@@ -1,5 +1,6 @@
 package cn.argento.askia.utilities.network;
 
+import cn.argento.askia.annotations.Utility;
 import cn.argento.askia.exceptions.runtime.lang.IllegalStringFormatRuntimeException;
 
 import java.text.MessageFormat;
@@ -9,7 +10,13 @@ import java.util.regex.Pattern;
 /**
  * 所有网络相关的API工具类
  */
+
+@Utility("网络工具类")
 public class NetworkUtility {
+
+    private NetworkUtility() {
+        throw new IllegalAccessError("NetworkUtility为工具类, 无法创建该类的对象");
+    }
     public static void main(String[] args) {
         final String s = MBitToMByte("60MBit/ps", null);
         System.out.println(s);

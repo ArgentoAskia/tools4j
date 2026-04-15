@@ -1,5 +1,6 @@
 package cn.argento.askia.utilities.classes;
 
+import cn.argento.askia.annotations.Utility;
 import cn.argento.askia.utilities.files.FileUtility;
 import cn.argento.askia.utilities.lang.StringUtility;
 
@@ -13,7 +14,13 @@ import java.util.List;
 /**
  * URL、URI增强
  */
+
+@Utility("资源工具类")
 public class ResourceUtility {
+
+    private ResourceUtility() {
+        throw new IllegalAccessError("ResourceUtility为工具类, 无法创建该类的对象");
+    }
 
     //  演示常用资源的获取方式
     public static void main(String[] args) throws URISyntaxException, IOException {

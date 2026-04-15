@@ -1,5 +1,6 @@
 package cn.argento.askia.utilities.lang;
 
+import cn.argento.askia.annotations.Utility;
 import cn.argento.askia.utilities.text.FormatUtility;
 import sun.reflect.FieldAccessor;
 import sun.reflect.ReflectionFactory;
@@ -11,8 +12,14 @@ import java.util.function.Function;
 /**
  * 此工具类对标Objects
  */
+
+@Utility("基础语言工具类")
 public class LangUtility {
 
+
+    private LangUtility(){
+        throw new IllegalAccessError("LangUtility为工具类, 无法创建该类的对象");
+    }
 
 
 

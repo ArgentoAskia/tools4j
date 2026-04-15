@@ -1,6 +1,7 @@
 package cn.argento.askia.utilities.files;
 
 
+import cn.argento.askia.annotations.Utility;
 import cn.argento.askia.exceptions.runtime.files.NotFileException;
 import cn.argento.askia.exceptions.runtime.files.UnsupportedFileTypeRuntimeException;
 import cn.argento.askia.utilities.system.SystemUtility;
@@ -24,7 +25,12 @@ import java.util.zip.ZipFile;
  * 增删改价读写
  * Files File Path
  */
+@Utility("文件对象工具类")
 public class FileUtility {
+
+    private FileUtility(){
+        throw new IllegalAccessError("DateTimeUtility为工具类, 无法创建该类的对象");
+    }
 
     @SuppressWarnings("all")
     public static File createFileIfNotExist(String path) {

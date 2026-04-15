@@ -1,5 +1,7 @@
 package cn.argento.askia.utilities.generate;
 
+import cn.argento.askia.annotations.Utility;
+
 import java.awt.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -15,8 +17,14 @@ import java.util.function.Supplier;
  * @since 1.0
  * @version 1.5
  */
+
+@Utility("随机数生成工具类")
 public class RandomUtility {
 
+
+    private RandomUtility(){
+        throw new IllegalAccessError("RandomUtility为工具类, 无法创建该类的对象");
+    }
     public static void main(String[] args) {
         int i = RandomUtility.randomInt(50, 5000);
         String s1 = RandomUtility.randomPhoneNumber();

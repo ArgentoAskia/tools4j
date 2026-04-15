@@ -1,5 +1,7 @@
 package cn.argento.askia.utilities.collection;
 
+import cn.argento.askia.annotations.Utility;
+
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -9,7 +11,12 @@ import java.util.stream.Collectors;
 /**
  * Java Collection Framework 等集合框架的通用工具类
  */
+@Utility("集合工具类")
 public class CollectionUtility {
+
+    private CollectionUtility() {
+        throw new IllegalAccessError("CollectionUtility为工具类, 无法创建该类的对象");
+    }
 
     /**
      * 增强类型的{@link Map#toString()}.

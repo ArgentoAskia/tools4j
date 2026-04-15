@@ -1,6 +1,7 @@
 package cn.argento.askia.utilities.collection;
 
 
+import cn.argento.askia.annotations.Utility;
 import cn.argento.askia.utilities.generate.RandomUtility;
 import cn.argento.askia.utilities.lang.LangUtility;
 
@@ -32,10 +33,13 @@ import java.util.function.Function;
  * @version 1.2
  * @since 1.0
  */
+@Utility("数组工具类")
 @SuppressWarnings("SuspiciousSystemArraycopy")
 public final class ArrayUtility {
 
-    private ArrayUtility(){}
+    private ArrayUtility(){
+        throw new IllegalAccessError("ArrayUtility为工具类, 无法创建该类的对象");
+    }
 
     private final static String TARGET_OBJECT_NOT_ARRAY = "参数 arrayObj 不是一个数组";
 

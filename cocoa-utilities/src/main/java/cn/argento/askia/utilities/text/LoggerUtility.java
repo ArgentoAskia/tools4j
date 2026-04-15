@@ -1,5 +1,7 @@
 package cn.argento.askia.utilities.text;
 
+import cn.argento.askia.annotations.Utility;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -8,6 +10,7 @@ import java.util.regex.Pattern;
  *
  * 提供一套自适应的日志级别配置, 该工具类会自动加载相关日志实现并打印日志, 我们提供了一套这样的机制：
  */
+@Utility("日志工具类")
 public class LoggerUtility {
 
 //    private static final boolean HAS_SLF4J;
@@ -16,6 +19,10 @@ public class LoggerUtility {
 //    static {
 //        boolean hasSlf4j = false;
 //    }
+
+    private LoggerUtility(){
+        throw new IllegalAccessError("FormatUtility为工具类, 无法创建该类的对象");
+    }
 
     // 我们按照默认的实现来检测使用
     public static void main(String[] args) {

@@ -1,5 +1,6 @@
 package cn.argento.askia.utilities.classes;
 
+import cn.argento.askia.annotations.Utility;
 import cn.argento.askia.utilities.system.SystemUtility;
 import cn.argento.askia.utilities.collection.ArrayUtility;
 
@@ -27,7 +28,13 @@ import java.util.stream.Collectors;
  *
  * @author askia
  */
+@Utility("Java类分析工具类")
 public class ClassUtility {
+
+    private ClassUtility(){
+        throw new IllegalAccessError("ClassUtility为工具类, 无法创建该类的对象");
+    }
+
     /**
      * 获取当前类文件所在的目录
      * @param cl

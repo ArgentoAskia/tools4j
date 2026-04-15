@@ -1,5 +1,7 @@
 package cn.argento.askia.utilities.io;
 
+import cn.argento.askia.annotations.Utility;
+
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -16,8 +18,12 @@ import java.util.zip.Checksum;
  * @version 1.0.1
  * @since 1.0
  */
+@Utility("IO流工具类")
 public class IOStreamUtility {
 
+    private IOStreamUtility(){
+        throw new IllegalAccessError("IOStreamUtility为工具类, 无法创建该类的对象");
+    }
     /**
      * 字节读取buffer大小
      * 预定义读取：1kb = 1024 bytes

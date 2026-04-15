@@ -1,5 +1,7 @@
 package cn.argento.askia.utilities.security;
 
+import cn.argento.askia.annotations.Utility;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -15,7 +17,12 @@ import java.util.Base64;
 /**
  *
  */
+@Utility("加密工具类")
 public class EncryptionUtility {
+
+    private EncryptionUtility() {
+        throw new IllegalAccessError("DigestUtility为工具类, 无法创建该类的对象");
+    }
 
     public enum AsymmetricAlgorithm{
         RSA;

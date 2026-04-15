@@ -1,5 +1,6 @@
 package cn.argento.askia.utilities.script;
 
+import cn.argento.askia.annotations.Utility;
 import cn.argento.askia.exceptions.runtime.files.UnsupportedMimeTypeRuntimeException;
 import cn.argento.askia.exceptions.runtime.scripts.CompilationException;
 import cn.argento.askia.utilities.io.IOStreamUtility;
@@ -14,9 +15,13 @@ import java.io.*;
  * @author Askia
  * @version 1.0
  */
+@Utility("脚本编译工具类")
 public class CompilationUtility {
 
 
+    private CompilationUtility() {
+        throw new IllegalAccessError("CompilationUtility为工具类, 无法创建该类的对象");
+    }
 
     // 关于编译器javac.exe的参数，参考类：com.sun.tools.javac.main.Option
 

@@ -1,5 +1,6 @@
 package cn.argento.askia.utilities.security;
 
+import cn.argento.askia.annotations.Utility;
 import cn.argento.askia.utilities.lang.LangUtility;
 
 import java.nio.charset.Charset;
@@ -8,7 +9,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
+@Utility("信息摘密工具类")
 public class DigestUtility {
+
+    private DigestUtility(){
+        throw new IllegalAccessError("DigestUtility为工具类, 无法创建该类的对象");
+    }
 
     public static void main(String[] args) {
         System.out.println(Arrays.toString("123".getBytes(StandardCharsets.UTF_8)));

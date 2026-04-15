@@ -1,5 +1,6 @@
 package cn.argento.askia.utilities.text;
 
+import cn.argento.askia.annotations.Utility;
 import cn.argento.askia.utilities.lang.StringUtility;
 
 import java.math.BigDecimal;
@@ -17,7 +18,11 @@ import java.util.regex.Pattern;
  * <p>提供数据格式化和格式化数据判别两大功能, 此类中, 所有将数据按照某个格式进行格式化的方法均以format开头, 比如：formatTime, 而所有的判别方法均以match开头</p>
  * @author Askia
  */
+@Utility("内容格式化工具类")
 public class FormatUtility {
+    private FormatUtility() {
+        throw new IllegalAccessError("FormatUtility为工具类, 无法创建该类的对象");
+    }
     // 预先缓存好Pattern, 不要每次都要重新compile()
     // 预先进行缓存的Pattern对象
     private static final String emailExp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";

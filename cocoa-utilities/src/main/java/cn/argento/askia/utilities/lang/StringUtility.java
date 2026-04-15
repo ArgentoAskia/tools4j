@@ -1,5 +1,6 @@
 package cn.argento.askia.utilities.lang;
 
+import cn.argento.askia.annotations.Utility;
 import cn.argento.askia.utilities.classes.ResourceUtility;
 
 import java.io.IOException;
@@ -7,8 +8,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@Utility("字符串工具类")
 public class StringUtility {
 
+    private StringUtility() {
+        throw new IllegalAccessError("StringUtility为工具类, 无法创建该类的对象");
+    }
 
     public static boolean isEnglishStringLoop(String str) {
         if (str == null || str.isEmpty()) {
