@@ -160,8 +160,8 @@ public class ArraySortAlgorithmsUtility {
      * 冒泡排序
      *
      * @param target 待排序的目标, 数组原始类型必须是实现了 {@link Comparable} 接口
-     * @param lo 下界, 最小为0, 最大为数组成员数减1
-     * @param hi 上界, 最小为0, 最大为数组成员数减1
+     * @param lo 下界, 最小为0, 最大为数组成员数减1, 排序范围包含lo
+     * @param hi 上界, 最小为0, 最大为数组成员数减1, 排序范围包含hi
      * @param orderBy {@link Order#ASC}代表升序, {@link Order#DESC}代表降序
      * @param <T> 所有实现了 {@link Comparable} 接口的类
      * @since 2026.4.7
@@ -241,8 +241,8 @@ public class ArraySortAlgorithmsUtility {
      * <p>此方法提供给那些没有实现了{@link Comparable} 接口的类, 因此需要提供一个 {@link Comparator} 比较器来进行比较</p>
      *
      * @param target 待排序的目标, 数组原始类型不限制
-     * @param lo 下界, 最小为0, 最大为数组成员数减1
-     * @param hi 上界, 最小为0, 最大为数组成员数减1
+     * @param lo 下界, 最小为0, 最大为数组成员数减1, 排序范围包含lo
+     * @param hi 上界, 最小为0, 最大为数组成员数减1, 排序范围包含hi
      * @param orderBy {@link Order#ASC}代表升序, {@link Order#DESC}代表降序
      * @param comparator 比较器对象
      * @param <T> 任何类型
@@ -331,8 +331,182 @@ public class ArraySortAlgorithmsUtility {
 
     // ============================= 插入排序 =============================
     // 插入排序
+    /**
+     * 插入排序.
+     *
+     * <p>此为使用二分查找优化过的插入排序算法，优化了插入过程寻找位置的方法。</p>
+     *
+     * @param target 待排序的目标, 数组原始类型必须是实现了 {@link Comparable} 接口标, 数组原始类型必须是实现了 {@link Comparable} 接口
+     * @param lo 下界, 最小为0, 最大为数组成员数减1, 排序范围包含lo
+     * @param hi 上界, 最小为0, 最大为数组成员数减1, 排序范围包含hi
+     * @param orderBy {@link Order#ASC}代表升序, {@link Order#DESC}代表降序
+     * @param <T> 所有实现了 {@link Comparable} 接口的类
+     * @since 2026.4.15
+     * @see ArraySortAlgorithmsUtility#insertion(Object[], int, int, Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#insertion(Comparable[])
+     * @see ArraySortAlgorithmsUtility#insertion(Object[], Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#insertion(Object[], Comparator)
+     * @see ArraySortAlgorithmsUtility#insertion(Comparable[], Order)
+     * @see ArraySortAlgorithmsUtility#insertion(Comparable[], int, int, Order)
+     */
     public static <T extends Comparable<? super T>> void insertion(T[] target, int lo, int hi, Order orderBy){
+        checkRange(lo, hi, target.length);
+        for (int i = 1; i <= hi; ++i) {
+            T key = target[i];
+            int left = 0;
+            int right = i;
 
+            // 使用二分查找找到插入位置
+            while (left < right) {
+                int mid = (left + right) / 2;
+                // 是否符合顺序, 符合则在左边找，不符合在右边找
+                if (!ordered(key, target[mid], orderBy)) {
+                    // 在右边找
+                    left = mid + 1;
+                }
+                else {
+                    // 在左边找
+                    right = mid;
+                }
+            }
+
+            // 将大于key的元素向右移动
+            for (int j = i; j > left; j--) {
+                target[j] = target[j - 1];
+            }
+            // 插入位置插入元素
+            target[left] = key;
+        }
+    }
+
+    /**
+     * 插入排序.
+     *
+     * <p>此方法默认将整个数组进行排序</p>
+     * @param target 待排序的目标, 数组原始类型必须是实现了 {@link Comparable} 接口标, 数组原始类型必须是实现了 {@link Comparable} 接口
+     * @param orderBy {@link Order#ASC}代表升序, {@link Order#DESC}代表降序
+     * @param <T> 所有实现了 {@link Comparable} 接口的类
+     * @since 2026.4.15
+     * @see ArraySortAlgorithmsUtility#insertion(Object[], int, int, Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#insertion(Comparable[])
+     * @see ArraySortAlgorithmsUtility#insertion(Object[], Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#insertion(Object[], Comparator)
+     * @see ArraySortAlgorithmsUtility#insertion(Comparable[], Order)
+     * @see ArraySortAlgorithmsUtility#insertion(Comparable[], int, int, Order)
+     */
+    public static <T extends Comparable<? super T>> void insertion(T[] target, Order orderBy){
+        insertion(target, 0, target.length - 1, orderBy);
+    }
+
+    /**
+     * 插入排序.
+     * <p>此方法默认将整个数组按照升序进行排序</p>
+     * @param target 待排序的目标, 数组原始类型必须是实现了 {@link Comparable} 接口标, 数组原始类型必须是实现了 {@link Comparable} 接口
+     * @param <T> 所有实现了 {@link Comparable} 接口的类
+     * @since 2026.4.15
+     * @see ArraySortAlgorithmsUtility#insertion(Object[], int, int, Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#insertion(Comparable[])
+     * @see ArraySortAlgorithmsUtility#insertion(Object[], Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#insertion(Object[], Comparator)
+     * @see ArraySortAlgorithmsUtility#insertion(Comparable[], Order)
+     * @see ArraySortAlgorithmsUtility#insertion(Comparable[], int, int, Order)
+     */
+    public static <T extends Comparable<? super T>> void insertion(T[] target){
+        insertion(target, 0, target.length - 1, Order.ASC);
+    }
+
+    /**
+     * 插入排序.
+     *
+     * <p>此方法提供给那些没有实现了{@link Comparable} 接口的类, 因此需要提供一个 {@link Comparator} 比较器来进行比较</p>
+     *
+     * @param target 待排序的目标, 数组原始类型不限制
+     * @param lo 下界, 最小为0, 最大为数组成员数减1, 排序范围包含lo
+     * @param hi 上界, 最小为0, 最大为数组成员数减1, 排序范围包含hi
+     * @param orderBy {@link Order#ASC}代表升序, {@link Order#DESC}代表降序
+     * @param comparator 比较器对象
+     * @param <T> 任何类型
+     * @since 2026.4.15
+     * @see ArraySortAlgorithmsUtility#insertion(Object[], int, int, Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#insertion(Comparable[])
+     * @see ArraySortAlgorithmsUtility#insertion(Object[], Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#insertion(Object[], Comparator)
+     * @see ArraySortAlgorithmsUtility#insertion(Comparable[], Order)
+     * @see ArraySortAlgorithmsUtility#insertion(Comparable[], int, int, Order)
+     */
+    public static <T> void insertion(T[] target, int lo, int hi, Order orderBy, Comparator<T> comparator){
+        checkRange(lo, hi, target.length);
+        for (int i = 1; i <= hi; ++i) {
+            T key = target[i];
+            int left = 0;
+            int right = i;
+
+            // 使用二分查找找到插入位置
+            while (left < right) {
+                int mid = (left + right) / 2;
+                // 是否符合顺序, 符合则在左边找，不符合在右边找
+                if (!ordered(key, target[mid], orderBy, comparator)) {
+                    // 在右边找
+                    left = mid + 1;
+                }
+                else {
+                    // 在左边找
+                    right = mid;
+                }
+            }
+
+            // 将大于key的元素向右移动
+            for (int j = i; j > left; j--) {
+                target[j] = target[j - 1];
+            }
+            // 插入位置插入元素
+            target[left] = key;
+        }
+    }
+
+    /**
+     * 插入排序.
+     *
+     * <p>此方法提供给那些没有实现了{@link Comparable} 接口的类, 因此需要提供一个 {@link Comparator} 比较器来进行比较</p>
+     *
+     * <p>此方法默认将整个数组进行排序</p>
+     *
+     * @param target 待排序的目标, 数组原始类型不限制
+     * @param orderBy {@link Order#ASC}代表升序, {@link Order#DESC}代表降序
+     * @param comparator 比较器对象
+     * @param <T> 任何类型
+     * @since 2026.4.15
+     * @see ArraySortAlgorithmsUtility#insertion(Object[], int, int, Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#insertion(Comparable[])
+     * @see ArraySortAlgorithmsUtility#insertion(Object[], Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#insertion(Object[], Comparator)
+     * @see ArraySortAlgorithmsUtility#insertion(Comparable[], Order)
+     * @see ArraySortAlgorithmsUtility#insertion(Comparable[], int, int, Order)
+     */
+    public static <T> void insertion(T[] target, Order orderBy, Comparator<T> comparator){
+        insertion(target, 0, target.length - 1, orderBy, comparator);
+    }
+
+    /**
+     * 插入排序.
+     *
+     * <p>此方法提供给那些没有实现了{@link Comparable} 接口的类, 因此需要提供一个 {@link Comparator} 比较器来进行比较</p>
+     *
+     * <p>此方法默认将整个数组进行升序排序</p>
+     *
+     * @param target 待排序的目标, 数组原始类型不限制
+     * @param comparator 比较器对象
+     * @param <T> 任何类型
+     * @since 2026.4.15
+     * @see ArraySortAlgorithmsUtility#insertion(Object[], int, int, Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#insertion(Comparable[])
+     * @see ArraySortAlgorithmsUtility#insertion(Object[], Order, Comparator)
+     * @see ArraySortAlgorithmsUtility#insertion(Object[], Comparator)
+     * @see ArraySortAlgorithmsUtility#insertion(Comparable[], Order)
+     * @see ArraySortAlgorithmsUtility#insertion(Comparable[], int, int, Order)
+     */
+    public static <T> void insertion(T[] target, Comparator<T> comparator){
+        insertion(target, 0, target.length - 1, Order.ASC, comparator);
     }
     // ============================= 插入排序 =============================
 
@@ -343,8 +517,8 @@ public class ArraySortAlgorithmsUtility {
      * <p>代码来源自普林斯顿老爷子的《算法4》
      *
      * @param target 待排序的目标, 数组原始类型必须是实现了 {@link Comparable} 接口
-     * @param lo 下界, 最小为0, 最大为数组成员数减1
-     * @param hi 上界, 最小为0, 最大为数组成员数减1
+     * @param lo 下界, 最小为0, 最大为数组成员数减1, 排序范围包含lo
+     * @param hi 上界, 最小为0, 最大为数组成员数减1, 排序范围包含hi
      * @param orderBy {@link Order#ASC}代表升序, {@link Order#DESC}代表降序
      * @param <T> 所有实现了 {@link Comparable} 接口的类
      * @since 2026.4.7
@@ -422,8 +596,8 @@ public class ArraySortAlgorithmsUtility {
      * <p>此方法提供给那些没有实现了{@link Comparable} 接口的类, 因此需要提供一个 {@link Comparator} 比较器来进行比较</p>
      *
      * @param target 待排序的目标, 数组原始类型不限制
-     * @param lo 下界, 最小为0, 最大为数组成员数减1
-     * @param hi 上界, 最小为0, 最大为数组成员数减1
+     * @param lo 下界, 最小为0, 最大为数组成员数减1, 排序范围包含lo
+     * @param hi 上界, 最小为0, 最大为数组成员数减1, 排序范围包含hi
      * @param orderBy {@link Order#ASC}代表升序, {@link Order#DESC}代表降序
      * @param comparator 比较器对象
      * @param <T> 任何类型
