@@ -497,9 +497,19 @@ public class CollectionUtility {
         }
     }
 
-
-    @Deprecated
-    protected static <T extends Cloneable> List<T> deepCopy(List<T> list, Function<? super T, T> copyFunction){
+    /**
+     * {@code list}结构克隆.
+     *
+     * <p>此方法被用于解决{@link List}结构深拷贝问题, 要求结构成员是实现了{@link Cloneable}接口的实现类</p>
+     *
+     * <p><b>此方法目前出于实验性阶段, 因为目前已有的解决方法中仅能想到使用这种方法来实现深拷贝, 但实际调用方仍然可以使用各种违规的方法来规避深拷贝</b></p>
+     *
+     * @param list list结构
+     * @param copyFunction 深拷贝函数, 完全有用户提供深拷贝功能
+     * @param <T> 任何实现了{@link Cloneable}接口的类型
+     * @return 深拷贝完成的新{@code List}结构
+     */
+    public static <T extends Cloneable> List<T> listClone(List<T> list, Function<? super T, T> copyFunction){
         if (list == null){
             return null;
         }
