@@ -7,7 +7,7 @@
     <groupId>cn.argento.askia</groupId>
     <artifactId>cocoa-java</artifactId>
     <packaging>pom</packaging>
-    <version>0.0.1</version>
+    <version>0.0.1-alpha</version>
     <build>
         <plugins>
             <plugin>
@@ -50,22 +50,22 @@
             <dependency>
                 <groupId>cn.argento.askia</groupId>
                 <artifactId>cocoa-annotations</artifactId>
-                <version>0.0.1</version>
+                <version>0.0.1-alpha</version>
             </dependency>
             <dependency>
                 <groupId>cn.argento.askia</groupId>
                 <artifactId>cocoa-design-patterns</artifactId>
-                <version>0.0.1</version>
+                <version>0.0.1-alpha</version>
             </dependency>
             <dependency>
                 <groupId>cn.argento.askia</groupId>
                 <artifactId>cocoa-utilities</artifactId>
-                <version>0.0.1</version>
+                <version>0.0.1-alpha</version>
             </dependency>
             <dependency>
                 <groupId>cn.argento.askia</groupId>
                 <artifactId>cocoa-core</artifactId>
-                <version>0.0.1</version>
+                <version>0.0.1-alpha</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
