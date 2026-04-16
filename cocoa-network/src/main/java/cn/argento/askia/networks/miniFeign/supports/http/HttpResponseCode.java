@@ -1,7 +1,5 @@
 package cn.argento.askia.networks.miniFeign.supports.http;
 
-
-import com.sun.istack.internal.Nullable;
 import lombok.Getter;
 
 @Getter
@@ -46,7 +44,6 @@ public enum HttpResponseCode {
      * @return the corresponding {@code HttpStatus}, or {@code null} if not found
      * @since 5.0
      */
-    @Nullable
     public static HttpResponseCode resolve(int statusCode) {
         // Use cached VALUES instead of values() to prevent array allocation.
         for (HttpResponseCode status : VALUES) {

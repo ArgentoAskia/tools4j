@@ -1,7 +1,5 @@
 package cn.argento.askia.networks.miniFeign.supports.http;
 
-import com.sun.istack.internal.Nullable;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +19,7 @@ public enum HttpRequestMethod {
     }
 
 
-    public static HttpRequestMethod resolve(@Nullable String method) {
+    public static HttpRequestMethod resolve(String method) {
         return (method != null ? mappings.get(method) : null);
     }
 
