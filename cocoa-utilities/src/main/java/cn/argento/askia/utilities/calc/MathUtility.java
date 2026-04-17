@@ -1,12 +1,15 @@
 package cn.argento.askia.utilities.calc;
 
 import cn.argento.askia.annotations.Utility;
+import cn.argento.askia.utilities.generate.RandomUtility;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.util.Comparator;
+import java.util.*;
+import java.util.function.BiFunction;
+import java.util.stream.LongStream;
 
 /**
  * 数学计算工具类.
@@ -483,13 +486,169 @@ public class MathUtility {
     }
 
 
-//1. 求和、平均值、方差（针对 int[]、double[]）
-//    java
+    // =========================== 统计函数 ===========================
+
+    /**
+     * 求和函数.
+     *
+     * <p>注意：此方法无法用于大数求和, 由于方法求和使用的是数组, 此方法使用{@code long}返回结果来尽最大可能保证数据不溢出, 因此调用方要保证自己的数据位于{@link Integer#MIN_VALUE} 和 {@link Integer#MAX_VALUE}之间</p>
+     *
+     * <p>求和函数支持并行处理, 指定参数二来决定是否使用并行流, 该方法底层使用{@link LongStream#sum()}来进行并行计算</p>
+     *
+     * @param numbers int类型数组
+     * @param parallel 是否使用并行处理
+     * @return 求和结果
+     * @since 2026.4.17
+     */
+    public static long sum(int[] numbers, boolean parallel){
+        if (numbers== null || numbers.length == 0){
+            throw new IllegalArgumentException("不能提供空参数");
+        }
+        long sum = 0;
+        if (parallel){
+            // 并行计算
+            sum = Arrays.stream(numbers)   // 创建普通流
+                    .asLongStream()        // 转为long流
+                    .parallel()            // 并行处理
+                    .sum();                // 求和
+        }
+        else{
+            for (int traver : numbers){
+                sum += traver;
+            }
+        }
+        return sum;
+    }
+
+    /**
+     * 求和函数.
+     * <p>求和函数支持并行处理, 指定参数二来决定是否使用并行流, 该方法底层使用{@link java.util.stream.DoubleStream#sum()}来进行并行计算</p>
+     * @param numbers double类型数组
+     * @param parallel 是否使用并行处理
+     * @return 求和结果
+     * @since 2026.4.17
+     */
+    public static double sum(double[] numbers, boolean parallel){
+        if (numbers== null || numbers.length == 0){
+            throw new IllegalArgumentException("不能提供空参数");
+        }
+        double sum = 0;
+        if (parallel){
+            sum = Arrays.stream(numbers)
+                    .parallel()
+                    .sum();
+        }
+        else{
+            for (double traver : numbers){
+                sum = Double.sum(sum, traver);
+            }
+        }
+        return sum;
+    }
+
+
+    /**
+     * 总体平均值.
+     *
+     * @param numbers int类型数组, 代表总体样本数值
+     * @param parallel 是否使用并行处理
+     * @return 总体平均值结果
+     * @since 2026.4.17
+     */
+    public static double average(int[] numbers, boolean parallel){
+        if (numbers== null || numbers.length == 0){
+            throw new IllegalArgumentException("不能提供空参数");
+        }
+        double average = 0;
+        if (parallel){
+            OptionalDouble optionalAverage = Arrays.stream(numbers)
+                    .asLongStream()
+                    .parallel()
+                    .average();
+            average = optionalAverage.orElseThrow(() -> new ArithmeticException("无法计算数组"+ Arrays.toString(numbers) +"的平均值, 原因是Stream流调用average()之后得到的OptionalDouble的isPresent()返回false"));
+        }
+        else{
+            int n = numbers.length;
+            long sum = sum(numbers, false);
+            average = sum * 1.0 / n;
+        }
+        return average;
+    }
+
+    /**
+     * 样本平均值.
+     *
+     * @param numbers int类型数组, 代表总体样本数值
+     * @param sampleCount 样本抽取个数
+     * @param parallel 是否使用并行处理
+     * @param sampleFunction 抽样函数, 参数1是总体样本, 参数2用于装载已选择的抽样样本, 此参数较为灵活, 实际使用时, 调用方可以决定如何记录抽样样本(按样本值, 按样本下标等), 要求返回一个样本数据
+     * @return 样本平均值结果
+     * @since 2026.4.17
+     */
+    public static double sampleAverage(int[] numbers, int sampleCount, boolean parallel, BiFunction<int[], Set<Integer>, Integer> sampleFunction){
+        if (numbers== null || numbers.length == 0){
+            throw new IllegalArgumentException("请提供总体样本");
+        }
+        if (sampleFunction == null){
+            throw new IllegalArgumentException("请提供抽样函数");
+        }
+        if (sampleCount <= 0 || sampleCount > numbers.length){
+            throw new IllegalArgumentException("抽样个数不能小于等于0或者超过样本总数");
+        }
+        int[] samples = new int[sampleCount];
+        Set<Integer> pickSet = new HashSet<>();
+        // 1.开始抽样
+        for (int i = 0; i < sampleCount; i++){
+            Integer apply = sampleFunction.apply(numbers, pickSet);
+            samples[i] = apply;
+        }
+        // 2.计算样本
+        return average(samples, parallel);
+    }
+
+    /**
+     * 样本平均值.
+     * @param numbers int类型数组, 代表总体样本数值
+     * @param sampleCount 样本抽取个数
+     * @param parallel 是否使用并行处理
+     * @return 样本平均值结果
+     * @since 2026.4.17
+     */
+    public static double sampleAverage(int[] numbers, int sampleCount, boolean parallel){
+        BiFunction<int[], Set<Integer>, Integer> function = new BiFunction<int[], Set<Integer>, Integer>() {
+            @Override
+            public Integer apply(int[] numbers, Set<Integer> indexSet) {
+                int randomIndex = RandomUtility.randomInt(0, numbers.length - 1);
+                // 如果该样本已抽取则重新抽取
+                while (indexSet.contains(randomIndex)){
+                    randomIndex = RandomUtility.randomInt(0, numbers.length - 1);
+                }
+                indexSet.add(randomIndex);
+                return numbers[randomIndex];
+            }
+        };
+        return sampleAverage(numbers, sampleCount, parallel, function);
+    }
+
+    /**
+     * 随机样本平均值.
+     * <p>样本数随机, 样本来源随机的样本平均值</p>
+     *
+     * @param numbers int类型数组, 代表总体样本数值
+     * @param parallel 是否使用并行处理
+     * @return 样本平均值结果
+     * @since 2026.4.17
+     */
+    public static double sampleAverage(int[] numbers, boolean parallel){
+        int sampleCount = RandomUtility.randomInt(0, numbers.length - 1);
+        return sampleAverage(numbers, sampleCount, parallel);
+    }
 //    public static double sum(double[] arr);
 //    public static double mean(double[] arr);
 //    public static double variance(double[] arr);  // 样本方差
 //    public static double stdDev(double[] arr);
 //    public static double average(int[] arr);
+    // =========================== 统计函数 ===========================
 
 //    /**
 //     * 快速幂.
