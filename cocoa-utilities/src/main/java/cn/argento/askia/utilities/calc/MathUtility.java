@@ -2,14 +2,11 @@ package cn.argento.askia.utilities.calc;
 
 import cn.argento.askia.annotations.Utility;
 
-import java.lang.ref.Reference;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Comparator;
-import java.util.List;
-import java.util.OptionalInt;
 
 /**
  * 数学计算工具类.
@@ -354,7 +351,7 @@ public class MathUtility {
      */
     public static int max(int... numbers){
         if (numbers.length == 0){
-            throw new IllegalArgumentException("不能提供空参数");
+            throw new IllegalArgumentException("不能提供空长度参数");
         }
         if (numbers.length == 1){
             return numbers[0];
@@ -368,6 +365,62 @@ public class MathUtility {
         return max;
     }
 
+    /**
+     * 取数值最大值.
+     * <p>此方法支持多个数字的最大值判别, 是{@link Math#max(long, long)}的增强版本, 支持数组</p>
+     *
+     * @param numbers long类型可变参数, 可提供数组
+     * @return 最大值
+     * @since 2026.4.17
+     */
+    public static long max(long... numbers){
+        if (numbers.length == 0){
+            throw new IllegalArgumentException("不能提供空长度参数");
+        }
+        if (numbers.length == 1){
+            return numbers[0];
+        }
+        long max = numbers[0];
+        for (long traver : numbers){
+            if (traver > max){
+                max = traver;
+            }
+        }
+        return max;
+    }
+
+    /**
+     * 取数值最大值.
+     * <p>此方法支持多个数字的最大值判别, 是{@link Math#max(long, long)}的增强版本, 支持数组</p>
+     *
+     * @param numbers double类型可变参数, 可提供数组
+     * @return 最大值
+     * @since 2026.4.17
+     */
+    public static double max(double... numbers){
+        if (numbers.length == 0){
+            throw new IllegalArgumentException("不能提供空长度参数");
+        }
+        if (numbers.length == 1){
+            return numbers[0];
+        }
+        double max = numbers[0];
+        for (double traver : numbers){
+            if (Double.compare(traver, max) > 0){
+                max = traver;
+            }
+        }
+        return max;
+    }
+
+    /**
+     * 取所有数值中的最小值.
+     * <p>此方法支持多个数字的最小值判别, 是{@link Math#min(int, int)}的增强版本, 支持数组</p>
+     *
+     * @param numbers int类型可变参数, 可提供数组
+     * @return 最小值
+     * @since 2026.4.17
+     */
     public static int min(int... numbers){
         if (numbers.length == 0) throw new IllegalArgumentException("不能提供空参数");
         if (numbers.length == 1){
@@ -381,6 +434,54 @@ public class MathUtility {
         }
         return min;
     }
+
+    /**
+     * 取所有数值中的最小值.
+     * <p>此方法支持多个数字的最小值判别, 是{@link Math#min(long, long)}的增强版本, 支持数组</p>
+     *
+     * @param numbers long类型可变参数, 可提供数组
+     * @return 最小值
+     * @since 2026.4.17
+     */
+    public static long min(long... numbers){
+        if (numbers.length == 0){
+            throw new IllegalArgumentException("不能提供空参数");
+        }
+        if (numbers.length == 1){
+            return numbers[0];
+        }
+        long min = numbers[0];
+        for (long traver : numbers){
+            if (traver < min){
+                min = traver;
+            }
+        }
+        return min;
+    }
+
+    /**
+     * 取所有数值中的最小值.
+     * <p>此方法支持多个数字的最小值判别, 是{@link Math#min(double, double)}的增强版本, 支持数组</p>
+     * @param numbers double类型可变参数, 可提供数组
+     * @return 最小值
+     * @since 2026.4.17
+     */
+    public static double min(double... numbers){
+        if (numbers.length == 0){
+            throw new IllegalArgumentException("不能提供空参数");
+        }
+        if (numbers.length == 1){
+            return numbers[0];
+        }
+        double min = numbers[0];
+        for (double traver : numbers){
+            if (Double.compare(traver, min) < 0){
+                min = traver;
+            }
+        }
+        return min;
+    }
+
 
 //1. 求和、平均值、方差（针对 int[]、double[]）
 //    java
