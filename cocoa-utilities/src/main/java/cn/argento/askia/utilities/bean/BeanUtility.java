@@ -43,7 +43,6 @@ public final class BeanUtility {
             final Method readMethod = propertyDescriptor.getReadMethod();
             return readMethod.invoke(propertyName, args);
         } catch (Throwable e) {
-            e.printStackTrace();
             try {
                 final Field field = bean.getClass().getField(propertyName);
                 field.setAccessible(true);

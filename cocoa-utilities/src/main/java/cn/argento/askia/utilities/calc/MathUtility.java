@@ -1,15 +1,19 @@
 package cn.argento.askia.utilities.calc;
 
 import cn.argento.askia.annotations.Utility;
+import cn.argento.askia.utilities.generate.RandomUtility;
 
-import java.lang.ref.Reference;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.util.Comparator;
-import java.util.List;
-import java.util.OptionalInt;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 /**
  * 数学计算工具类.
@@ -354,7 +358,7 @@ public class MathUtility {
      */
     public static int max(int... numbers){
         if (numbers.length == 0){
-            throw new IllegalArgumentException("不能提供空参数");
+            throw new IllegalArgumentException("不能提供空长度参数");
         }
         if (numbers.length == 1){
             return numbers[0];
@@ -368,6 +372,62 @@ public class MathUtility {
         return max;
     }
 
+    /**
+     * 取数值最大值.
+     * <p>此方法支持多个数字的最大值判别, 是{@link Math#max(long, long)}的增强版本, 支持数组</p>
+     *
+     * @param numbers long类型可变参数, 可提供数组
+     * @return 最大值
+     * @since 2026.4.17
+     */
+    public static long max(long... numbers){
+        if (numbers.length == 0){
+            throw new IllegalArgumentException("不能提供空长度参数");
+        }
+        if (numbers.length == 1){
+            return numbers[0];
+        }
+        long max = numbers[0];
+        for (long traver : numbers){
+            if (traver > max){
+                max = traver;
+            }
+        }
+        return max;
+    }
+
+    /**
+     * 取数值最大值.
+     * <p>此方法支持多个数字的最大值判别, 是{@link Math#max(long, long)}的增强版本, 支持数组</p>
+     *
+     * @param numbers double类型可变参数, 可提供数组
+     * @return 最大值
+     * @since 2026.4.17
+     */
+    public static double max(double... numbers){
+        if (numbers.length == 0){
+            throw new IllegalArgumentException("不能提供空长度参数");
+        }
+        if (numbers.length == 1){
+            return numbers[0];
+        }
+        double max = numbers[0];
+        for (double traver : numbers){
+            if (Double.compare(traver, max) > 0){
+                max = traver;
+            }
+        }
+        return max;
+    }
+
+    /**
+     * 取所有数值中的最小值.
+     * <p>此方法支持多个数字的最小值判别, 是{@link Math#min(int, int)}的增强版本, 支持数组</p>
+     *
+     * @param numbers int类型可变参数, 可提供数组
+     * @return 最小值
+     * @since 2026.4.17
+     */
     public static int min(int... numbers){
         if (numbers.length == 0) throw new IllegalArgumentException("不能提供空参数");
         if (numbers.length == 1){
@@ -382,13 +442,327 @@ public class MathUtility {
         return min;
     }
 
-//1. 求和、平均值、方差（针对 int[]、double[]）
-//    java
+    /**
+     * 取所有数值中的最小值.
+     * <p>此方法支持多个数字的最小值判别, 是{@link Math#min(long, long)}的增强版本, 支持数组</p>
+     *
+     * @param numbers long类型可变参数, 可提供数组
+     * @return 最小值
+     * @since 2026.4.17
+     */
+    public static long min(long... numbers){
+        if (numbers.length == 0){
+            throw new IllegalArgumentException("不能提供空参数");
+        }
+        if (numbers.length == 1){
+            return numbers[0];
+        }
+        long min = numbers[0];
+        for (long traver : numbers){
+            if (traver < min){
+                min = traver;
+            }
+        }
+        return min;
+    }
+
+    /**
+     * 取所有数值中的最小值.
+     * <p>此方法支持多个数字的最小值判别, 是{@link Math#min(double, double)}的增强版本, 支持数组</p>
+     * @param numbers double类型可变参数, 可提供数组
+     * @return 最小值
+     * @since 2026.4.17
+     */
+    public static double min(double... numbers){
+        if (numbers.length == 0){
+            throw new IllegalArgumentException("不能提供空参数");
+        }
+        if (numbers.length == 1){
+            return numbers[0];
+        }
+        double min = numbers[0];
+        for (double traver : numbers){
+            if (Double.compare(traver, min) < 0){
+                min = traver;
+            }
+        }
+        return min;
+    }
+
+
+    // =========================== 统计函数 ===========================
+
+    /**
+     * 求和函数.
+     *
+     * <p>注意：此方法无法用于大数求和, 由于方法求和使用的是数组, 此方法使用{@code long}返回结果来尽最大可能保证数据不溢出, 因此调用方要保证自己的数据位于{@link Integer#MIN_VALUE} 和 {@link Integer#MAX_VALUE}之间</p>
+     *
+     * <p>求和函数支持并行处理, 指定参数二来决定是否使用并行流, 该方法底层使用{@link LongStream#sum()}来进行并行计算</p>
+     *
+     * @param numbers int类型数组
+     * @param parallel 是否使用并行处理
+     * @return 求和结果
+     * @since 2026.4.17
+     */
+    public static long sum(int[] numbers, boolean parallel){
+        if (numbers== null || numbers.length == 0){
+            throw new IllegalArgumentException("不能提供空参数");
+        }
+        long sum = 0;
+        if (parallel){
+            // 并行计算
+            sum = Arrays.stream(numbers)   // 创建普通流
+                    .asLongStream()        // 转为long流
+                    .parallel()            // 并行处理
+                    .sum();                // 求和
+        }
+        else{
+            for (int traver : numbers){
+                sum += traver;
+            }
+        }
+        return sum;
+    }
+
+    /**
+     * 求和函数.
+     * <p>求和函数支持并行处理, 指定参数二来决定是否使用并行流, 该方法底层使用{@link java.util.stream.DoubleStream#sum()}来进行并行计算</p>
+     * @param numbers double类型数组
+     * @param parallel 是否使用并行处理
+     * @return 求和结果
+     * @since 2026.4.17
+     */
+    public static double sum(double[] numbers, boolean parallel){
+        if (numbers== null || numbers.length == 0){
+            throw new IllegalArgumentException("不能提供空参数");
+        }
+        double sum = 0;
+        if (parallel){
+            sum = Arrays.stream(numbers)
+                    .parallel()
+                    .sum();
+        }
+        else{
+            for (double traver : numbers){
+                sum = Double.sum(sum, traver);
+            }
+        }
+        return sum;
+    }
+
+
+    /**
+     * 总体平均值.
+     *
+     * @param numbers int类型数组, 代表总体样本数值
+     * @param parallel 是否使用并行处理
+     * @return 总体平均值结果
+     * @since 2026.4.17
+     */
+    public static double average(int[] numbers, boolean parallel){
+        if (numbers== null || numbers.length == 0){
+            throw new IllegalArgumentException("不能提供空参数");
+        }
+        double average = 0;
+        if (parallel){
+            OptionalDouble optionalAverage = Arrays.stream(numbers)
+                    .asLongStream()
+                    .parallel()
+                    .average();
+            average = optionalAverage.orElseThrow(() -> new ArithmeticException("无法计算数组"+ Arrays.toString(numbers) +"的平均值, 原因是Stream流调用average()之后得到的OptionalDouble的isPresent()返回false"));
+        }
+        else{
+            int n = numbers.length;
+            long sum = sum(numbers, false);
+            average = sum * 1.0 / n;
+        }
+        return average;
+    }
+
+    /**
+     * 样本平均值.
+     *
+     * @param numbers int类型数组, 代表总体样本数值
+     * @param sampleCount 样本抽取个数
+     * @param parallel 是否使用并行处理
+     * @param sampleFunction 抽样函数, 参数1是总体样本, 参数2用于装载已选择的抽样样本, 此参数较为灵活, 实际使用时, 调用方可以决定如何记录抽样样本(按样本值, 按样本下标等), 要求返回一个样本数据
+     * @return 样本平均值结果
+     * @since 2026.4.17
+     */
+    public static double sampleAverage(int[] numbers, int sampleCount, boolean parallel, BiFunction<int[], Set<Integer>, Integer> sampleFunction){
+        if (numbers== null || numbers.length == 0){
+            throw new IllegalArgumentException("请提供总体样本");
+        }
+        if (sampleFunction == null){
+            throw new IllegalArgumentException("请提供抽样函数");
+        }
+        if (sampleCount <= 0 || sampleCount > numbers.length){
+            throw new IllegalArgumentException("抽样个数不能小于等于0或者超过样本总数");
+        }
+        int[] samples = new int[sampleCount];
+        Set<Integer> pickSet = new HashSet<>();
+        // 1.开始抽样
+        for (int i = 0; i < sampleCount; i++){
+            Integer apply = sampleFunction.apply(numbers, pickSet);
+            samples[i] = apply;
+        }
+        // 2.计算样本
+        return average(samples, parallel);
+    }
+
+    /**
+     * 样本平均值.
+     * @param numbers int类型数组, 代表总体样本数值
+     * @param sampleCount 样本抽取个数
+     * @param parallel 是否使用并行处理
+     * @return 样本平均值结果
+     * @since 2026.4.17
+     */
+    public static double sampleAverage(int[] numbers, int sampleCount, boolean parallel){
+        BiFunction<int[], Set<Integer>, Integer> function = new BiFunction<int[], Set<Integer>, Integer>() {
+            @Override
+            public Integer apply(int[] numbers, Set<Integer> indexSet) {
+                int randomIndex = RandomUtility.randomInt(0, numbers.length - 1);
+                // 如果该样本已抽取则重新抽取
+                while (indexSet.contains(randomIndex)){
+                    randomIndex = RandomUtility.randomInt(0, numbers.length - 1);
+                }
+                indexSet.add(randomIndex);
+                return numbers[randomIndex];
+            }
+        };
+        return sampleAverage(numbers, sampleCount, parallel, function);
+    }
+
+    /**
+     * 随机样本平均值.
+     * <p>样本数随机, 样本来源随机的样本平均值</p>
+     *
+     * @param numbers int类型数组, 代表总体样本数值
+     * @param parallel 是否使用并行处理
+     * @return 样本平均值结果
+     * @since 2026.4.17
+     */
+    public static double sampleAverage(int[] numbers, boolean parallel){
+        int sampleCount = RandomUtility.randomInt(0, numbers.length - 1);
+        return sampleAverage(numbers, sampleCount, parallel);
+    }
 //    public static double sum(double[] arr);
 //    public static double mean(double[] arr);
 //    public static double variance(double[] arr);  // 样本方差
 //    public static double stdDev(double[] arr);
 //    public static double average(int[] arr);
+
+    /**
+     * 中位数统计
+     *
+     * @param numbers int数组, 代表数据样本
+     * @param parallel 是否使用并行处理, 并行处理将用于样本排序
+     * @return 中位数
+     * @since 2026.4.17
+     */
+    public static double median(int[] numbers, boolean parallel){
+        if (numbers == null || numbers.length == 0){
+            throw new IllegalArgumentException("请提供数据样本");
+        }
+        if (parallel){
+            // 并行排序
+            Arrays.parallelSort(numbers);
+        }
+        else{
+            Arrays.sort(numbers);
+
+        }
+        if (isEven(numbers.length)){
+            int afterIndex = numbers.length / 2;
+            int beforeIndex = afterIndex - 1;
+            int afterData = numbers[afterIndex];
+            int beforeData = numbers[beforeIndex];
+            return (afterData + beforeData) * 1.0 / 2;
+        }
+        else{
+            int index = numbers.length / 2;
+            return numbers[index];
+        }
+    }
+
+    /**
+     * 众数
+     * <p>数据集中出现频次最高的数值。一组数据可以有一个众数、多个众数（双众数、多众数）或没有众数（所有值出现次数相同）。</p>
+     * @param numbers int数组, 代表数据样本
+     * @param parallel 是否使用并行处理, 并行处理将用于样本处理
+     * @param retModes 参考性参数，返回所有众数
+     * @return 出现频次最高的次数
+     * @since 2026.4.17
+     */
+    public static long mode(int[] numbers, boolean parallel, List<Integer> retModes){
+        if (numbers == null || numbers.length == 0){
+            throw new IllegalArgumentException("请提供数据样本");
+        }
+        if (parallel){
+            // 并行处理统计
+            ConcurrentMap<Integer, Long> frequencyMap = Arrays.stream(numbers)      // 创建 IntStream
+                    .parallel()                                           // 转换为并行流
+                    .boxed()                                              // 装箱为 Stream<Integer>
+                    .collect(Collectors.groupingByConcurrent(
+                            Function.identity(),                          // key 为元素本身
+                            Collectors.counting()                         // value 为计数
+                    ));
+            // 并行翻转Map
+            Map<Long, List<Integer>> inverted = frequencyMap.entrySet()
+                    .parallelStream()                                    // 并行处理条目
+                    .collect(Collectors.groupingByConcurrent(
+                            Map.Entry::getValue,                         // 按出现次数分组
+                            ConcurrentHashMap::new,                      // 指定结果容器为 ConcurrentHashMap
+                            Collectors.mapping(Map.Entry::getKey, Collectors.toList()) // 提取数字并收集为 List
+                    ));
+            if (inverted.size() == 1){
+                // 没有众数
+                return 0;
+            }
+            Map.Entry<Long, List<Integer>> next = inverted.entrySet().iterator().next();
+            List<Integer> value = next.getValue();
+            retModes.addAll(value);
+            return next.getKey();
+        }
+        else{
+            // 可以并行处理
+            Map<Integer, Long> modeCount = new HashMap<>();
+            for (int number : numbers){
+                if (modeCount.containsKey(number)){
+                    modeCount.put(number, modeCount.get(number) + 1);
+                }
+                else{
+                    modeCount.put(number, 1L);
+                }
+            }
+            // 翻转Map
+            Map<Long, List<Integer>> countMap = new TreeMap<>(Comparator.reverseOrder());
+            for (Map.Entry<Integer, Long> entry : modeCount.entrySet()){
+                Integer number = entry.getKey();
+                Long count = entry.getValue();
+                countMap.computeIfAbsent(count, count1 -> {
+                    List<Integer> numberList = new ArrayList<>();
+                    numberList.add(number);
+                    return numberList;
+                });
+            }
+            // 如果countMap只有一个值，则证明没有众数（所有值出现次数相同）
+            if (countMap.size() == 1){
+                return 0;
+            }
+            else{
+                // 我们获取第一个值
+                Map.Entry<Long, List<Integer>> firstEntry = countMap.entrySet().iterator().next();
+                Long count = firstEntry.getKey();
+                List<Integer> value = firstEntry.getValue();
+                // 加到返回值中
+                retModes.addAll(value);
+                return count;
+            }
+        }
+    }
+    // =========================== 统计函数 ===========================
 
 //    /**
 //     * 快速幂.
@@ -435,7 +809,27 @@ public class MathUtility {
 
     // 基本的加减乘除计算
 
-    //  判别方法
+    // ====================== 判别方法 ======================
+
+    /**
+     * 判断一个整数是否是奇数
+     * @param number int整数
+     * @return 如果是偶数则返回{@code true}, 否则返回{@code false}
+     * @since 2026.4.17
+     */
+    public static boolean isOdd(int number){
+        return number % 2 == 1;
+    }
+
+    /**
+     * 判断一个整数是否是偶数
+     * @param number int整数
+     * @return 如果是偶数则返回{@code true}, 否则返回{@code false}
+     * @since 2026.4.17
+     */
+    public static boolean isEven(int number){
+        return number % 2 == 0;
+    }
 //    public static boolean isOdd(int n);               // 是否是基数
 //    public static boolean isEven(int n);              // 是否是偶数
 //    public static boolean isPrime(int n);             // 是否是质数 O(√n) 试除法
@@ -443,6 +837,7 @@ public class MathUtility {
 //    public static boolean isBetween(int value, int low, int high); // 数值范围检查，包含边界
 //    public static boolean[] sieveOfEratosthenes(int n) // 返回 [0..n] 的布尔数组
 //    public static List<Integer> primeFactors(int n)    // 质因数分解
+    // ====================== 判别方法 ======================
 
     // 数学公式
 //    public static long factorial(int n);      // 阶乘（递归或迭代，注意溢出）
@@ -458,6 +853,7 @@ public class MathUtility {
     }
 
     // 非递归版本公约数, 内部使用
+    @SuppressWarnings("all")
     private static int gcd(int a, int b, Void noUse) {
         a = Math.abs(a);
         b = Math.abs(b);
