@@ -8,7 +8,11 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 /**
@@ -651,13 +655,112 @@ public class MathUtility {
 
     /**
      * 中位数统计
-     * @param numbers
-     * @param parallel
-     * @return
+     *
+     * @param numbers int数组, 代表数据样本
+     * @param parallel 是否使用并行处理, 并行处理将用于样本排序
+     * @return 中位数
      * @since 2026.4.17
      */
-    public static int median(int[] numbers, boolean parallel){
+    public static double median(int[] numbers, boolean parallel){
+        if (numbers == null || numbers.length == 0){
+            throw new IllegalArgumentException("请提供数据样本");
+        }
+        if (parallel){
+            // 并行排序
+            Arrays.parallelSort(numbers);
+        }
+        else{
+            Arrays.sort(numbers);
 
+        }
+        if (isEven(numbers.length)){
+            int afterIndex = numbers.length / 2;
+            int beforeIndex = afterIndex - 1;
+            int afterData = numbers[afterIndex];
+            int beforeData = numbers[beforeIndex];
+            return (afterData + beforeData) * 1.0 / 2;
+        }
+        else{
+            int index = numbers.length / 2;
+            return numbers[index];
+        }
+    }
+
+    /**
+     * 众数
+     * <p>数据集中出现频次最高的数值。一组数据可以有一个众数、多个众数（双众数、多众数）或没有众数（所有值出现次数相同）。</p>
+     * @param numbers int数组, 代表数据样本
+     * @param parallel 是否使用并行处理, 并行处理将用于样本处理
+     * @param retModes 参考性参数，返回所有众数
+     * @return 出现频次最高的次数
+     * @since 2026.4.17
+     */
+    public static long mode(int[] numbers, boolean parallel, List<Integer> retModes){
+        if (numbers == null || numbers.length == 0){
+            throw new IllegalArgumentException("请提供数据样本");
+        }
+        if (parallel){
+            // 并行处理统计
+            ConcurrentMap<Integer, Long> frequencyMap = Arrays.stream(numbers)      // 创建 IntStream
+                    .parallel()                                           // 转换为并行流
+                    .boxed()                                              // 装箱为 Stream<Integer>
+                    .collect(Collectors.groupingByConcurrent(
+                            Function.identity(),                          // key 为元素本身
+                            Collectors.counting()                         // value 为计数
+                    ));
+            // 并行翻转Map
+            Map<Long, List<Integer>> inverted = frequencyMap.entrySet()
+                    .parallelStream()                                    // 并行处理条目
+                    .collect(Collectors.groupingByConcurrent(
+                            Map.Entry::getValue,                         // 按出现次数分组
+                            ConcurrentHashMap::new,                      // 指定结果容器为 ConcurrentHashMap
+                            Collectors.mapping(Map.Entry::getKey, Collectors.toList()) // 提取数字并收集为 List
+                    ));
+            if (inverted.size() == 1){
+                // 没有众数
+                return 0;
+            }
+            Map.Entry<Long, List<Integer>> next = inverted.entrySet().iterator().next();
+            List<Integer> value = next.getValue();
+            retModes.addAll(value);
+            return next.getKey();
+        }
+        else{
+            // 可以并行处理
+            Map<Integer, Long> modeCount = new HashMap<>();
+            for (int number : numbers){
+                if (modeCount.containsKey(number)){
+                    modeCount.put(number, modeCount.get(number) + 1);
+                }
+                else{
+                    modeCount.put(number, 1L);
+                }
+            }
+            // 翻转Map
+            Map<Long, List<Integer>> countMap = new TreeMap<>(Comparator.reverseOrder());
+            for (Map.Entry<Integer, Long> entry : modeCount.entrySet()){
+                Integer number = entry.getKey();
+                Long count = entry.getValue();
+                countMap.computeIfAbsent(count, count1 -> {
+                    List<Integer> numberList = new ArrayList<>();
+                    numberList.add(number);
+                    return numberList;
+                });
+            }
+            // 如果countMap只有一个值，则证明没有众数（所有值出现次数相同）
+            if (countMap.size() == 1){
+                return 0;
+            }
+            else{
+                // 我们获取第一个值
+                Map.Entry<Long, List<Integer>> firstEntry = countMap.entrySet().iterator().next();
+                Long count = firstEntry.getKey();
+                List<Integer> value = firstEntry.getValue();
+                // 加到返回值中
+                retModes.addAll(value);
+                return count;
+            }
+        }
     }
     // =========================== 统计函数 ===========================
 
