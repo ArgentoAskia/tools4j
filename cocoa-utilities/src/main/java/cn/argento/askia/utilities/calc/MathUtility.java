@@ -648,6 +648,17 @@ public class MathUtility {
 //    public static double variance(double[] arr);  // 样本方差
 //    public static double stdDev(double[] arr);
 //    public static double average(int[] arr);
+
+    /**
+     * 中位数统计
+     * @param numbers
+     * @param parallel
+     * @return
+     * @since 2026.4.17
+     */
+    public static int median(int[] numbers, boolean parallel){
+
+    }
     // =========================== 统计函数 ===========================
 
 //    /**
@@ -695,7 +706,27 @@ public class MathUtility {
 
     // 基本的加减乘除计算
 
-    //  判别方法
+    // ====================== 判别方法 ======================
+
+    /**
+     * 判断一个整数是否是奇数
+     * @param number int整数
+     * @return 如果是偶数则返回{@code true}, 否则返回{@code false}
+     * @since 2026.4.17
+     */
+    public static boolean isOdd(int number){
+        return number % 2 == 1;
+    }
+
+    /**
+     * 判断一个整数是否是偶数
+     * @param number int整数
+     * @return 如果是偶数则返回{@code true}, 否则返回{@code false}
+     * @since 2026.4.17
+     */
+    public static boolean isEven(int number){
+        return number % 2 == 0;
+    }
 //    public static boolean isOdd(int n);               // 是否是基数
 //    public static boolean isEven(int n);              // 是否是偶数
 //    public static boolean isPrime(int n);             // 是否是质数 O(√n) 试除法
@@ -703,6 +734,7 @@ public class MathUtility {
 //    public static boolean isBetween(int value, int low, int high); // 数值范围检查，包含边界
 //    public static boolean[] sieveOfEratosthenes(int n) // 返回 [0..n] 的布尔数组
 //    public static List<Integer> primeFactors(int n)    // 质因数分解
+    // ====================== 判别方法 ======================
 
     // 数学公式
 //    public static long factorial(int n);      // 阶乘（递归或迭代，注意溢出）
@@ -718,6 +750,7 @@ public class MathUtility {
     }
 
     // 非递归版本公约数, 内部使用
+    @SuppressWarnings("all")
     private static int gcd(int a, int b, Void noUse) {
         a = Math.abs(a);
         b = Math.abs(b);
