@@ -11,6 +11,7 @@
         <module name="cocoa-language-extends" />
         <module name="cocoa-command-tools-providers" />
         <module name="cocoa-network" />
+        <module name="cocoa-cache" />
         <module name="cocoa-utilities" />
         <module name="cocoa-design-patterns" />
         <module name="cocoa-concurrent" />
