@@ -286,7 +286,7 @@ public class FormatUtility {
         return camelCaseStr.replaceAll("(?<=[a-z])(?=[A-Z])", replacement);
     }
 
-    //                    ============== 时间格式化 ===========
+    // =============================== 时间格式化 ===============================
     /**
      * 格式化输出{@link LocalDateTime}本地日期时间对象
      *
@@ -309,7 +309,7 @@ public class FormatUtility {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         return simpleDateFormat.format(date);
     }
-    //                    ============== 时间格式化 ===========
+    // =============================== 时间格式化 ===============================
 
 
 
