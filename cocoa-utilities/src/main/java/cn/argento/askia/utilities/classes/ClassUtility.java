@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * 和Class(类扫描)、ByteCode(字节码处理)、ClassLoader(类加载)相关的工具类.
+ * 和Class(类扫描)、ByteCode(字节码分析处理)、ClassLoader(类加载)相关的工具类.
  *
  * <p>提供基础的包扫面能力
  *
@@ -36,10 +36,12 @@ public class ClassUtility {
     }
 
     /**
-     * 获取当前类文件所在的目录
-     * @param cl
-     * @return
-     * @throws MalformedURLException
+     * 获取当前类文件所在的目录.
+     * <p>此方法要求提供的{@link Class}对象不能是java.*和jdk.*下的, 或者说所有使用{@code BootStrap Class Loader}加载的类都不能使用此方法进行获取,原因是这些类的{@link Class#getClassLoader()}会返回{@code null}</p>
+     * <p>此方法支持Jar包获取</p>
+     * @param cl 非{@code BootStrap Class Loader}加载的类
+     * @return 该类所在的位置(包含包名), 如果提供的类由{@code BootStrap Class Loader}加载, 则会返回当前运行的JDK的根目录
+     * @throws MalformedURLException 此异常是URL构建时抛出
      */
     public static URL getCurrentClassesPath(Class<?> cl) throws MalformedURLException {
         ClassLoader classLoader = cl.getClassLoader();
@@ -59,10 +61,14 @@ public class ClassUtility {
     }
 
     /**
-     * 获取当前类所在的根目录（不算Package）
-     * @param cl
-     * @return
-     * @throws MalformedURLException
+     * 获取当前类所在的根目录, 即不算Package的路径.
+     * <p>此方法同时支持{@code jar}文件的类路径根目录获取</p>
+     * <p>此方法依赖 {@link ClassUtility#getCurrentClassesPath(Class)}</p>
+     *
+     * @param cl 非{@code BootStrap Class Loader}加载的类
+     * @return 该类所在的位置(不包含包名), 如果提供的类由{@code BootStrap Class Loader}加载, 则会返回当前运行的JDK的根目录
+     * @throws MalformedURLException 此异常是getCurrentClassesPath()构建URL时抛出
+     * @see ClassUtility#getCurrentClassesPath(Class)
      */
     public static String getCurrentClassesPathRoot(Class<?> cl) throws MalformedURLException {
         URL currentClassesPath = getCurrentClassesPath(cl);
@@ -98,7 +104,7 @@ public class ClassUtility {
      * 此方法会扫描{@code class}文件所在的{@code classpath}下的所有类, 兼容{@code maven}和{@code jar}文件
      * @param cl class对象
      * @return  {@code class}所在的{@code classpath}下的所有类(包括所有子包！)
-     * @throws MalformedURLException
+     * @throws MalformedURLException 此异常是getCurrentClassesPath()构建URL时抛出
      */
     public static Class<?>[] scanClassesFromClass(Class<?> cl) throws MalformedURLException {
         String scanPath = getCurrentClassesPathRoot(cl);
