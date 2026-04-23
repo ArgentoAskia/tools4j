@@ -54,6 +54,15 @@ public class StringAlgorithmsUtility {
         }
     }
 
+    /**
+     * BF模式匹配算法.
+     *
+     * <p>也称暴力算法, 用于匹配模式串出现在文本串中的位置</p>
+     * <p>此为邓俊辉《数据结构C++描述》中的第一个版本</p>
+     * @param pattern 模式串
+     * @param text 文本串
+     * @return 出现的位置
+     */
     public static int BF1(char[] pattern, char[] text){
         int patternLength = pattern.length, i = 0;
         int textLength = text.length, j = 0;
@@ -75,6 +84,15 @@ public class StringAlgorithmsUtility {
         return j - i;
     }
 
+    /**
+     * BF模式匹配算法.
+     *
+     * <p>也称暴力算法, 用于匹配模式串出现在文本串中的位置</p>
+     * <p>此为邓俊辉《数据结构C++描述》中的第二个版本</p>
+     * @param pattern 模式串
+     * @param text 文本串
+     * @return 出现的位置
+     */
     public static int BF2(char[] pattern, char[] text){
         int patternLength = pattern.length, i = 0;
         int textLength = text.length, j = 0;
@@ -91,6 +109,14 @@ public class StringAlgorithmsUtility {
         return j;
     }
 
+    /**
+     * KMP模式匹配算法.
+     *
+     * <p>代码来自邓俊辉《数据结构C++描述》，有部分修改</p>
+     * @param pattern 模式串
+     * @param text 文本串
+     * @return 出现的位置
+     */
     public static int KMP(char[] pattern, char[] text){
         // 创建 next 表
         int[] nextTable = buildNext(pattern);
@@ -139,9 +165,9 @@ public class StringAlgorithmsUtility {
             if (t < 0 || pattern[t] == pattern[j]){
                 j++;
                 t++;
-                next[j] = t;
+//                next[j] = t;
                 // 优化...
-//                next[j] = (pattern[t] != pattern[j]? t : next[t]);
+                next[j] = (pattern[t] != pattern[j]? t : next[t]);
             }
             // 出现失配
             // 则需要回退t
@@ -150,85 +176,5 @@ public class StringAlgorithmsUtility {
             }
         }
         return next;
-    }
-
-
-    /**
-     * 找出两个有序的字符串数组中的共同部分，第一个字符串数组有而第二个字符串数组没有的以及第一个字符串数组有而第二个字符串数组没有的
-     *
-     * Linux comm指令实现, 对比两个有序的行字符串.
-     *
-     * // find out what means AST?
-     *
-     * @param str1Array
-     * @param str2Array
-     * @param result1
-     * @param result2
-     * @param commonResult
-     */
-    public static boolean comm(final String[] str1Array, final String[] str2Array,
-                            String[] result1, String[] result2, String[] commonResult){
-        // 判断是否有序，无序返回false;
-        int strArray1Pointer = 0;
-        int strArray2Pointer = 0;
-        Set<String> commonResultList = new HashSet<>();
-        Set<String> str1ArrayAlongList = new HashSet<>();
-        Set<String> str2ArrayAlongList = new HashSet<>();
-        while (strArray1Pointer < str1Array.length && strArray2Pointer < str2Array.length){
-            if (str1Array[strArray1Pointer].equals(str2Array[strArray2Pointer])){
-                commonResultList.add(str1Array[strArray1Pointer]);
-                // 跳过相同的部分
-                // strArray1Pointer + 1可能会引发ArrayIndexOfOutBoundException，所以需要判断
-                if (strArray1Pointer + 1 < str1Array.length){
-                    while(str1Array[strArray1Pointer].equals(str1Array[strArray1Pointer + 1])){
-                        strArray1Pointer++;
-                    }
-                }
-                if (strArray2Pointer + 1 < str2Array.length){
-                    while(str2Array[strArray2Pointer].equals(str2Array[strArray2Pointer + 1])){
-                        strArray2Pointer++;
-                    }
-                }
-                strArray2Pointer++;
-                strArray1Pointer++;
-            }
-            else if (str1Array[strArray1Pointer].compareTo(str2Array[strArray2Pointer]) < 0){
-                str1ArrayAlongList.add(str1Array[strArray1Pointer]);
-                strArray1Pointer++;
-            }
-            else if (str1Array[strArray1Pointer].compareTo(str2Array[strArray2Pointer]) > 0){
-                str2ArrayAlongList.add(str2Array[strArray2Pointer]);
-                strArray2Pointer++;
-            }
-        }
-        // 下面的if满足其一
-        if (strArray1Pointer < str1Array.length){
-            str1ArrayAlongList.addAll(Arrays.asList(str1Array).subList(strArray1Pointer, str1Array.length));
-        }
-        if (strArray2Pointer < str2Array.length){
-            str2ArrayAlongList.addAll(Arrays.asList(str2Array).subList(strArray2Pointer, str2Array.length));
-        }
-        commonResultList.toArray(commonResult);
-        str2ArrayAlongList.toArray(result2);
-        str1ArrayAlongList.toArray(result1);
-        return true;
-    }
-
-    private static List<String> concat(List<String> list1, List<String> list2, String concatStr){
-        return IntStream.range(0, Math.max(list1.size(), list2.size()))
-                .mapToObj(i -> {
-                    String s1 = i < list1.size() ? list1.get(i) : "";
-                    String s2 = i < list2.size() ? list2.get(i) : "";
-                    return s1 + concatStr +s2;
-                })
-                .collect(Collectors.toList());
-    }
-
-    public static List<String> concat(String str1, String separator1, String str2, String separator2, String concatStr){
-        String[] splitStr1 = str1.split(separator1);
-        String[] splitStr2 = str2.split(separator2);
-        ArrayList<String> stringsList1 = new ArrayList<>(Arrays.asList(splitStr1));
-        ArrayList<String> stringsList2 = new ArrayList<>(Arrays.asList(splitStr2));
-        return concat(stringsList1, stringsList2, concatStr);
     }
 }
