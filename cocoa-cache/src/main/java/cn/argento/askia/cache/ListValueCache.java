@@ -1,7 +1,6 @@
 package cn.argento.askia.cache;
 
 import cn.argento.askia.cache.support.CollectionValueSupport;
-import org.checkerframework.checker.units.qual.C;
 
 import java.util.*;
 import java.util.function.Function;
@@ -10,12 +9,14 @@ import java.util.function.Supplier;
 
 public interface ListValueCache<K, V> extends Cache<K, List<V>>, CollectionValueSupport<K, V, List<V>> {
 
+    // 大小
     @Override
     default long sizeOf(K key){
         final List<V> vs = get(key);
         return vs != null? vs.size():-1;
     }
 
+    // 增删改查
     @Override
     default boolean addValue(K key, V collectionValue){
         if (containsKey(key)){
@@ -26,7 +27,7 @@ public interface ListValueCache<K, V> extends Cache<K, List<V>>, CollectionValue
             return false;
         }
     }
-
+    // 删除
     @Override
     default V deleteValue(K key, int index){
         if (containsKey(key)){
@@ -190,7 +191,7 @@ public interface ListValueCache<K, V> extends Cache<K, List<V>>, CollectionValue
     default boolean containsAll(K key, List<V> coll){
         if (containsKey(key)){
             final List<V> list = get(key);
-            return list.containsAll(coll);
+            return new HashSet<>(list).containsAll(coll);
         }
         return false;
     }
