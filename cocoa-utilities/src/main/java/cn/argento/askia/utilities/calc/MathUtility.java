@@ -830,11 +830,21 @@ public class MathUtility {
     public static boolean isEven(int number){
         return number % 2 == 0;
     }
-//    public static boolean isOdd(int n);               // 是否是基数
-//    public static boolean isEven(int n);              // 是否是偶数
+
 //    public static boolean isPrime(int n);             // 是否是质数 O(√n) 试除法
 //    public static boolean isPowerOfTwo(int n);        // 是否是2的幂次
-//    public static boolean isBetween(int value, int low, int high); // 数值范围检查，包含边界
+
+    /**
+     * 包含边界数值范围检查.
+     * @param value 值
+     * @param low 最小值
+     * @param high 最大值边界
+     * @return 如果{@code value} 位于 {@code low}和 {@code high}之间则返回{@code true}, 否则返回{@code false}
+     * @since 2026.4.23
+     */
+    public static boolean isBetween(int value, int low, int high){
+        return value >= low && value <= high;
+    }
 //    public static boolean[] sieveOfEratosthenes(int n) // 返回 [0..n] 的布尔数组
 //    public static List<Integer> primeFactors(int n)    // 质因数分解
     // ====================== 判别方法 ======================
