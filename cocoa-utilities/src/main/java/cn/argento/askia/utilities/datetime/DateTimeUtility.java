@@ -72,8 +72,21 @@ public class DateTimeUtility {
         throw new IllegalAccessError("DateTimeUtility为工具类, 无法创建该类的对象");
     }
 
+    // ========================== 转换方法 ==========================
     // localdatetime本身不好含时区信息，所以需要先转为包含时区信息的ZonedDateTime
     // 不建议转为毫秒再到Date，会丢失nano time
+
+    /**
+     * 转换方法, 将{@link  LocalDateTime}转为{@linkplain Date java.util.Date}.
+     *
+     * <p>转换时的困难点在于如何处理Date的时区, 因此指定参数二需要一个{@link ZoneId}</p>
+     *
+     * <p>此方法先将{@link LocalDateTime}转为{@link ZonedDateTime}, 然后将{@link ZonedDateTime}转为{@link Instant}</p>
+     *
+     * @param localDateTime 本地时间对象, 可接受{@code null}
+     * @param zoneId zoneId, 如果提供{@code null}则使用{@link ZoneId#systemDefault()}
+     * @return Date对象, 如果{@code localDateTime}为{@code null}时, 则返回{@code null}, 否则返回转换后的{@linkplain Date java.util.Date}对象
+     */
     public static Date localDateTimeToDate(LocalDateTime localDateTime, ZoneId zoneId){
         if (localDateTime == null){
             return null;
@@ -86,16 +99,37 @@ public class DateTimeUtility {
         return Date.from(instant);
     }
 
+    /**
+     * 转换方法, 将{@link  LocalDateTime}转为{@linkplain Date java.util.Date}.
+     * <p>此为{@link DateTimeUtility#localDateTimeToDate(LocalDateTime, ZoneId)}的默认版本, 使用默认的{@link ZoneId#systemDefault()}时区</p>
+     * @param localDateTime 本地时间对象
+     * @return Date对象
+     */
     public static Date localDateTimeToDate(LocalDateTime localDateTime){
         return localDateTimeToDate(localDateTime, ZoneId.systemDefault());
     }
 
+    /**
+     * 转换方法, 将{@linkplain  Date java.util.Date}转为{@link  ZonedDateTime}.
+     * <p>该方法先将 {@linkplain  Date java.util.Date} 转为 {@link Instant}, 然后通过补充{@link ZoneId}的方式转为{@link ZonedDateTime}</p>
+     * @param date java.util.Date对象, 可接受{@code null}
+     * @param zoneId ZoneId, 不能提供{@code null}
+     * @return ZonedDateTime, 如果{@code date}参数为{@code null},则返回{@code null}, 否则返回转换结果
+     */
     public static ZonedDateTime dateToZoneDateTime(Date date, ZoneId zoneId){
+        if (date == null){
+            return null;
+        }
         Instant instant = date.toInstant();
-        ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(instant, zoneId);
-        return zonedDateTime;
+        return ZonedDateTime.ofInstant(instant, zoneId);
     }
 
+    /**
+     * 转换方法, 将{@linkplain  Date java.util.Date}转为{@link  LocalDateTime}.
+     * <p>该方法先将 {@linkplain  Date java.util.Date} 转为 {@link Instant}, 然后将{@link Instant}转为{@link LocalDateTime}</p>
+     * @param date java.util.Date对象, 可接受{@code null}
+     * @return LocalDateTime, 如果{@code date}参数为{@code null},则返回{@code null}, 否则返回转换结果
+     */
     public static LocalDateTime dateToLocalDateTime(Date date){
         if (date == null){
             return null;
@@ -104,10 +138,21 @@ public class DateTimeUtility {
         return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
     }
 
+    /**
+     * 转换方法, 将{@link  LocalDateTime}转为{@link Timestamp}.
+     * @param dateTime {@link LocalDateTime}对象, 接受{@code null}
+     * @return Timestamp, 如果{@code date}参数为{@code null},则返回{@code null}, 否则返回转换结果
+     */
     public static Timestamp localDateTimeToTimestamp(LocalDateTime dateTime){
         return dateTime != null? Timestamp.valueOf(dateTime):null;
     }
 
+    /**
+     * 转换方法, 将{@link  LocalDateTime}转为{@link Timestamp}.
+     * @param dateTime dateTime {@link LocalDateTime}对象, 接受{@code null}
+     * @param zoneId 时区，提供{@code null}时使用{@link ZoneId#systemDefault()}
+     * @return Timestamp, 如果{@code date}参数为{@code null},则返回{@code null}, 否则返回转换结果
+     */
     public static Timestamp localDateTimeToTimestamp(LocalDateTime dateTime, ZoneId zoneId){
         if (dateTime == null){
             return null;
@@ -162,11 +207,13 @@ public class DateTimeUtility {
         }
         return Time.valueOf(localTime);
     }
+    // ========================== 转换方法 ==========================
 
     private static Class<?>[] dateTimeClasses = new Class[]{
             LocalDateTime.class, ZonedDateTime.class,
             OffsetDateTime.class, Date.class, Calendar.class, Timestamp.class, Instant.class
     };
+
 
     // ======================= 计算 API  ==============================
     /**
