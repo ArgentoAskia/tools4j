@@ -5,9 +5,8 @@ import cn.argento.askia.annotations.Utility;
 import cn.argento.askia.utilities.lang.StringUtility;
 
 import java.beans.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.io.Serializable;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -26,12 +25,32 @@ public final class BeanUtility {
         throw new IllegalAccessError("BeanUtility为工具类, 无法创建该类的对象");
     }
     // 获取JavaBean property的值！
+
+    /**
+     * 获取JavaBean中某一个Property的值.
+     * <p>该方法是 {@code getProperty()}的默认方法, 并提供泛型类型转换的能力</p>
+     * @param bean JavaBean对象
+     * @param propertyName 属性名称, 一般是一个字段名
+     * @param valueClass 属性类型
+     * @return 字段的值
+     * @param <V> 属性类型
+     */
     public static <V> V getProperty(Object bean, String propertyName, Class<V> valueClass){
         final Object propertyValue = getProperty(bean, propertyName);
         return valueClass.cast(propertyValue);
     }
 
     // 获取JavaBean的值，
+
+    /**
+     * 获取JavaBean中某一个Property的值.
+     * <p>该方法遵循先使用{@link Introspector}内省JavaBean获取属性, 一旦失败则考虑使用{@link Class#getField(String)}和{@link Class#getDeclaredField(String)}获取, 如果还是失败则证明属性可能是一个非字段类型的属性, 只有相应的{@code getXXX}方法, 并且大概率非{@code public}, 我们尝试直接通过方法获取.</p>
+     *
+     * @param bean JavaBean对象
+     * @param propertyName 属性名称, 一般是一个字段名
+     * @param args 获取该字段需要的相关参数
+     * @return 字段的值
+     */
     public static Object getProperty(Object bean, String propertyName, Object... args){
         try {
             final BeanInfo beanInfo = Introspector.getBeanInfo(bean.getClass());
@@ -56,9 +75,19 @@ public final class BeanUtility {
                     }
                     return declaredField.get(bean);
                 } catch (NoSuchFieldException suchFieldException) {
-                    // FIXME: getXXX()
-                    // 可能这个属性没有实际的属性
-                    // 我们还有一种方法获取, 即想办法获取他的getXXX()方法
+                    try {
+                        // 可能这个属性没有实际的属性
+                        // 我们还有一种方法获取, 即想办法获取他的getXXX()方法
+                        // 但这个方法大概率是非公开的, 因为一旦公开，则在内省的时候就已经获取了
+                        String s = StringUtility.upperFirstLetter(propertyName);
+                        Method declaredMethod = bean.getClass().getDeclaredMethod("get" + s);
+                        if (!declaredMethod.isAccessible()) {
+                            declaredMethod.setAccessible(true);
+                        }
+                        return declaredMethod.invoke(bean, args);
+                    }catch (Exception exception){
+                        exception.printStackTrace();
+                    }
                     return null;
                 } catch (IllegalAccessException illegalAccessException) {
                     illegalAccessException.printStackTrace();
@@ -75,17 +104,54 @@ public final class BeanUtility {
         return null;
     }
 
-    // todo how to judge if it's JavaBean
-    public static boolean isJavaBean(Class<?> beanClass, boolean checkEvents){
-        try {
-            final BeanInfo beanInfo = Introspector.getBeanInfo(beanClass);
-        } catch (IntrospectionException e) {
-            e.printStackTrace();
-            // judge itself
+
+    /**
+     * 判断一个类是否符合基本 JavaBean 规范。
+     * @param clazz 待检查的类
+     * @return true 如果符合基本条件（无参构造 + 属性遵循 getter/setter 模式）
+     */
+    public static boolean isBasicJavaBean(Class<?> clazz) {
+        // 1. 类必须是 public 的
+        if (!Modifier.isPublic(clazz.getModifiers())) {
+            return false;
         }
 
+        // 2. 必须有一个 public 无参构造器
+        boolean hasNoArgConstructor = false;
+        for (Constructor<?> ctor : clazz.getConstructors()) {
+            if (ctor.getParameterCount() == 0) {
+                hasNoArgConstructor = true;
+                break;
+            }
+        }
+        if (!hasNoArgConstructor) {
+            return false;
+        }
 
-        return false;
+        // 3. 使用内省 API 获取所有属性描述符
+        try {
+            PropertyDescriptor[] props = Introspector.getBeanInfo(clazz).getPropertyDescriptors();
+            // 至少应该有一个属性（排除 class 属性）
+            boolean hasProperty = false;
+            for (PropertyDescriptor pd : props) {
+                if ("class".equals(pd.getName())) continue;
+                hasProperty = true;
+                // 可选：检查每个属性是否有对应的读/写方法
+                // （PropertyDescriptor 已经保证了读/写方法符合命名规范）
+                // 如果要求严格，可以进一步检查 getter/ setter 是否为 public
+            }
+            // 如果没有除 class 外的任何属性，也算作空 JavaBean（比如仅用于标记）
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * 严格判断是否是完全符合规范的 JavaBean（包括实现 Serializable）。
+     */
+    public static boolean isFullJavaBean(Class<?> clazz) {
+        return isBasicJavaBean(clazz) && Serializable.class.isAssignableFrom(clazz);
     }
 
 
@@ -252,6 +318,11 @@ public final class BeanUtility {
         }
     }
 
+    /**
+     * 获取一个JavaBean的所有Setter.
+     * @param obj JavaBean
+     * @return Method对象, 所有Setter方法
+     */
     public static Method[] getJavaBeanAllSetters(Object obj){
         List<Method> methodList = new ArrayList<>();
         try {
