@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 /**
- * URL、URI增强
+ * URL、URI增强、资源加载、资源读取(文本, 二进制等各类资源)等
  */
 
 @Utility("资源工具类")
@@ -73,6 +73,10 @@ public class ResourceUtility {
         return FileUtility.readAllLines(Paths.get(parent, domain.replace('.', File.separatorChar), resourceName));
     }
 
+    /**
+     * 获取当前ClassPath
+     * @return classpath URL
+     */
     public static URL getCurrentClasspath(){
         return ResourceUtility.class.getProtectionDomain().getCodeSource().getLocation();
     }
