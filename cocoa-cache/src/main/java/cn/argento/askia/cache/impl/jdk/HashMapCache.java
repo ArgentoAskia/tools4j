@@ -86,7 +86,7 @@ public class HashMapCache<K, V> extends AbstractCacheImpl implements Cache<K, V>
     @Override
     public void close() {
         // 删除所有的成员
-        if (hashMap.size() > 0){
+        if (!hashMap.isEmpty()){
             // 有成员
             clear();        // 清除所有成员
         }
