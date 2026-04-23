@@ -591,11 +591,11 @@ public final class ArrayUtility {
      *     <li></li>
      * </ol>
      *
-     * @param src
-     * @param srcOffset
-     * @param desc
-     * @param descOffset
-     * @param length
+     * @param src src
+     * @param srcOffset src起始偏移
+     * @param desc desc
+     * @param descOffset desc起始偏移
+     * @param length 复制长度
      * @apiNote 原版 {@link System#arraycopy(Object, int, Object, int, int)} 的复制有如下的注意点：<ol>
      *     <li>若src和dest参数指向同一数组对象，则执行的复制操作将按以下方式处理：首先将srcPos至srcPos+length-1位置的组件复制到长度为components的临时数组，随后将该临时数组的内容复制至目标数组的destPos至destPos+length-1位置</li>
      *     <li>若dest为null值，则抛出NullPointerException异常。</li>
