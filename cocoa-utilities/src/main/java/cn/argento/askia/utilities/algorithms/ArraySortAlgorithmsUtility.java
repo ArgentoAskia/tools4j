@@ -1,6 +1,7 @@
 package cn.argento.askia.utilities.algorithms;
 
 import cn.argento.askia.annotations.Utility;
+import cn.argento.askia.utilities.collection.ArrayUtility;
 
 import java.util.Comparator;
 import java.util.Objects;
@@ -688,9 +689,70 @@ public class ArraySortAlgorithmsUtility {
     public static <T extends Comparable<? super T>> void quick(T[] target, int lo, int hi, Order orderBy){
 
     }
+
+    /**
+     * 原地归并函数.
+     *
+     * <p>算法来源自《算法4》,该方法先将所有元素复制到aux[]中, 然后再归并回a[]中。</p>
+     * <p>方法在归并时(第二个for循环)进行了4个条件判断, 左半边用尽(取右半边的元素)、右半边用尽(取左半边的元素)、右半边的当前元素小于左半边的当前元素(取右半边的元素)以及右半边的当前元素大于左半边的当前元素(取左半边的元素)</p>
+     * @param target target
+     * @param aux aux额外扩展空间
+     * @param lo lo，下界
+     * @param mid mid，中间，也就是切分点
+     * @param hi hi 上届
+     * @param orderBy 按照什么顺序进行排序
+     * @param <T> 实现了Comparable接口的类型
+     */
+    private static <T extends Comparable<? super T>> void merge0(T[] target, T[] aux, int lo, int mid, int hi, Order orderBy){
+        int i = lo, j = mid + 1;
+
+        // 将a[lo...hi]复制到aux[lo...hi]
+        if (hi + 1 - lo >= 0) System.arraycopy(target, lo, aux, lo, hi + 1 - lo);
+        for (int k = lo; k <= hi; k++) {
+            if (i > mid)        target[k] = aux[j++];
+            else if (j > hi)        target[k] = aux[i++];
+            else if (ordered(aux[j], aux[i], orderBy)) target[k] = aux[j++];
+            else  target[k] = aux[i++];
+        }
+    }
+
+    /**
+     * 自顶向下的归并排序.
+     * @param target
+     * @param aux
+     * @param lo
+     * @param hi
+     * @param orderBy
+     * @param <T>
+     */
+    private static <T extends Comparable<? super T>> void merge1(T[] target, T[] aux, int lo, int hi, Order orderBy){
+        if (hi <= lo) return;
+        // 取中间
+        int mid = lo + (hi - lo) / 2;
+        merge1(target, aux, lo, mid, orderBy);            // 归并左半边排序
+        merge1(target, aux, mid + 1, hi, orderBy);     // 归并右半边排序
+        merge0(target, aux, lo, mid, hi, orderBy);  // 归并结果
+    }
+
+    /**
+     * 自底向上归并排序
+     * @param target
+     * @param aux
+     * @param lo
+     * @param hi
+     * @param orderBy
+     * @param <T>
+     */
+    private static <T extends Comparable<? super T>> void merge2(T[] target, T[] aux, int lo, int hi, Order orderBy){
+
+    }
     // 归并排序
     public static <T extends Comparable<? super T>> void merge(T[] target, int lo, int hi, Order orderBy){
-
+        @SuppressWarnings("unchecked")
+        Class<T> componentType = (Class<T>) target.getClass().getComponentType();
+        T[] aux = ArrayUtility.newArrayInstance(componentType, target.length);
+        // 归并排序
+        merge1(target, aux, lo, hi, orderBy);
     }
     // 堆排序
     public static <T extends Comparable<? super T>> void heap(T[] target, int lo, int hi, Order orderBy){
