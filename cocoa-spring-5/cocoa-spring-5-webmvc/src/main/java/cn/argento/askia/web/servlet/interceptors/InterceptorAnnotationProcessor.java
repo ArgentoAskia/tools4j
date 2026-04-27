@@ -25,6 +25,17 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * {@code @Interceptor} 的注解处理器
+ *
+ * 客户端代码调用其中的 {@code process} 方法进行处理注解
+ *
+ * @author Askia
+ * @since 2026.4.27
+ * @see #process(Class, InterceptorRegistry)
+ * @see #process(InterceptorRegistry, HandlerInterceptor...)
+ * @see #process(Class, InterceptorRegistry, ApplicationContext)
+ */
 @Slf4j
 public class InterceptorAnnotationProcessor {
 
@@ -58,6 +69,14 @@ public class InterceptorAnnotationProcessor {
     // 5. 后置处理阶段(处理上下文，返回值等等)
     // 6. 完成处理阶段(日志留档)
 
+    /**
+     * 注解处理函数.
+     *
+     * <p>适用于 {@link HandlerInterceptor} 的类上标记了 {@link Interceptor} 然后提供默认构造器的注册. </p>
+     * <p>可和 {@link #process(Class, InterceptorRegistry, ApplicationContext)} 混用但是需要注意 {@link #process(Class, InterceptorRegistry, ApplicationContext)} 的条件</p>
+     * @param baseClass 扫描基类
+     * @param registry 注册器
+     */
     public static void process(Class<?> baseClass, InterceptorRegistry registry){
         if (log.isDebugEnabled()) {
             log.debug(".......... --------------------------------- 拦截器(基准类扫描方式)注册报告 ---------------------------------");
@@ -179,6 +198,14 @@ public class InterceptorAnnotationProcessor {
         }
     }
 
+    /**
+     * 注解处理函数.
+     * <p>适用于 {@link HandlerInterceptor} 的构造器上标记了 {@link Interceptor} 并携带参数的注册. </p>
+     * <p>可和 {@link #process(Class, InterceptorRegistry)} 混用但是需要注意 {@link #process(Class, InterceptorRegistry)} 的条件</p>
+     * @param baseClass 扫描基类
+     * @param registry 注册器
+     * @param context IoC容器上下文
+     */
     public static void process(Class<?> baseClass, InterceptorRegistry registry, ApplicationContext context) {
         if (log.isDebugEnabled()) {
             log.debug(".......... --------------------------------- 拦截器(基准类扫描方式 + 参数构造器)注册报告 ---------------------------------");
