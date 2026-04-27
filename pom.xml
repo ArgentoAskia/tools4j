@@ -33,6 +33,7 @@
         <module>cocoa-gui</module>
         <module>cocoa-network</module>
         <module>cocoa-cache</module>
+        <module>cocoa-spring-5</module>
     </modules>
 
     <!--
