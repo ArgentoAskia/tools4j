@@ -22,6 +22,10 @@
             <groupId>cn.argento.askia</groupId>
             <artifactId>cocoa-utilities</artifactId>
         </dependency>
+        <dependency>
+            <groupId>cn.argento.askia</groupId>
+            <artifactId>cocoa-core</artifactId>
+        </dependency>
     </dependencies>
 
 
