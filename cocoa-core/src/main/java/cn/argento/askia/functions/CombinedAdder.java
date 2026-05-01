@@ -5,4 +5,5 @@ import java.math.BigDecimal;
 
 @FunctionalInterface
 public interface CombinedAdder<T, C> extends Adder<T, C, T>{
+
 }
