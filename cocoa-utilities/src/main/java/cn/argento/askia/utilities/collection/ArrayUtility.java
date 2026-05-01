@@ -73,6 +73,7 @@ public final class ArrayUtility {
      * @return 一个整数，代表数组的维度
      * @throws IllegalArgumentException 如果传递的参数不是一个数组时则抛出这个异常
      * @since 1.0.1
+     * @see #getDimensionRecursion(Object)
      */
     @SuppressWarnings("StatementWithEmptyBody")
     public static int getDimension(Object arrayObj){
@@ -81,6 +82,35 @@ public final class ArrayUtility {
         int i = 0;
         while (name.charAt(i++) == '[');
         return --i;
+    }
+
+    /**
+     * 获取数组的维度(递归数据类型获取).
+     *
+     * <p>此方法能更加精准地获取数组维度, 使用递归的方式而非判别类名</p>
+     *
+     * @param arrayObj 数组对象
+     * @return 一个整数，代表数组的维度
+     * @throws IllegalArgumentException 如果传递的参数不是一个数组时则抛出这个异常
+     * @since 2026.4.28
+     * @see #getDimension(Object)
+     */
+    public static int getDimensionRecursion(Object arrayObj){
+        checkObjectIsArray(arrayObj);
+        int dimension = 0;
+        Class<?> objClass = arrayObj.getClass();;
+        do{
+            if (objClass.isArray()){
+                dimension++;
+                // 获取组件类型
+                objClass = objClass.getComponentType();
+            }
+            else{
+                // 终止循环
+                objClass = null;
+            }
+        }while (objClass != null);
+        return dimension;
     }
 
     /**
@@ -1202,8 +1232,7 @@ public final class ArrayUtility {
     public static <T1, T2> T2[] computeCopy(T1[] source, Function<T1, T2> computeFunction, Class<T2> t2Class){
         final T2[] t2Array = (T2[]) newArray(t2Class, source.length);
         int index = 0;
-        for (T1 member :
-                source) {
+        for (T1 member : source) {
             final T2 applyResult = computeFunction.apply(member);
             t2Array[index++] = applyResult;
         }
