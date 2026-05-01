@@ -10,7 +10,7 @@
          <li>{@code cn.argento.askia.utilities.collection.*} 数据结构相关工具类，包含集合框架JCF, 数组工具类等</li>
          <li>{@code cn.argento.askia.utilities.database.*} 数据库相关工具类, 包含数据库元素据, Datasource, SQLBuilder等工具类</li>
          <li>{@code cn.argento.askia.utilities.datetime.*} 日期时间相关工具类, 包含时间对象创建、计算、判别、表达和转换，注意此包不包含任何时间格式化相关的内容, 如需格式化请查看text包</li>
-         <li>{@code cn.argento.askia.utilities.files.*} 各类文件的相关处理工具类，比如Json, pdf等, 以及文件信息相关的工具类, 比如File, Files</li>
+         <li>{@code cn.argento.askia.utilities.files.*} 各类文件(io包、nio包)的相关处理工具类，比如Json, pdf等, 以及文件,路径等相关信息相关的工具类, 比如File, Files</li>
          <li>{@code cn.argento.askia.utilities.functional.*} 函数式编程相关的工具类, 包含操作流Stream, MapReduce封装, 函数式接口调用, 回调等相关工具类</li>
          <li>{@code cn.argento.askia.utilities.generate.*} 各类生成式内容的工具类, 比如UUID, CDK, 随机内容(文本, 数值)等等</li>
          <li>{@code cn.argento.askia.utilities.graphic.*} 图形动画相关的工具类, 包括Java2D的封装, 动画等等</li>
