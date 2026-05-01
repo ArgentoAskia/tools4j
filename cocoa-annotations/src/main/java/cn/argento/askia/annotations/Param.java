@@ -1,7 +1,6 @@
 package cn.argento.askia.annotations;
 
 import cn.argento.askia.supports.LifeCyclePhase;
-import cn.argento.askia.supports.Phase;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -26,5 +25,12 @@ public @interface Param {
      * 获取阶段结束的返回值
      * @return 阶段结束的返回值
      */
-    Phase phaseRet() default Phase.LAST_PHASE;
+    LifeCyclePhase phaseRet() default LifeCyclePhase.LAST_PHASE;
+
+
+    /**
+     * 参数是否一定存在
+     * @return
+     */
+    boolean must() default true;
 }
