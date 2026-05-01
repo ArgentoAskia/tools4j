@@ -15,6 +15,25 @@ public class AssertionUtility {
         throw new IllegalAccessError("AssertionUtility为工具类, 无法创建该类的对象");
     }
 
+    public static void requirePositiveNumber(int number){
+        requirePositiveNumber(number, "需要提供大于0的正整数");
+    }
+
+    public static void requirePositiveNumber(int number, String message){
+        if (number <= 0){
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    public static void requireNonNegativeNumber(int number){
+        requireNonNegativeNumber(number, "需要提供大于等于0的整数");
+    }
+    public static void requireNonNegativeNumber(int number, String message){
+        if (number < 0){
+            throw new IllegalArgumentException(message);
+        }
+    }
+
     public static <T> void requireNotNull(T t) {
         Objects.requireNonNull(t);
     }
@@ -52,6 +71,12 @@ public class AssertionUtility {
     public static void requireObjectParamAsArrayType(Object obj) {
         if (!ArrayUtility.isArray(obj)) {
             throw new IllegalArgumentException("require array type param, but provides：" + obj.getClass() + " is not a array type");
+        }
+    }
+
+    public static void requireArrayAtLeastOneMember(Object[] objects){
+        if (objects == null || objects.length == 0){
+            throw new IllegalArgumentException("require array at least has one member");
         }
     }
 
