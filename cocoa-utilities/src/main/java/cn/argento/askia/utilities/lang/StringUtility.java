@@ -27,6 +27,15 @@ public class StringUtility {
         return true;
     }
 
+    public static String newWhiteSpaceString(int length){
+        AssertionUtility.requireNonNegativeNumber(length);
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            stringBuilder.append(" ");
+        }
+        return stringBuilder.toString();
+    }
+
     /**
      * 判断一个字符串是否是纯英文字符串.
      * <p>此方法通过正则表达式实现判断字符串中是否仅包含英文字母.
@@ -128,14 +137,17 @@ public class StringUtility {
 
     public static void main(String[] args) {
 //        System.out.println(Character.isLetter('中'));
-        final String s = simpleChinese2HuoXingChinese("购买商品前，请先仔细阅读商品订购须知。订单支付确认将被视為您已理解并接受了定购须知的内容，定金/尾款一经支付，概不退还。");
-        final String s1 = simpleChinese2TraditionalChinese("购买商品前，请先仔细阅读商品订购须知。订单支付确认将被视為您已理解并接受了定购须知的内容，定金/尾款一经支付，概不退还。");
-        final String s2 = traditionalChinese2HuoXingChinese(s1);
-        System.out.println(s2);
-        final Character[] a = traditionalChineseWordMapping.get("壹");
-        System.out.println(Arrays.toString(a));
-        System.out.println(s);
-        System.out.println(s1);
+//        final String s = simpleChinese2HuoXingChinese("购买商品前，请先仔细阅读商品订购须知。订单支付确认将被视為您已理解并接受了定购须知的内容，定金/尾款一经支付，概不退还。");
+//        final String s1 = simpleChinese2TraditionalChinese("购买商品前，请先仔细阅读商品订购须知。订单支付确认将被视為您已理解并接受了定购须知的内容，定金/尾款一经支付，概不退还。");
+//        final String s2 = traditionalChinese2HuoXingChinese(s1);
+//        System.out.println(s2);
+//        final Character[] a = traditionalChineseWordMapping.get("壹");
+//        System.out.println(Arrays.toString(a));
+//        System.out.println(s);
+//        System.out.println(s1);
+
+        List<String> result = StringUtility.cartesianProduct(Arrays.asList("a", "b"), Arrays.asList("1", "2"), Arrays.asList("x", "y"));
+        System.out.println(result); // [a1x, a1y, a2x, a2y, b1x, b1y, b2x, b2y]
     }
 
 
@@ -179,9 +191,9 @@ public class StringUtility {
         traditionalChineseWordMapping = new HashMap<>();
         simpleChineseWordMapping = new HashMap<>();
         try {
-            final List<String> huoxingStringList = ResourceUtility.readAllLinesFromClassPath("com.yumitoy.utilities", "huoxingChineseDictionary.txt");
-            final List<String> traditionalStringList = ResourceUtility.readAllLinesFromClassPath("com.yumitoy.utilities", "TraditionalChineseDictionary.txt");
-            final List<String> simpleStringList = ResourceUtility.readAllLinesFromClassPath("com.yumitoy.utilities", "SimpleChineseDictionary.txt");
+            final List<String> huoxingStringList = ResourceUtility.readAllLinesFromClassPath("", "huoxingChineseDictionary.txt");
+            final List<String> traditionalStringList = ResourceUtility.readAllLinesFromClassPath("", "TraditionalChineseDictionary.txt");
+            final List<String> simpleStringList = ResourceUtility.readAllLinesFromClassPath("", "SimpleChineseDictionary.txt");
             // 一定要有值
             assert huoxingStringList.size() > 0;
             assert traditionalStringList.size() > 0;
@@ -417,5 +429,72 @@ public class StringUtility {
         commonResult.addAll(commonResultList);
         result2.addAll(str2ArrayAlongList);
         result1.addAll(str1ArrayAlongList);
+    }
+
+
+
+    /**
+     * 计算多个字符串列表的笛卡尔积（高效版本）
+     * @param listsVarargs 输入列表，例如 [[a,b], [1,2], [x,y]]
+     * @return 所有组合字符串的列表，按索引顺序
+     */
+    @SafeVarargs
+    public static List<String> cartesianProduct(List<String>... listsVarargs) {
+        if (listsVarargs == null || listsVarargs.length == 0) return new ArrayList<>();
+        // 过滤空列表
+        List<List<String>> lists = new ArrayList<>();
+        for (List<String> list : listsVarargs){
+            if (list != null && list.size() != 0) {
+                lists.add(list);
+            }
+        }
+
+        // 1. 计算总组合数，并验证无空列表
+        long total = 1;
+        int n = lists.size();
+        int[] sizes = new int[n];
+        for (int i = 0; i < n; i++) {
+            List<String> list = lists.get(i);
+            sizes[i] = list.size();
+            total *= sizes[i];
+            // 防止溢出，如果 total > Integer.MAX_VALUE 可以抛出异常或改用 long
+            if (total > Integer.MAX_VALUE) {
+                throw new IllegalArgumentException("总组合数超过 " + Integer.MAX_VALUE);
+            }
+        }
+
+        // 2. 预分配结果列表容量
+        List<String> result = new ArrayList<>((int) total);
+
+        // 3. 维护索引数组，初始全为 0
+        int[] indices = new int[n];
+        // 用于缓存每个列表，避免重复 .get(index) 多次调用（不影响大部分情况）
+        // 但为了清晰，直接使用原列表
+
+        // 4. 生成所有组合
+        while (true) {
+            // 构建当前组合字符串
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < n; i++) {
+                sb.append(lists.get(i).get(indices[i]));
+            }
+            result.add(sb.toString());
+
+            // 5. 索引进位（类似加法器）
+            int pos = n - 1;
+            while (pos >= 0) {
+                if (++indices[pos] < sizes[pos]) {
+                    break;
+                }
+                // 当前位进位，重置当前位为 0，并向前进位
+                indices[pos] = 0;
+                pos--;
+            }
+            // 如果所有位都进位完毕（pos < 0），则循环结束
+            if (pos < 0) {
+                break;
+            }
+        }
+        return result;
     }
 }
