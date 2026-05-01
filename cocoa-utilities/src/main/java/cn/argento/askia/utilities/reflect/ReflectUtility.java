@@ -25,17 +25,22 @@ public class ReflectUtility {
 //        Method valueOf = strCl.getMethod("valueOf", int.class);
 //        boolean isPublic = ReflectUtil.modifiersJudge(valueOf, ReflectUtil.isPublic);
 //        System.out.println(isPublic);
-        String name = getName(ReflectUtility[].class, CLASS_SIMPLE_NAME);
-        System.out.println(name);
+//        String name = getName(ReflectUtility[].class, CLASS_SIMPLE_NAME);
+//        System.out.println(name);
+//
+//        Class<?> componentType = String[][].class.getComponentType();
+//        System.out.println(componentType);
+//        Object o = ArrayUtility.newArray(componentType, 3);
+//        System.out.println(o);
+//        System.out.println(ArrayUtility.getDimension(o));
+//        System.out.println(getDeclaredCallerClassNameAndMethodName("getDeclaredCallerMethodName"));
+//        System.out.println(getCallerClassName());
+//        System.out.println(getCallerMethodName());
 
-        Class<?> componentType = String[][].class.getComponentType();
-        System.out.println(componentType);
-        Object o = ArrayUtility.newArray(componentType, 3);
-        System.out.println(o);
-        System.out.println(ArrayUtility.getDimension(o));
-        System.out.println(getDeclaredCallerClassNameAndMethodName("getDeclaredCallerMethodName"));
-        System.out.println(getCallerClassName());
-        System.out.println(getCallerMethodName());
+        final Method toString = String.class.getDeclaredMethod("toString");
+        final Method toString1 = String.class.getMethod("toString");
+        System.out.println(toString == toString1);
+        System.out.println(toString.equals(toString1));
 
     }
 
@@ -488,10 +493,21 @@ public class ReflectUtility {
         return new ReflectiveOperationException("无法找到方法：" + methodName + "在类：" + obj.getClass() + "中");
     }
 
+    /**
+     * 获取一个 {@link Class} 对象的所有 {@link Method} 对象
+     *
+     * <p>此方法会调用 {@link Class#getDeclaredMethods()} 和 {@link Class#getMethods()} 获取所有的方法并进行整合.
+     *
+     * <p>在 {@link Class#getDeclaredMethods()} 中, 会返回一个包含 {@link Method} 对象的数组, 该数组反映由这个 {@link Class} 对象表示的类或接口(不包含继承关系)的所有声明方法，包括 {@code public} 、{@code protected} 、 {@code default} 和 {@code private} , 但不包括继承的方法。
+     *
+     * <p>而在 {@link Class#getMethods()} 中, 会返回一个包含 {@link Method} 对象的数组, 该数组反映由这个 {@link Class} 对象表示的类或接口的所有 {@code public} 级别的方法，包括当前类和接口, 以及从父类和父接口继承的方法。
+     * @param cl {@link Class} 对象
+     * @return 一个 {@link Set} 承载所有的 {@link Method} 对象
+     */
     public static Set<Method> getAllMethods(Class<?> cl){
         Method[] declaredMethods = cl.getDeclaredMethods();
         Method[] methods = cl.getMethods();
-        HashSet<Method> hashSet = new HashSet<>();
+        HashSet<Method> hashSet = new HashSet<>(methods.length + declaredMethods.length);
         hashSet.addAll(Arrays.asList(declaredMethods));
         hashSet.addAll(Arrays.asList(methods));
         return hashSet;
