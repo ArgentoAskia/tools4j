@@ -1,6 +1,7 @@
 package cn.argento.askia.utilities.collection;
 
 import cn.argento.askia.annotations.Utility;
+import cn.argento.askia.utilities.lang.StringUtility;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -41,7 +42,7 @@ public class CollectionUtility {
         for (Map.Entry<?, ?> entry : entries){
             final Object key = entry.getKey();
             final Object value = entry.getValue();
-            String keyValue = key.toString() + "=";
+            String keyValue = key.toString() + " = ";
             // 因为所有的引用类型都可以调用toString()维度数组不行，所以我们单独处理数组即可！
             if (value.getClass().isArray()){
                 final Object[] all = ArrayUtility.getAll(value);
@@ -182,6 +183,59 @@ public class CollectionUtility {
         return toBeautifulString(collectionTypeObj, false, false);
     }
 
+    public static String toBeautifulString(Map<?, ?> map, boolean withSize, boolean withType, boolean keepMaxKey){
+        StringBuilder beginBuilder = new StringBuilder();
+        if (withType){
+            beginBuilder.append("map = ").append(map.getClass());
+            if (withSize){
+                beginBuilder.append(", ");
+                beginBuilder.append("size = ").append(map.size());
+            }
+        }
+        else if (withSize){
+            beginBuilder.append("map size = ").append(map.size());
+        }
+        beginBuilder.append(" ==> ").append(System.lineSeparator()).append("{").append(System.lineSeparator()).append("\t\t");
+        if (keepMaxKey){
+            int maxLength = 0;
+            for (Map.Entry<?, ?> entry : map.entrySet()){
+                final String s = entry.getKey().toString();
+                if (maxLength < s.length()){
+                    maxLength = s.length();
+                }
+            }
+            Map<String, Object> map1 = new HashMap<>();
+            for (Map.Entry<?, ?> entry : map.entrySet()){
+                final String s = entry.getKey().toString();
+                int length = maxLength - s.length();
+                String whiteSpaceStr = StringUtility.newWhiteSpaceString(length);
+                final Object value = entry.getValue();
+                map1.put(s + whiteSpaceStr, value);
+            }
+            String begin = beginBuilder.toString();
+            String delimiter = "," +System.lineSeparator() + "\t\t";
+            String end = System.lineSeparator() + "}";
+            return toString(map1, delimiter, begin, end);
+        }
+        else{
+            String begin = beginBuilder.toString();
+            String delimiter = "," +System.lineSeparator() + "\t\t";
+            String end = System.lineSeparator() + "}";
+            return toString(map, delimiter, begin, end);
+        }
+    }
+
+    public static String toBeautifulString(Map<?, ?> map){
+        String begin = "map = " + map.getClass() +
+                ", " +
+                "size = " + map.size() +
+                " ==> " +
+                System.lineSeparator() +
+                "{" + System.lineSeparator() + "\t\t";
+        String delimiter = "," +System.lineSeparator() + "\t\t";
+        String end = System.lineSeparator() + "}";
+        return toString(map, delimiter, begin, end);
+    }
 
     // 实现将List进行转换
 
