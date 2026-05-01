@@ -115,6 +115,28 @@ public class FormatUtility {
        return classNameExpPattern.matcher(str).matches();
     }
 
+    // 符合包名
+    private static final String packageNameExp = "^[a-zA-Z_$][a-zA-Z0-9_$]*(\\.[a-zA-Z_$][a-zA-Z0-9_$]*)*$";
+    private static final String packageNameAntExp = "^[a-zA-Z_$][a-zA-Z0-9_$]*(\\.[a-zA-Z_$][a-zA-Z0-9_$]*|\\.\\*|\\.\\*\\*)*$";
+    private static final Pattern packageNameExpPattern = Pattern.compile(packageNameExp);
+    private static final Pattern packageNameAntExpPattern = Pattern.compile(packageNameAntExp);
+
+    /**
+     * 是否符合包名格式
+     *
+     * @param packageName 包名
+     * @param matchWildcard 是否匹配通配符
+     * @return
+     */
+    public static boolean matchPackage(String packageName, boolean matchWildcard){
+        if (matchWildcard){
+            return packageNameAntExpPattern.matcher(packageName).matches();
+        }
+        else{
+            return packageNameExpPattern.matcher(packageName).matches();
+        }
+    }
+
     // 严格大驼峰
     private static final String pascalCasePatternExp = "^[A-Z][a-z0-9]*([A-Z][a-z0-9]+)*$";
     private static final Pattern pascalCasePatternExpPattern = Pattern.compile(pascalCasePatternExp);
