@@ -1,6 +1,6 @@
 package cn.argento.askia.annotations;
 
-import cn.argento.askia.supports.Converter;
+import cn.argento.askia.functions.Converter;
 
 import java.lang.annotation.*;
 import java.util.function.Function;

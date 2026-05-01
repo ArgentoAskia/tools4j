@@ -1,4 +1,4 @@
-package cn.argento.askia.processors;
+package cn.argento.askia.processor;
 
 import java.io.*;
 import java.lang.annotation.Annotation;

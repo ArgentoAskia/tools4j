@@ -1,4 +1,4 @@
-package cn.argento.askia.supports;
+package cn.argento.askia.supports.handler;
 
 import cn.argento.askia.utilities.annotation.AnnotationUtility;
 
@@ -69,7 +69,7 @@ public class AnnotationKeyValue<V> {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("cn.argento.askia.supports.AnnotationKeyValue{");
+        final StringBuffer sb = new StringBuffer("cn.argento.askia.supports.handler.AnnotationKeyValue{");
         sb.append("attributeName='").append(attributeName).append('\'');
         sb.append(", value=").append(value);
         sb.append('}');

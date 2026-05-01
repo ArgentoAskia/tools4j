@@ -1,4 +1,4 @@
-package cn.argento.askia.lang;
+package cn.argento.askia.langs;
 
 public interface Cloneable extends java.lang.Cloneable {
 

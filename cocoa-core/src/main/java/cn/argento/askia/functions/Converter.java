@@ -1,14 +1,6 @@
-package cn.argento.askia.supports;
+package cn.argento.askia.functions;
 
-import cn.argento.askia.annotations.Utility;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * {@docRoot }
