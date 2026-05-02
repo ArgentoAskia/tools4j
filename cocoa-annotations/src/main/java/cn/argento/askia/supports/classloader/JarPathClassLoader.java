@@ -1,4 +1,4 @@
-package cn.argento.askia.supports.classloaders;
+package cn.argento.askia.supports.classloader;
 
 import java.io.IOException;
 import java.net.URI;

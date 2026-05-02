@@ -1,16 +1,11 @@
-package cn.argento.askia.supports.classloaders;
+package cn.argento.askia.supports.classloader;
 
-import cn.argento.askia.annotations.AliasFor;
-
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 
 public class FilePathClassLoader extends ClassLoader{
-
+    private Path classFilePath;
     public FilePathClassLoader(){
         this(ClassLoader.getSystemClassLoader());
     }
@@ -19,9 +14,13 @@ public class FilePathClassLoader extends ClassLoader{
         super(parent);
     }
 
+    public void setClassFilePath(Path classFilePath) {
+        this.classFilePath = classFilePath;
+    }
+
     protected Class<?> findClass(String name, Path path) throws ClassNotFoundException {
         // 是否是合法的文件
-        if (!Files.isRegularFile(path)) {
+        if (path == null || !Files.isRegularFile(path)) {
             throw new ClassNotFoundException("文件" + path + "不存在或者可能并非是合法的文件");
         }
         if (!path.toString().endsWith("class")){
@@ -38,8 +37,6 @@ public class FilePathClassLoader extends ClassLoader{
 
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
-        final String fileName = name.replace('.', File.separatorChar);
-        final Path path = Paths.get(fileName);
-        return findClass(name, path);
+        return findClass(name, classFilePath);
     }
 }
