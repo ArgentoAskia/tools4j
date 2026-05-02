@@ -140,12 +140,73 @@ public class PathUtility {
         return resolveWildcardPath(path, false);
     }
 
-    public static List<Path> resolveWildcardFile(Path filePath, boolean parallel){
+    public static List<Path> resolveWildcardFile(String filePath, boolean parallel) throws IOException {
         List<Path> result = new ArrayList<>();
+        int i = filePath.lastIndexOf(File.separator);
+        String basePath = filePath.substring(0, i);
+        String fileName = filePath.substring(i + 1);
+        Path basePathObject = Paths.get(basePath);
+        Files.walkFileTree(basePathObject, EnumSet.noneOf(FileVisitOption.class),1,new SimpleFileVisitor<Path>() {
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                Objects.requireNonNull(file);
+                Objects.requireNonNull(attrs);
+                String string = file.getFileName().toString();
+                if (PathUtility.wildcardFileMatch(fileName, string)){
+                    result.add(file);
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
         return result;
     }
 
-    public static List<Path> resolveWildcardFile(Path filePath){
+    public static boolean wildcardFileMatch(String pattern, String str) {
+        if (pattern == null || str == null) {
+            return false;
+        }
+
+        int pLen = pattern.length();
+        int sLen = str.length();
+
+        int p = 0; // pattern 指针
+        int s = 0; // string 指针
+        int starIdx = -1; // 最后一次出现 '*' 的位置
+        int match = 0;    // 上一次匹配 '*' 时，str 对应的位置
+
+        while (s < sLen) {
+            // 字符匹配 或 pattern 当前为 '?'
+            if (p < pLen && (pattern.charAt(p) == '?' || pattern.charAt(p) == str.charAt(s))) {
+                p++;
+                s++;
+            }
+            // pattern 当前为 '*'
+            else if (p < pLen && pattern.charAt(p) == '*') {
+                starIdx = p;   // 记录 '*' 的位置
+                match = s;     // 记录当前 str 位置
+                p++;           // 跳过 '*'，先尝试匹配 0 个字符
+            }
+            // 上次遇到过 '*'，需要回溯
+            else if (starIdx != -1) {
+                p = starIdx + 1; // pattern 指针回到 '*' 的下一个位置
+                match++;         // str 匹配位置向前移动一个字符
+                s = match;
+            }
+            // 不匹配且没有 '*' 可回溯
+            else {
+                return false;
+            }
+        }
+
+        // 检查 pattern 尾部是否都是 '*'（剩余的 '*' 可匹配空串）
+        while (p < pLen && pattern.charAt(p) == '*') {
+            p++;
+        }
+        return p == pLen;
+    }
+
+    public static List<Path> resolveWildcardFile(String filePath) throws IOException {
         return resolveWildcardFile(filePath, false);
     }
 
@@ -159,6 +220,14 @@ public class PathUtility {
         }
         final String s = parent.toString();
         return StringAlgorithmsUtility.KMP(WILDCARD_PATH_RECURSIVE.toCharArray(), s.toCharArray()) >= 0 || s.contains(WILDCARD_PATH_SINGLE);
+    }
+    public static boolean isWildcardPath(String path){
+        int i = path.lastIndexOf(File.separator);
+        if (i == -1){
+            throw new InvalidPathException(path, "该路径字符串没有路径分割器, 可能不是合法的路径");
+        }
+        String parentPath = path.substring(0, i);
+        return StringAlgorithmsUtility.KMP(WILDCARD_PATH_RECURSIVE.toCharArray(), parentPath.toCharArray()) >= 0 || parentPath.contains(WILDCARD_PATH_SINGLE);
     }
     public static final String WILDCARD_FILE_SINGLE = "?";
     public static final String WILDCARD_FILE_RECURSIVE = "*";
@@ -227,6 +296,32 @@ public class PathUtility {
             }
         });
         return pathRet;
+    }
+
+
+    /**
+     * 判断 potentialParent 是否是 potentialChild 的祖先目录（父或更上层）。
+     *
+     * @param potentialParent 可能的父路径
+     * @param potentialChild  可能的子路径
+     * @return true 如果 potentialParent 是 potentialChild 的祖先，且两者不相同
+     * @since 2026.5.2
+     */
+    public static boolean isParent(Path potentialParent, Path potentialChild) {
+        Objects.requireNonNull(potentialParent, "parent path must not be null");
+        Objects.requireNonNull(potentialChild, "child path must not be null");
+
+        // 规范化路径（消除 . 和 .. 等）
+        Path parent = potentialParent.toAbsolutePath().normalize();
+        Path child = potentialChild.toAbsolutePath().normalize();
+
+        // 根路径相同且子路径以父路径开头
+        return !parent.equals(child) && child.startsWith(parent);
+    }
+
+    // 字符串版本
+    public static boolean isParent(String parentPath, String childPath) {
+        return isParent(Paths.get(parentPath), Paths.get(childPath));
     }
 
     public static void main(String[] args) throws IOException {
