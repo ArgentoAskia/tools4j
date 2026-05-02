@@ -2,12 +2,7 @@ package cn.argento.askia.utilities.algorithms;
 
 import cn.argento.askia.annotations.Utility;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.Arrays;
 
 @Utility(value = "字符串相关算法工具类")
 public class StringAlgorithmsUtility {
@@ -16,43 +11,51 @@ public class StringAlgorithmsUtility {
         throw new IllegalAccessError("StringAlgorithmsUtility为工具类, 无法创建该类的对象");
     }
 
-//    public static void main(String[] args) {
+    public static void main(String[] args) {
 //        final int i = BF1("glk".toCharArray(), "agidgcjhggik".toCharArray());
 //        System.out.println(i);
-//
-//        // 1 1 2 4 3 3 7 6 3
-//        final int[] ints = buildNext("abcabdabe".toCharArray());
-//        System.out.println(Arrays.toString(ints));
-//    }
 
-    public static void main(String[] args) {
-        String file1Path = "C:\\Users\\Admin\\Desktop\\1.txt";
-        String file2Path = "C:\\Users\\Admin\\Desktop\\2.txt";
-        String mergedFilePath = "C:\\Users\\Admin\\Desktop\\merged.txt";
-
-        try {
-            // 读取两个文件的内容
-            List<String> lines1 = Files.readAllLines(Paths.get(file1Path));
-            List<String> lines2 = Files.readAllLines(Paths.get(file2Path));
-
-            // 按行合并两个列表
-            List<String> mergedLines = IntStream.range(0, Math.max(lines1.size(), lines2.size()))
-                    .mapToObj(i -> {
-                        String line1 = i < lines1.size() ? lines1.get(i) : "";
-                        String line2 = i < lines2.size() ? lines2.get(i) : "";
-                        return line1 + "\\" + "n" + line2; // 按需调整合并逻辑
-                    })
-                    .collect(Collectors.toList());
-
-            // 将合并后的内容写入新文件
-            Files.write(Paths.get(mergedFilePath), mergedLines);
-
-            System.out.println("文件合并完成，结果已保存到：" + mergedFilePath);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // 1 1 2 4 3 3 7 6 3
+        final int[] ints = buildNext("abcabdabe".toCharArray());
+        System.out.println(Arrays.toString(ints));
+        final int[] ints2 = buildNext("cn\\argento\\askia\\scanner".toCharArray());
+        System.out.println(Arrays.toString(ints2));
+        final int[] ints3 = buildNext("cn\\argento\\askia".toCharArray());
+        System.out.println(Arrays.toString(ints3));
+        int kmp = KMP("cn\\argento\\askia\\scanner".toCharArray(), "G:\\project\\java\\cocoa-java\\cocoa-annotations\\target\\classes\\cn\\argento\\askia\\supports\\LifeCyclePhase$2.class".toCharArray());
+        System.out.println(kmp);
+        int kmp2 = KMP("s".toCharArray(), "G:\\project\\java\\cocoa-java\\cocoa-annotations\\target\\classes\\cn\\argento\\askia\\supports\\LifeCyclePhase$2.class".toCharArray());
+        System.out.println(kmp2);
     }
+
+//    public static void main(String[] args) {
+//        String file1Path = "C:\\Users\\Admin\\Desktop\\1.txt";
+//        String file2Path = "C:\\Users\\Admin\\Desktop\\2.txt";
+//        String mergedFilePath = "C:\\Users\\Admin\\Desktop\\merged.txt";
+//
+//        try {
+//            // 读取两个文件的内容
+//            List<String> lines1 = Files.readAllLines(Paths.get(file1Path));
+//            List<String> lines2 = Files.readAllLines(Paths.get(file2Path));
+//
+//            // 按行合并两个列表
+//            List<String> mergedLines = IntStream.range(0, Math.max(lines1.size(), lines2.size()))
+//                    .mapToObj(i -> {
+//                        String line1 = i < lines1.size() ? lines1.get(i) : "";
+//                        String line2 = i < lines2.size() ? lines2.get(i) : "";
+//                        return line1 + "\\" + "n" + line2; // 按需调整合并逻辑
+//                    })
+//                    .collect(Collectors.toList());
+//
+//            // 将合并后的内容写入新文件
+//            Files.write(Paths.get(mergedFilePath), mergedLines);
+//
+//            System.out.println("文件合并完成，结果已保存到：" + mergedFilePath);
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     /**
      * BF模式匹配算法.
@@ -115,7 +118,7 @@ public class StringAlgorithmsUtility {
      * <p>代码来自邓俊辉《数据结构C++描述》，有部分修改</p>
      * @param pattern 模式串
      * @param text 文本串
-     * @return 出现的位置
+     * @return 出现的位置, 如果不存在匹配则返回文本串的长度
      */
     public static int KMP(char[] pattern, char[] text){
         // 创建 next 表
@@ -136,6 +139,21 @@ public class StringAlgorithmsUtility {
         }
         // 找到则进行相减即可得到位置！
         return i - j;
+    }
+
+
+    /**
+     * 使用KMP算法匹配模式串和文本串.
+     *
+     * @param pattern 模式串
+     * @param text 文本串
+     * @return 如果匹配则返回 {@code true} 否则失配则返回 {@code false}
+     */
+    public static boolean KMPMatch(String pattern, String text){
+        char[] charArray = pattern.toCharArray();
+        char[] charArray2 = text.toCharArray();
+        int kmp = KMP(charArray, charArray2);
+        return kmp >= 0 && kmp < charArray2.length;
     }
 
 
