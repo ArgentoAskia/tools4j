@@ -1,19 +1,25 @@
-package cn.argento.askia.supports.beans;
+package cn.argento.askia.supports.environment;
 
 import cn.argento.askia.utilities.lang.AssertionUtility;
 
 import java.lang.annotation.Annotation;
-import java.time.Year;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
-public class BaseEnvironmentBean {
+/**
+ * 基础环境信息支持
+ */
+public class BaseEnvironmentBean implements EnvironmentBean<BaseEnvironmentBean>{
 
-    private final Class<Annotation> solveAnnotation;
+    private Class<Annotation> solveAnnotation;
 
     private final Map<Class<?>, Object> annotationProcessorMap;
 
+    /**
+     * valueOf专用构造器
+     * @param solveAnnotation
+     * @param annotationProcessors
+     */
     private BaseEnvironmentBean(Class<Annotation> solveAnnotation, Object[] annotationProcessors){
         AssertionUtility.requireArrayAtLeastOneMember(annotationProcessors);
         this.solveAnnotation = solveAnnotation;
@@ -41,6 +47,13 @@ public class BaseEnvironmentBean {
         }
     }
 
+    public static BaseEnvironmentBean valueOf(Class<Annotation> solveAnnotation, Object... annotationProcessors){
+        if (annotationProcessors == null){
+            annotationProcessors = new Object[0];
+        }
+        return new BaseEnvironmentBean(solveAnnotation, annotationProcessors);
+    }
+
     /**
      * Builder专用构造器
      * @param solveAnnotation
@@ -51,26 +64,28 @@ public class BaseEnvironmentBean {
         this.annotationProcessorMap = annotationProcessorMap;
     }
 
-    public static BaseEnvironmentBean valueOf(Class<Annotation> solveAnnotation, Object... annotationProcessors){
-        if (annotationProcessors == null){
-            annotationProcessors = new Object[0];
-        }
-        return new BaseEnvironmentBean(solveAnnotation, annotationProcessors);
-    }
+
 
     public static BaseEnvironmentBeanBuilder builder() {
         return new BaseEnvironmentBeanBuilder();
     }
 
-    public static final class BaseEnvironmentBeanBuilder {
-        private Class<Annotation> solveAnnotation;
-        private Map<Class<?>, Object> annotationProcessorMap;
+    @Override
+    public BaseEnvironmentBean getBean(BaseEnvironmentBean environmentBean) {
+        this.annotationProcessorMap.putAll(environmentBean.getAnnotationProcessorMap());
+        this.solveAnnotation = environmentBean.solveAnnotation;
+        return this;
+    }
 
-        private BaseEnvironmentBeanBuilder() {
+    public static class BaseEnvironmentBeanBuilder {
+        protected Class<Annotation> solveAnnotation;
+        protected final Map<Class<?>, Object> annotationProcessorMap;
+
+        BaseEnvironmentBeanBuilder() {
             annotationProcessorMap = new HashMap<>();
         }
 
-        public BaseEnvironmentBeanBuilder processAnnotation(Class<Annotation> solveAnnotation) {
+        public BaseEnvironmentBeanBuilder addProcessAnnotation(Class<Annotation> solveAnnotation) {
             this.solveAnnotation = solveAnnotation;
             return this;
         }

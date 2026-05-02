@@ -1,13 +1,12 @@
-package cn.argento.askia.supports.beans;
+package cn.argento.askia.supports.environment;
 
-import cn.argento.askia.utilities.classes.ClassUtility;
+import java.lang.annotation.Annotation;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-public class ScannedEnvironmentBean {
+/**
+ * 文件扫描基准环境信息
+ */
+public class FileScanBasedEnvironmentBean extends BaseEnvironmentBean {
 
     // 指定classpath, 支持通配符
     private List<String> classpathList;
@@ -18,7 +17,8 @@ public class ScannedEnvironmentBean {
     // 指定类名, 支持通配符
     private List<String> classNameList;
 
-    ScannedEnvironmentBean(List<String> classpathList, List<String> packageList, List<String> classNameList) {
+    FileScanBasedEnvironmentBean(Class<Annotation> solveAnnotation, Map<Class<?>, Object> annotationProcessorMap, List<String> classpathList, List<String> packageList, List<String> classNameList) {
+        super(solveAnnotation, annotationProcessorMap);
         this.classpathList = classpathList;
         this.packageList = packageList;
         this.classNameList = classNameList;
@@ -52,17 +52,27 @@ public class ScannedEnvironmentBean {
         return ret;
     }
 
+    @Override
+    public FileScanBasedEnvironmentBean getBean(BaseEnvironmentBean environmentBean) {
+        if (environmentBean instanceof FileScanBasedEnvironmentBean){
+            return (FileScanBasedEnvironmentBean)environmentBean;
+        }
+        // 返回空的FileScanBasedEnvironmentBean
+        super.getBean(environmentBean);
+        return this;
+    }
 
     public static ScannedEnvironmentBeanBuilder builder() {
         return new ScannedEnvironmentBeanBuilder();
     }
 
-    public static final class ScannedEnvironmentBeanBuilder {
+    public static final class ScannedEnvironmentBeanBuilder extends BaseEnvironmentBeanBuilder{
         private final Set<String> classpathList;
         private final Set<String> packageList;
         private final Set<String> classNameList;
 
-        private ScannedEnvironmentBeanBuilder() {
+        ScannedEnvironmentBeanBuilder() {
+            super();
             classpathList = new HashSet<>();
             packageList = new HashSet<>();
             classNameList = new HashSet<>();
@@ -74,7 +84,7 @@ public class ScannedEnvironmentBean {
         }
 
         public ScannedEnvironmentBeanBuilder addClassPath(String classpath){
-            this.classNameList.add(classpath);
+            this.classpathList.add(classpath);
             return this;
         }
 
@@ -105,8 +115,27 @@ public class ScannedEnvironmentBean {
             return this;
         }
 
-        public ScannedEnvironmentBean build() {
-            return new ScannedEnvironmentBean(new ArrayList<>(classpathList), new ArrayList<>(packageList), new ArrayList<>(classNameList));
+        @Override
+        public ScannedEnvironmentBeanBuilder addProcessAnnotation(Class<Annotation> solveAnnotation) {
+            super.addProcessAnnotation(solveAnnotation);
+            return this;
+        }
+
+        @Override
+        public ScannedEnvironmentBeanBuilder addAnnotationProcessorMap(Map<Class<?>, Object> annotationProcessorMap) {
+            super.addAnnotationProcessorMap(annotationProcessorMap);
+            return this;
+        }
+
+        @Override
+        public ScannedEnvironmentBeanBuilder addAnnotationProcessor(Object annotationProcessor) {
+            super.addAnnotationProcessor(annotationProcessor);
+            return this;
+        }
+
+        @Override
+        public FileScanBasedEnvironmentBean build() {
+            return new FileScanBasedEnvironmentBean(super.solveAnnotation, super.annotationProcessorMap, new ArrayList<>(classpathList), new ArrayList<>(packageList), new ArrayList<>(classNameList));
         }
     }
 }
