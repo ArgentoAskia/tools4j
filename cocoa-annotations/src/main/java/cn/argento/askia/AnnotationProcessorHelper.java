@@ -76,18 +76,6 @@ class AnnotationProcessorHelper {
     }
 
     /**
-     * 将 {@link AnnotationProcessorContext} 转为 {@link MutableAnnotationProcessorContext}
-     * @param context 实现了 {@link MutableAnnotationProcessorContext} 的子实现
-     * @return {@link MutableAnnotationProcessorContext} 对象, 转换失败将返回 {@code null}
-     */
-    static MutableAnnotationProcessorContext getMutableContext(AnnotationProcessorContext context){
-        if (context instanceof MutableAnnotationProcessorContext){
-            return (MutableAnnotationProcessorContext) context;
-        }
-        return null;
-    }
-
-    /**
      * 初始化上下文容器
      * @param context context
      */
@@ -152,7 +140,10 @@ class AnnotationProcessorHelper {
                     }
                 }
                 final Object invoke = initMethod.invoke(annotationProcessObj, args);
-                context.registerBean(beanName, invoke);
+                // 如果方法返回值不等于void或者Void, 则我们尝试将返回值放入容器中, 哪怕返回值本身就是null
+                if (initMethod.getReturnType() != void.class && initMethod.getReturnType() != Void.class){
+                    context.registerBean(beanName, invoke);
+                }
             }
         }
     }
@@ -206,7 +197,9 @@ class AnnotationProcessorHelper {
                     args[index++] = null;
                 }
                 final Object invoke = destroyMethod.invoke(annotationProcessObj, args);
-                context.registerBean(beanName, invoke);
+                if (destroyMethod.getReturnType() != void.class && destroyMethod.getReturnType() != Void.class){
+                    context.registerBean(beanName, invoke);
+                }
             }
         }
     }
