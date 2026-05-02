@@ -27,11 +27,11 @@ public class StringUtility {
         return true;
     }
 
-    public static String newWhiteSpaceString(int length){
+    public static String newRepeatString(char c, int length) {
         AssertionUtility.requireNonNegativeNumber(length);
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < length; i++) {
-            stringBuilder.append(" ");
+            stringBuilder.append(c);
         }
         return stringBuilder.toString();
     }
@@ -440,11 +440,16 @@ public class StringUtility {
      */
     @SafeVarargs
     public static List<String> cartesianProduct(List<String>... listsVarargs) {
+        return cartesianProduct("", listsVarargs);
+    }
+
+    @SafeVarargs
+    public static List<String> cartesianProduct(String delimiter, List<String>... listsVarargs) {
         if (listsVarargs == null || listsVarargs.length == 0) return new ArrayList<>();
         // 过滤空列表
         List<List<String>> lists = new ArrayList<>();
         for (List<String> list : listsVarargs){
-            if (list != null && list.size() != 0) {
+            if (list != null && !list.isEmpty()) {
                 lists.add(list);
             }
         }
@@ -477,6 +482,9 @@ public class StringUtility {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < n; i++) {
                 sb.append(lists.get(i).get(indices[i]));
+                if (i != n - 1) {
+                    sb.append(delimiter);
+                }
             }
             result.add(sb.toString());
 
