@@ -5,11 +5,24 @@ import cn.argento.askia.annotations.ApiStatus;
 import cn.argento.askia.context.AnnotationProcessorContext;
 import cn.argento.askia.context.BeanNotFoundException;
 import cn.argento.askia.context.MoreThenOneBeanException;
+import cn.argento.askia.context.MutableAnnotationProcessorContext;
 import cn.argento.askia.utilities.lang.StringUtility;
 
 
 @ApiStatus.Internal
 class AnnotationProcessorContextHelper {
+
+    /**
+     * 将 {@link AnnotationProcessorContext} 转为 {@link MutableAnnotationProcessorContext}
+     * @param context 实现了 {@link MutableAnnotationProcessorContext} 的子实现
+     * @return {@link MutableAnnotationProcessorContext} 对象, 转换失败将返回 {@code null}
+     */
+    static MutableAnnotationProcessorContext getMutableContext(AnnotationProcessorContext context){
+        if (context instanceof MutableAnnotationProcessorContext){
+            return (MutableAnnotationProcessorContext) context;
+        }
+        return null;
+    }
 
     /**
      * 先按照类型，再按照值来找Bean对象
