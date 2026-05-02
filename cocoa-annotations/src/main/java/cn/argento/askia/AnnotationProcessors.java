@@ -156,43 +156,38 @@ package cn.argento.askia;
 //    }
 //}
 
-import cn.argento.askia.annotations.AnnotationProcessor;
-import cn.argento.askia.annotations.phase.*;
 import cn.argento.askia.context.AnnotationProcessorContext;
 import cn.argento.askia.context.BeanNotFoundException;
 import cn.argento.askia.context.MutableAnnotationProcessorContext;
 import cn.argento.askia.supports.LifeCyclePhase;
-import cn.argento.askia.supports.beans.BaseEnvironmentBean;
-import cn.argento.askia.supports.beans.ScannedEnvironmentBean;
-import cn.argento.askia.utilities.annotation.AnnotationUtility;
+import cn.argento.askia.supports.environment.BaseEnvironmentBean;
+import cn.argento.askia.supports.environment.EnvironmentBean;
 
-import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.Function;
 
 public class AnnotationProcessors {
 
 
     /**
      * 处理方法
-     * @param scannedEnvironmentBean
+     * @param environmentBean
      * @param annotationTargetClass
      * @param annotationProcessObj
      * @param context context
      * @param <T>
      */
-    public static <T> void process(ScannedEnvironmentBean scannedEnvironmentBean, Class<Annotation> annotationTargetClass,
-                                T annotationProcessObj, AnnotationProcessorContext context) throws InvocationTargetException, IllegalAccessException, BeanNotFoundException, NoSuchMethodException {
-        final MutableAnnotationProcessorContext mutableContext = AnnotationProcessorHelper.getMutableContext(context);
+    public static <E extends EnvironmentBean<E>, T> void process(Class<Annotation> annotationTargetClass,
+                                                                 T annotationProcessObj, EnvironmentBean<E> environmentBean, AnnotationProcessorContext context) throws InvocationTargetException, IllegalAccessException, BeanNotFoundException, NoSuchMethodException {
+        final MutableAnnotationProcessorContext mutableContext = AnnotationProcessorContextHelper.getMutableContext(context);
+        // 先进行初始化代码
+        AnnotationProcessorHelper.initContext(mutableContext, annotationProcessObj);
         // 初始化必要参数
         BaseEnvironmentBean bean = BaseEnvironmentBean.valueOf(annotationTargetClass, annotationProcessObj);
         // 初始化上下文
         mutableContext.registerBean("baseEnvironmentBean", bean);
-        mutableContext.registerBean("scannedEnvironmentBean", scannedEnvironmentBean);
-        AnnotationProcessorHelper.initContext(mutableContext, annotationProcessObj);
+        mutableContext.registerBean("environmentBean", environmentBean);
         final AnnotationProcessingEnvironmentBean<T> annotationProcessingEnvironmentBean = AnnotationProcessorHelper.introspectAnnotationProcessor(annotationProcessObj);
         AnnotationProcessorHelper.firePhase(LifeCyclePhase.SCANNING, annotationProcessingEnvironmentBean, mutableContext, annotationTargetClass);
         AnnotationProcessorHelper.firePhase(LifeCyclePhase.CHECKING, annotationProcessingEnvironmentBean, mutableContext, annotationTargetClass);
@@ -203,28 +198,61 @@ public class AnnotationProcessors {
         AnnotationProcessorHelper.closeContext(mutableContext, annotationProcessObj);
     }
 
-    public static void process(ScannedEnvironmentBean scannedEnvironmentBean, Class<Annotation> annotationTargetClass,
-                               AnnotationProcessorContext context, Object... annotationProcessObjs){
-
+    public static <T> void process(BaseEnvironmentBean baseEnvironmentBean, AnnotationProcessorContext context){
+        final MutableAnnotationProcessorContext mutableContext = AnnotationProcessorContextHelper.getMutableContext(context);
     }
 
-
-    public static <T> T process(ScannedEnvironmentBean scannedEnvironmentBean,
-                                Object annotationProcessObj, AnnotationProcessorContext context,
-                                Class<T> retType){
-        return null;
+    /**
+     * 带返回值的处理方法.
+     * <p>该方法允许您在注解处理完成之后返回容器内的一些东西以作为复用.</p>
+     * @param fileScanBasedEnvironmentBean
+     * @param annotationTargetClass
+     * @param annotationProcessObj
+     * @param context
+     * @param retFunction
+     * @return
+     * @param <T>
+     * @param <P>
+     * @throws BeanNotFoundException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     * @throws NoSuchMethodException
+     */
+    public static <E extends EnvironmentBean<E>, T, P> T process(Class<Annotation> annotationTargetClass,
+                                                                 P annotationProcessObj, EnvironmentBean<E> environmentBean, AnnotationProcessorContext context,
+                                                                 Function<AnnotationProcessorContext, T> retFunction) throws BeanNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        process(annotationTargetClass, annotationProcessObj, environmentBean, context);
+        return retFunction.apply(context);
     }
 
-
-    public static void process(ScannedEnvironmentBean scannedEnvironmentBean,
-                               Object annotationProcessObj, AnnotationProcessorContext context,
-                               Class<? extends Annotation>... resolveClasses){
-
+    public static <T, P> T process(BaseEnvironmentBean baseEnvironmentBean, AnnotationProcessorContext context,
+                                   Function<AnnotationProcessorContext, T> retFunction){
+        process(baseEnvironmentBean, context);
+        return retFunction.apply(context);
     }
 
-    public static <T> T process(ScannedEnvironmentBean scannedEnvironmentBean,
-                                Object annotationProcessObj, AnnotationProcessorContext context,
-                                Class<T> retType, Class<? extends Annotation>... resolveClasses){
-        return null;
+//    public static void process(ScannedEnvironmentBean scannedEnvironmentBean, Class<Annotation> annotationTargetClass,
+//                               AnnotationProcessorContext context, Object... annotationProcessObjs){
+//
+//    }
+
+
+
+
+
+//    public static void process(ScannedEnvironmentBean scannedEnvironmentBean,
+//                               Object annotationProcessObj, AnnotationProcessorContext context,
+//                               Class<? extends Annotation>... resolveClasses){
+//
+//    }
+//
+//    public static <T> T process(ScannedEnvironmentBean scannedEnvironmentBean,
+//                                Object annotationProcessObj, AnnotationProcessorContext context,
+//                                Class<T> retType, Class<? extends Annotation>... resolveClasses){
+//        return null;
+//    }
+
+    public static void main(String[] args) {
+
     }
 }
