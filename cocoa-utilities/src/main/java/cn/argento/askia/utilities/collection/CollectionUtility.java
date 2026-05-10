@@ -208,7 +208,8 @@ public class CollectionUtility {
             for (Map.Entry<?, ?> entry : map.entrySet()){
                 final String s = entry.getKey().toString();
                 int length = maxLength - s.length();
-                String whiteSpaceStr = StringUtility.newWhiteSpaceString(length);
+                // todo 此地方使用printf()优化
+                String whiteSpaceStr = StringUtility.newRepeatString(' ',length);
                 final Object value = entry.getValue();
                 map1.put(s + whiteSpaceStr, value);
             }
@@ -226,13 +227,14 @@ public class CollectionUtility {
     }
 
     public static String toBeautifulString(Map<?, ?> map){
+        int folder = 2;     // 默认输出两个 \t折叠
         String begin = "map = " + map.getClass() +
                 ", " +
                 "size = " + map.size() +
                 " ==> " +
                 System.lineSeparator() +
                 "{" + System.lineSeparator() + "\t\t";
-        String delimiter = "," +System.lineSeparator() + "\t\t";
+        String delimiter = "," +System.lineSeparator() + StringUtility.newRepeatString('\t',folder);
         String end = System.lineSeparator() + "}";
         return toString(map, delimiter, begin, end);
     }
@@ -815,6 +817,9 @@ public class CollectionUtility {
         list2.add(3);
         list2.add(4);
         list2.add(5);
-        System.out.println(toBeautifulString(list, false, false));
+        List<List<Integer>> list3 = new ArrayList<>();
+        list3.add(list);
+        list3.add(list2);
+        System.out.println(toBeautifulString(list3, false, false));
     }
 }
