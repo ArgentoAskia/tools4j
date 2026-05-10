@@ -25,7 +25,7 @@ public @interface Param {
      * 获取阶段结束的返回值
      * @return 阶段结束的返回值
      */
-    LifeCyclePhase phaseRet() default LifeCyclePhase.LAST_PHASE;
+    LifeCyclePhase phaseRet() default LifeCyclePhase.NO;
 
 
     /**
