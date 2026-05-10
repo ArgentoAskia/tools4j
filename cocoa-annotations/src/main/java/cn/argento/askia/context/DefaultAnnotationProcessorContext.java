@@ -6,7 +6,9 @@ import cn.argento.askia.utilities.lang.StringUtility;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DefaultAnnotationProcessorContext extends AbstractAnnotationProcessorContext
@@ -15,8 +17,11 @@ public class DefaultAnnotationProcessorContext extends AbstractAnnotationProcess
 
     private ResolveAnnotationCache resolveCache;
 
+    private Map<Object, TypeReference<?>> objectGenericMessageMap;
+
     public DefaultAnnotationProcessorContext(){
         resolveCache = new ResolveAnnotationCache();
+        objectGenericMessageMap = new HashMap<>();
     }
 
     @Override
@@ -41,23 +46,26 @@ public class DefaultAnnotationProcessorContext extends AbstractAnnotationProcess
         return aClass.getName() + "#" + stringList.size();
     }
 
-//    private void indexBean(Class<?> clazz, String name) {
-//        if (clazz == null || clazz == Object.class) return;
-//        typeIndex.computeIfAbsent(clazz, k -> new CopyOnWriteArrayList<>()).add(name);
-//        for (Class<?> iface : clazz.getInterfaces()) {
-//            typeIndex.computeIfAbsent(iface, k -> new CopyOnWriteArrayList<>()).add(name);
-//        }
-//        indexBean(clazz.getSuperclass(), name);
-//    }
+    private void indexBean(Class<?> clazz, String name) {
+        if (clazz == null || clazz == Object.class) return;
+        typeIndex.computeIfAbsent(clazz, k -> new CopyOnWriteArrayList<>()).add(name);
+        for (Class<?> iface : clazz.getInterfaces()) {
+            typeIndex.computeIfAbsent(iface, k -> new CopyOnWriteArrayList<>()).add(name);
+        }
+        indexBean(clazz.getSuperclass(), name);
+    }
 
     @Override
     public void registerBean(String name, Object bean) {
         if (StringUtility.isBlank(name)){
             // 空命名则使用类型
-            nameMap.put(createDefaultUniqueName(bean), bean);
+            final String defaultUniqueName = createDefaultUniqueName(bean);
+            nameMap.put(defaultUniqueName, bean);
+            indexBean(bean.getClass(), defaultUniqueName);
         }
         else{
             nameMap.put(name, bean);
+            indexBean(bean.getClass(), name);
         }
     }
 
@@ -68,16 +76,18 @@ public class DefaultAnnotationProcessorContext extends AbstractAnnotationProcess
             name = createDefaultUniqueName(bean);
         }
         nameMap.put(name, bean);
-
+        objectGenericMessageMap.put(bean, typeReference);
     }
 
     @Override
     public TypeReference<?> getTypeReference(Object bean) {
-        return null;
+        return objectGenericMessageMap.get(bean);
     }
 
     @Override
     public void close() {
-
+        resolveCache.clear();
+        objectGenericMessageMap.clear();
+        super.close();
     }
 }

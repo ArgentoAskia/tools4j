@@ -101,4 +101,12 @@ public abstract class AbstractAnnotationProcessorContext implements AnnotationPr
     public String[] getAllBeanNames() {
         return nameMap.keySet().toArray(new String[0]);
     }
+
+
+    protected void close(){
+        annotationProcessorList.clear();
+        lifeCyclePhaseReturnObjectMap.clear();
+        nameMap.clear();
+        typeIndex.clear();
+    }
 }

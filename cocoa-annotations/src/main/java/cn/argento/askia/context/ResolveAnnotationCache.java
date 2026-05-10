@@ -29,4 +29,9 @@ public class ResolveAnnotationCache {
     public int size(){
         return resolveCacheMap.size();
     }
+
+
+    public void clear(){
+        resolveCacheMap.clear();
+    }
 }
