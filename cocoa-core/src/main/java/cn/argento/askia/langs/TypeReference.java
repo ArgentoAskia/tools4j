@@ -2,10 +2,7 @@ package cn.argento.askia.langs;
 
 
 import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * TypeReference类型引用
@@ -59,6 +56,11 @@ public abstract class TypeReference<T> {
         }
     }
 
+    public TypeReference(Class<?> tClass){
+        this();
+
+    }
+
     /**
      * 获取TypeReference包装内的T
      * @return
@@ -72,7 +74,7 @@ public abstract class TypeReference<T> {
         final Type[] actualTypeArguments = type.getActualTypeArguments();
         // 因为TypeReference只有一个泛型参数，所以actualTypeArguments只有一个成员
         Type actualTypeArgument = actualTypeArguments[0];
-        System.out.println(actualTypeArgument.getClass());
+//        System.out.println(actualTypeArgument.getClass());
         // 然后我们对这个actualTypeArgument进行判断
         return genericType.genericTypeClass.isAssignableFrom(actualTypeArgument.getClass());
     }
@@ -290,10 +292,50 @@ public abstract class TypeReference<T> {
         return false;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        // 是Type接口或者子接口
+        if (o instanceof Type){
+            // 如果是Class<?>类型则尝试转Class<>
+            if (o instanceof Class<?> && this.match(GenericType.BASE_TYPE)){
+                final Class<?> as = this.as(Class.class);
+                final Class<?> oClass = (Class<?>) o;
+                return oClass.isAssignableFrom(as);
+            }
+            // 容器对象类型必须是参数的子类型
+            final Type objectType = getType();
+            final Type oType = (Type) o;
+            return typeMatch(objectType, oType, true);
+        }
+        // TypeReference<?>的对象则比较内部的Type
+        if (o instanceof TypeReference<?>){
+            TypeReference<?> that = (TypeReference<?>) o;
+            return typeMatch(getType(), that.getType(), true);
+        }
+        // 其他任何情况全部false
+        return false;
+    }
+
+
+    @Override
+    public String toString() {
+        return getType().toString();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getType());
+    }
 
     public static void main(String[] args) {
-        TypeReference<List<?>> reference = new TypeReference<List<?>>() {};
-        TypeReference<ArrayList<String>> reference1 = new TypeReference<ArrayList<String>>() {};
+        TypeReference<?> reference = new TypeReference<List<?>>() {};
+        TypeReference<?> reference1 = new TypeReference<ArrayList<String>>() {};
+        TypeReference<?> reference2 = new TypeReference<String>() {};
+        System.out.println(reference.getType());
+        System.out.println(reference1.getType());
+        System.out.println(reference2.getType());
         System.out.println(TypeReference.typeMatch(reference1.getType(), reference.getType(), true));
         System.out.println();
 //        final Class as1 = reference.as(Class.class);
