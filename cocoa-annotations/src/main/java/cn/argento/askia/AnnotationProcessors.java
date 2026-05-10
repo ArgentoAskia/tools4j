@@ -251,8 +251,4 @@ public class AnnotationProcessors {
 //                                Class<T> retType, Class<? extends Annotation>... resolveClasses){
 //        return null;
 //    }
-
-    public static void main(String[] args) {
-
-    }
 }
