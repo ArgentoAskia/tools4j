@@ -294,17 +294,21 @@ class AnnotationProcessorHelper {
                     // 通过类型获取Bean
                     try {
                         Object beanByType = context.getBeanByType(parameter.getType());
-                        if (beanByType == null){
-                            beanByType = context.getBeanByInheritType(parameter.getType());
-                        }
                         // 查看泛型是否对得上
                         final Type parameterizedType = parameter.getParameterizedType();
                         if (beanByType != null && parameterizedType.getTypeName().contains("<")){
                             final TypeReference<?> typeReference = context.getTypeReference(beanByType);
-                            final Type type = typeReference.getType();
-                            if (TypeReference.typeMatch(type, parameterizedType, true)){
-                                params[index++] = beanByType;
-                                continue;
+                            if (typeReference != null){
+                                final Type type = typeReference.getType();
+                                if (TypeReference.typeMatch(type, parameterizedType, true)){
+                                    params[index++] = beanByType;
+                                    continue;
+                                }
+                            }
+                            // 没有在容器中发现泛型信息, 检查是否是必须参数
+                            else{
+                                // 清空bean
+                                beanByType = null;
                             }
                         }
                         if (must && beanByType == null){
@@ -320,7 +324,9 @@ class AnnotationProcessorHelper {
                             Object paramObj = null;
                             if (StringUtility.isBlank(value1)){
                                 // 处理LifeCyclePhase
-                                paramObj = context.getPhaseReturnValue(lifeCyclePhase);
+                                if (lifeCyclePhase != LifeCyclePhase.NO){
+                                    paramObj = context.getPhaseReturnValue(lifeCyclePhase);
+                                }
                             }
                             else{
                                 //  处理按名字查找
