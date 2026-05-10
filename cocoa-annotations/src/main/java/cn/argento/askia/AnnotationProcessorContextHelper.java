@@ -36,9 +36,6 @@ class AnnotationProcessorContextHelper {
         try {
             Object beanByType = context.getBeanByType(tClass);
             if (beanByType == null){
-                beanByType = context.getBeanByInheritType(tClass);
-            }
-            if (beanByType == null){
                 throw new BeanNotFoundException("找不到类型为" + tClass + "的Bean, 开启按照名字查找");
             }
             return beanByType;
