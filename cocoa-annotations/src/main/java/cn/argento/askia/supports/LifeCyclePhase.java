@@ -17,6 +17,17 @@ import java.util.List;
  */
 @SuppressWarnings("all")
 public enum LifeCyclePhase {
+    NO(null) {
+        @Override
+        public <T extends Annotation> Class<T> getPhaseAnnotation() {
+            return null;
+        }
+
+        @Override
+        public <T extends Annotation> T asPhaseAnnotation(Annotation annotation) {
+            return null;
+        }
+    },
     LAST_PHASE(null){
         @Override
         public Class<? extends Annotation> getPhaseAnnotation() {
