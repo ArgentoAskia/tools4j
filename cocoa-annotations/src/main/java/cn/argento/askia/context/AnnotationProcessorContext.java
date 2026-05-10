@@ -1,7 +1,9 @@
 package cn.argento.askia.context;
 
+import cn.argento.askia.langs.TypeReference;
 import cn.argento.askia.supports.LifeCyclePhase;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -15,7 +17,7 @@ public interface AnnotationProcessorContext {
      */
     List<Object> getAnnotationProcessors();
 
-    Object getAnnotationProcessor(Class<?> annotationProcessorClass);
+    <T> T getAnnotationProcessor(Class<T> annotationProcessorClass);
 
     Object getPhaseReturnValue(LifeCyclePhase phase);
 
@@ -24,16 +26,7 @@ public interface AnnotationProcessorContext {
         return tClass.cast(phaseReturnValue);
     }
 
-    <T> T getBeanByType(Class<T> tClass) throws MoreThenOneBeanException;
-
-    /**
-     * 获取继承关系中的大Bean
-     * @param tClass 和getBeanByType的参数一样
-     * @param <T>
-     * @return
-     * @throws MoreThenOneBeanException
-     */
-    <T> T getBeanByInheritType(Class<T> tClass) throws MoreThenOneBeanException;
+    <T> T getBeanByType(Type tClass) throws MoreThenOneBeanException, BeanNotFoundException;
 
     <T> T getBeanByName(String name, Class<T> tClass);
 
