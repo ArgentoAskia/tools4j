@@ -9,6 +9,7 @@ import java.lang.annotation.Annotation;
  * 框架内部可修改接口
  */
 public interface MutableAnnotationProcessorContext extends AnnotationProcessorContext{
+    void registerAnnotationProcessor(Object annotationProcessor);
     void setPhaseReturnValue(LifeCyclePhase phase, Object value);
     void setResolveCache(Class<?> annotationProcessClass, Class<? extends Annotation>[] resolveClasses);
     Class<? extends Annotation>[] getResolveCache(Class<?> annotationProcessClass);
