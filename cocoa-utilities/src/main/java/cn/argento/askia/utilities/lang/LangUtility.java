@@ -670,4 +670,71 @@ public class LangUtility {
         }
     }
 
+
+    /**
+     * 获取基本类型的对应包装器类型
+     * @param primitiveType 基本类型Class对象
+     * @return 对应的包装器类型Class对象, 如果提供的Class对象不是基本类型则返回自身
+     */
+    public static Class<?> getBoxingType(Class<?> primitiveType){
+        if (!primitiveType.isPrimitive()){
+            return primitiveType;
+        }
+        if (primitiveType == int.class){
+            return Integer.class;
+        }
+        else if (primitiveType == byte.class){
+            return Byte.class;
+        }
+        else if (primitiveType == short.class){
+            return Short.class;
+        }
+        else if (primitiveType == long.class){
+            return Long.class;
+        }
+        else if (primitiveType == double.class){
+            return Double.class;
+        }
+        else if (primitiveType == float.class){
+            return Float.class;
+        }
+        else if (primitiveType == char.class){
+            return Character.class;
+        }
+        else {
+            return Boolean.class;
+        }
+    }
+    public static Class<?> getUnBoxingType(Class<?> boxingType){
+        if (isBoxingType(boxingType)){
+            if (boxingType == Byte.class){
+                return byte.class;
+            }
+            else if (boxingType == Short.class){
+                return short.class;
+            }
+            else if (boxingType == Integer.class){
+                return int.class;
+            }
+            else if (boxingType == Long.class){
+                return long.class;
+            }
+            else if (boxingType == Float.class){
+                return float.class;
+            }
+            else if (boxingType == Double.class){
+                return double.class;
+            }
+            else if (boxingType == Character.class){
+                return char.class;
+            }
+            else {
+                return boolean.class;
+            }
+        }
+        else{
+            return boxingType;
+        }
+    }
+
 }
