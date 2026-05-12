@@ -1,4 +1,4 @@
-package cn.argento.askia.supports.environment;
+package cn.argento.askia.support.environment;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class ClassBasedEnvironmentBean extends BaseEnvironmentBean{
      * @param solveAnnotation
      * @param annotationProcessorMap
      */
-    ClassBasedEnvironmentBean(Class<Annotation> solveAnnotation, Map<Class<?>, Object> annotationProcessorMap,  List<Class<?>> baseClasses) {
+    ClassBasedEnvironmentBean(Class<? extends Annotation> solveAnnotation, Map<Class<?>, Object> annotationProcessorMap,  List<Class<?>> baseClasses) {
         super(solveAnnotation, annotationProcessorMap);
         this.baseClasses = baseClasses;
     }

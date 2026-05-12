@@ -1,4 +1,4 @@
-package cn.argento.askia.supports.matcher;
+package cn.argento.askia.support.matcher;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

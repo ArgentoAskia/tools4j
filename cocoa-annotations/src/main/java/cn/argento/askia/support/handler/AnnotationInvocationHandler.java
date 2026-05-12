@@ -1,4 +1,4 @@
-package cn.argento.askia.supports.handler;
+package cn.argento.askia.support.handler;
 
 import cn.argento.askia.utilities.annotation.AnnotationUtility;
 

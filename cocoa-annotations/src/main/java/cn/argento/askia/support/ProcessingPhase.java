@@ -1,4 +1,4 @@
-package cn.argento.askia.supports;
+package cn.argento.askia.support;
 
 /**
  * 注解处理器处理阶段周期

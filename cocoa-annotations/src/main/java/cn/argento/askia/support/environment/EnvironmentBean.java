@@ -1,4 +1,4 @@
-package cn.argento.askia.supports.environment;
+package cn.argento.askia.support.environment;
 
 /**
  * 环境信息Bean

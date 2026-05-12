@@ -1,9 +1,6 @@
-package cn.argento.askia.supports;
+package cn.argento.askia.support;
 
-import cn.argento.askia.annotations.AnnotationProcessor;
 import cn.argento.askia.annotations.phase.*;
-import cn.argento.askia.utilities.collection.ArrayUtility;
-import cn.argento.askia.utilities.collection.CollectionUtility;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;

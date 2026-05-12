@@ -1,4 +1,4 @@
-package cn.argento.askia.supports.classloader;
+package cn.argento.askia.support.classloader;
 
 import java.io.IOException;
 import java.nio.file.Files;

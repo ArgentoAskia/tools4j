@@ -1,8 +1,5 @@
-package cn.argento.askia.supports.matcher;
+package cn.argento.askia.support.matcher;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**

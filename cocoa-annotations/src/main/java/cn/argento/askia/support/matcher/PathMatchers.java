@@ -1,4 +1,4 @@
-package cn.argento.askia.supports.matcher;
+package cn.argento.askia.support.matcher;
 
 import java.util.concurrent.ConcurrentHashMap;
 

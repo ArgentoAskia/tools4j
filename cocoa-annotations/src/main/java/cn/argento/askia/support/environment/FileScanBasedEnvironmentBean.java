@@ -1,4 +1,4 @@
-package cn.argento.askia.supports.environment;
+package cn.argento.askia.support.environment;
 
 import cn.argento.askia.utilities.lang.StringUtility;
 
