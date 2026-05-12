@@ -1,8 +1,6 @@
 package cn.argento.askia.annotations;
 
 import cn.argento.askia.annotations.annotation.AnnotationProcessor;
-import cn.argento.askia.annotations.annotation.Destroy;
-import cn.argento.askia.annotations.annotation.Initialization;
 import cn.argento.askia.annotations.annotation.Param;
 import cn.argento.askia.annotations.annotation.phase.*;
 import cn.argento.askia.annotations.context.AnnotationProcessorContext;
@@ -13,6 +11,7 @@ import cn.argento.askia.langs.TypeReference;
 import cn.argento.askia.annotations.support.LifeCyclePhase;
 import cn.argento.askia.utilities.annotation.AnnotationUtility;
 import cn.argento.askia.utilities.collection.ArrayUtility;
+import cn.argento.askia.utilities.collection.CollectionUtility;
 import cn.argento.askia.utilities.lang.StringUtility;
 import cn.argento.askia.utilities.reflect.ReflectUtility;
 
@@ -75,135 +74,8 @@ class AnnotationProcessorHelper {
         else if (annotation.annotationType() == ScanPhase.class){
             bean.addMethodScanPhase(m, (ScanPhase) annotation);
         }
-        throw new UnsupportedOperationException("暂不支持解析该阶段" + annotation.annotationType());
-    }
-
-    /**
-     * 初始化上下文容器
-     * @param context context
-     */
-    static void initContext(MutableAnnotationProcessorContext context, Object annotationProcessObj) throws InvocationTargetException, IllegalAccessException {
-        final Class<?> annotationProcessObjClass = annotationProcessObj.getClass();
-        final Set<Method> declaredMethods = ReflectUtility.getAllMethods(annotationProcessObjClass);
-        Method initMethod = null;
-        String beanName = null;
-        for (Method m : declaredMethods){
-            if (AnnotationUtility.isDeclaredAnnotationPresent(m, Initialization.class)) {
-                // 标记了@Initialization
-                initMethod = m;
-                beanName = Initialization.class.getSimpleName();
-                break;
-            }
-            if (AnnotationUtility.isDeclaredAnnotationPresent(m, PostConstruct.class)){
-                // 标记了@PostConstruct
-                initMethod = m;
-                beanName = PostConstruct.class.getSimpleName();
-                break;
-            }
-        }
-        if (initMethod != null){
-            // 允许访问私有方法和继承性方法
-            if (!initMethod.isAccessible()){
-                initMethod.setAccessible(true);
-            }
-            final Class<?>[] parameterTypes = initMethod.getParameterTypes();
-            if (parameterTypes.length == 0){
-                // 直接调用
-                final Object invoke = initMethod.invoke(annotationProcessObj);
-                context.registerBean(beanName, invoke);
-                return;
-            }
-            if (parameterTypes.length == 1 && (AnnotationProcessorContext.class == parameterTypes[0] || MutableAnnotationProcessorContext.class == parameterTypes[0])){
-                final Object invoke = initMethod.invoke(annotationProcessObj, context);
-                context.registerBean(beanName, invoke);
-                return;
-            }
-            // 两个以上的参数
-            if (parameterTypes.length > 1){
-                final Parameter[] parameters = initMethod.getParameters();
-                Object[] args = new Object[parameters.length];
-                int index = 0;
-                for (Parameter p : parameters){
-                    if (p.getType() == AnnotationProcessorContext.class || p.getType() == MutableAnnotationProcessorContext.class){
-                        args[index++] = context;
-                        continue;
-                    }
-                    String paramName = "";
-                    if (p.isAnnotationPresent(Param.class)){
-                        final Param declaredAnnotation = p.getDeclaredAnnotation(Param.class);
-                        paramName = declaredAnnotation.value();
-                    }
-                    try{
-                        final Object bean = AnnotationProcessorContextHelper.findBean(p.getType(), paramName, context);
-                        args[index++] = bean;
-                    }
-                    catch (BeanNotFoundException e){
-                        //  找不到填null
-                        args[index++] = null;
-                    }
-                }
-                final Object invoke = initMethod.invoke(annotationProcessObj, args);
-                // 如果方法返回值不等于void或者Void, 则我们尝试将返回值放入容器中, 哪怕返回值本身就是null
-                if (initMethod.getReturnType() != void.class && initMethod.getReturnType() != Void.class){
-                    context.registerBean(beanName, invoke);
-                }
-            }
-        }
-    }
-
-    static void closeContext(MutableAnnotationProcessorContext context, Object annotationProcessObj) throws InvocationTargetException, IllegalAccessException {
-        final Class<?> annotationProcessObjClass = annotationProcessObj.getClass();
-        final Set<Method> declaredMethods = ReflectUtility.getAllMethods(annotationProcessObjClass);
-        Method destroyMethod = null;
-        String beanName = null;
-        for (Method m : declaredMethods){
-            if (AnnotationUtility.isDeclaredAnnotationPresent(m, Destroy.class)) {
-                // 标记了@Initialization
-                destroyMethod = m;
-                beanName = Destroy.class.getSimpleName();
-                break;
-            }
-            if (AnnotationUtility.isDeclaredAnnotationPresent(m, PreDestroy.class)){
-                // 标记了@PostConstruct
-                destroyMethod = m;
-                beanName = PreDestroy.class.getSimpleName();
-                break;
-            }
-        }
-        if (destroyMethod != null){
-            // 允许访问私有方法和继承性方法
-            if (!destroyMethod.isAccessible()){
-                destroyMethod.setAccessible(true);
-            }
-            final Class<?>[] parameterTypes = destroyMethod.getParameterTypes();
-            if (parameterTypes.length == 0){
-                // 直接调用
-                final Object invoke = destroyMethod.invoke(annotationProcessObj);
-                context.registerBean(beanName, invoke);
-                return;
-            }
-            if (parameterTypes.length == 1 && (AnnotationProcessorContext.class == parameterTypes[0] || MutableAnnotationProcessorContext.class == parameterTypes[0])){
-                final Object invoke = destroyMethod.invoke(annotationProcessObj, context);
-                context.registerBean(beanName, invoke);
-                return;
-            }
-            // 两个以上的参数
-            if (parameterTypes.length > 1){
-                final Parameter[] parameters = destroyMethod.getParameters();
-                Object[] args = new Object[parameters.length];
-                int index = 0;
-                for (Parameter p : parameters){
-                    if (p.getType() == AnnotationProcessorContext.class || p.getType() == MutableAnnotationProcessorContext.class){
-                        args[index++] = context;
-                        continue;
-                    }
-                    args[index++] = null;
-                }
-                final Object invoke = destroyMethod.invoke(annotationProcessObj, args);
-                if (destroyMethod.getReturnType() != void.class && destroyMethod.getReturnType() != Void.class){
-                    context.registerBean(beanName, invoke);
-                }
-            }
+        else{
+            throw new UnsupportedOperationException("暂不支持解析该阶段" + annotation.annotationType());
         }
     }
 
@@ -213,8 +85,7 @@ class AnnotationProcessorHelper {
      * @param lifeCyclePhase2 执行阶段
      * @param bean 注解处理器环境对象
      * @param context 注解处理器上下文环境
-     * @param phaseAnnotationsClass 注解处理器支持处理的注解
-     * @param annotationTargetClass 要处理的注解
+     * @param annotationTargetClass 注解处理器处理的注解
      * @param <T> 注解处理器类型
      * @throws BeanNotFoundException
      * @throws InvocationTargetException
@@ -222,63 +93,48 @@ class AnnotationProcessorHelper {
      * @throws NoSuchMethodException
      */
     @SuppressWarnings("all")
-    static <T> void firePhase(LifeCyclePhase lifeCyclePhase2, AnnotationProcessingEnvironmentBean<T> bean, MutableAnnotationProcessorContext context,
-                              Class<? extends Annotation>[] phaseAnnotationsClass, Class<? extends Annotation> annotationTargetClass) throws BeanNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        // 阶段方法
+    static <T> void firePhase(Class<? extends Annotation>[] resolveAnnotationTargetClasses, LifeCyclePhase lifeCyclePhase2, Object annotationProcessor, AnnotationProcessingEnvironmentBean<T> bean, MutableAnnotationProcessorContext context) throws BeanNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // 获取所有标记了注解的方法
         final Map<Method, List<Annotation>> phaseMap = bean.getPhaseMap(lifeCyclePhase2);
+        // 方法调用次序
         Map<Integer, List<Method>> orderMethodCallMap = new TreeMap<>();
-
+        // 方法上标记的注解
+        Map<Method, Set<Class<? extends Annotation>>> orderMethodResolveAnnotationSet = new HashMap<>();
         for (Map.Entry<Method, List<Annotation>> entry : phaseMap.entrySet()){
             // Scanning阶段注解
             final List<Annotation> value = entry.getValue();
             final Method key = entry.getKey();
-            boolean next = false;
             int order = -1;
+            Set<Class<? extends Annotation>> resolveSet = new HashSet<>();
             for (Annotation annotation : value){
 //                final ScanPhase scanPhase = LifeCyclePhase.SCANNING.asPhaseAnnotation(annotation);
                 final boolean override = AnnotationUtility.getAnnotationAttributeValue(annotation, "override", boolean.class);;
                 order = AnnotationUtility.getAnnotationAttributeValue(annotation, "order", int.class);
                 final Class<? extends Annotation>[] resolveAnnotation = AnnotationUtility.getAnnotationAttributeValue(annotation, "value", Class[].class);
-                if (override){
-                    // 复写，我们则按照scanPhase.value()进行匹配
-                    if (ArrayUtility.contain(resolveAnnotation, annotationTargetClass)){
-                        next = true;
-                        break;
-                    }
+                if (override && resolveAnnotation.length > 0){
+                    // 复写且标记了复写的注解，则我们需要使用复写阶段的注解覆盖掉resolveAnnotationTargetClasses
+                    Collections.addAll(resolveSet, resolveAnnotation);
                 }
                 else if (resolveAnnotation.length > 0){
-                    // 注解融合
-                    // 复写
-                    HashSet<Class<? extends Annotation>> set = new HashSet<>(Arrays.asList(phaseAnnotationsClass));
-                    set.addAll(Arrays.asList(resolveAnnotation));
-                    if (set.contains(annotationTargetClass)){
-                        // 有交集, 调用
-                        next = true;
-                        break;
-                    }
+                    // override = false
+                    Collections.addAll(resolveSet, resolveAnnotationTargetClasses);
+                    Collections.addAll(resolveSet, resolveAnnotation);
                 }
                 else{
-                    // 使用phaseAnnotationsClass来判断
-                    if (ArrayUtility.contain(phaseAnnotationsClass, annotationTargetClass)){
-                        // 有交集, 调用
-                        next = true;
-                        break;
-                    }
+                    Collections.addAll(resolveSet, resolveAnnotationTargetClasses);
                 }
             }
-            if (next){
-                // 添加此方法
-                final List<Method> methods = orderMethodCallMap.computeIfAbsent(order, m -> new ArrayList<>());
-                methods.add(key);
-            }
+            // 添加此注解到容器
+            orderMethodResolveAnnotationSet.put(key, resolveSet);
+            // 添加此方法
+            final List<Method> methods = orderMethodCallMap.computeIfAbsent(order, m -> new ArrayList<>());
+            methods.add(key);
         }
-
         final Class<T> annotationProcessorClass = bean.getAnnotationProcessorClass();
         // 按照顺序进行调用
         for (Map.Entry<Integer, List<Method>> entry : orderMethodCallMap.entrySet()){
             final List<Method> value = entry.getValue();
             for (Method m : value){
-                final Object annotationProcessor = context.getAnnotationProcessor(annotationProcessorClass);
                 final Parameter[] parameterTypes = m.getParameters();
                 Object[] params = new Object[parameterTypes.length];
                 int index = 0;
@@ -289,11 +145,21 @@ class AnnotationProcessorHelper {
                         param = parameter.getDeclaredAnnotation(Param.class);
                         must = param.must();
                     }
+                    // 特殊参数处理
                     // 如果是context本身, 则我们提供context
                     if (AnnotationProcessorContext.class.isAssignableFrom(parameter.getType())){
                         params[index++] = context;
                         continue;
                     }
+                    // 注解集合
+                    System.out.println(parameter.getParameterizedType().getTypeName());
+                    if (Set.class == parameter.getType() && parameter.getParameterizedType().getTypeName().equals("java.util.Set<java.lang.Class<? extends java.lang.annotation.Annotation>>")){
+                        // 集合参数
+                        final Set<Class<? extends Annotation>> classes = orderMethodResolveAnnotationSet.get(m);
+                        params[index++] = classes;
+                        continue;
+                    }
+                    //
                     // 通过类型获取Bean
                     try {
                         Object beanByType = context.getBeanByType(parameter.getType());
@@ -347,16 +213,18 @@ class AnnotationProcessorHelper {
                 final Class<?> returnType = m.getReturnType();
                 if (returnType != void.class && returnType != Void.class){
                     context.setPhaseReturnValue(lifeCyclePhase2, phaseResult);
+                    // 设置上一个阶段
+                    LifeCyclePhase.setLastPhase(lifeCyclePhase2);
                 }
             }
         }
     }
     @SuppressWarnings("all")
-    static <T> void firePhase(LifeCyclePhase lifeCyclePhase2, AnnotationProcessingEnvironmentBean<T> bean, MutableAnnotationProcessorContext context, Class<? extends Annotation> annotationTargetClass) throws IllegalAccessException, BeanNotFoundException, InvocationTargetException, NoSuchMethodException {
+    static <T> void firePhase(LifeCyclePhase lifeCyclePhase2, Object annotationProcess, AnnotationProcessingEnvironmentBean<T> bean, MutableAnnotationProcessorContext context, Class<? extends Annotation>... resolveAnnotationTargetClasses) throws IllegalAccessException, BeanNotFoundException, InvocationTargetException, NoSuchMethodException {
 
         Class<? extends Annotation>[] resolveCache = context.getResolveCache(bean.getAnnotationProcessorClass());
         if (resolveCache == null){
-            // 注解处理器处理哪些注解
+            // 拼接AnnotationProcessor处理器中value()和resolves()的值
             final AnnotationProcessor annotationProcessor = bean.getAnnotationProcessor();
             final Class<? extends Annotation>[] resolves = annotationProcessor.resolves();
             final Class<?>[] value = annotationProcessor.value();
@@ -368,10 +236,11 @@ class AnnotationProcessorHelper {
                     resolvesAnnotationMap.add(cl);
                 }
             }
+            // 生成resolveCache并保存
             resolveCache = resolvesAnnotationMap.toArray(new Class[0]);
             context.setResolveCache(bean.getAnnotationProcessorClass(), resolveCache);
         }
-        firePhase(lifeCyclePhase2, bean, context, resolveCache, annotationTargetClass);
+        // 点燃阶段方法
+        firePhase(resolveCache, lifeCyclePhase2, annotationProcess, bean, context);
     }
-
 }
