@@ -28,12 +28,12 @@ public enum LifeCyclePhase {
     LAST_PHASE(null){
         @Override
         public Class<? extends Annotation> getPhaseAnnotation() {
-            return currentPhase.phaseAnnotation;
+            return lastPhase.phaseAnnotation;
         }
 
         @Override
         public Annotation asPhaseAnnotation(Annotation annotation) {
-            return currentPhase.asPhaseAnnotation(annotation);
+            return lastPhase.asPhaseAnnotation(annotation);
         }
     },
 
@@ -202,9 +202,9 @@ public enum LifeCyclePhase {
         return phaseList.toArray(new Annotation[0]);
     }
 
-    private static LifeCyclePhase currentPhase = LifeCyclePhase.SCANNING;
+    private static LifeCyclePhase lastPhase = LifeCyclePhase.NO;
 
-    public static void setCurrentPhase(LifeCyclePhase lifeCyclePhase){
-        currentPhase = lifeCyclePhase;
+    public static void setLastPhase(LifeCyclePhase lifeCyclePhase){
+        lastPhase = lifeCyclePhase;
     }
 }
