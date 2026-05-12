@@ -1,5 +1,7 @@
 package cn.argento.askia.supports.environment;
 
+import cn.argento.askia.utilities.lang.StringUtility;
+
 import java.lang.annotation.Annotation;
 import java.util.*;
 
@@ -62,73 +64,78 @@ public class FileScanBasedEnvironmentBean extends BaseEnvironmentBean {
         return this;
     }
 
-    public static ScannedEnvironmentBeanBuilder builder() {
-        return new ScannedEnvironmentBeanBuilder();
+    public static FileScannedEnvironmentBeanBuilder builder() {
+        return new FileScannedEnvironmentBeanBuilder();
     }
 
-    public static final class ScannedEnvironmentBeanBuilder extends BaseEnvironmentBeanBuilder{
+    public static FileScannedEnvironmentBeanSolveAnnotationBuilder fileScannedEnvironmentBeanStepBuilder(){
+        return new FileScannedEnvironmentBeanSolveAnnotationBuilder();
+    }
+
+    // 普通Builder
+    public static final class FileScannedEnvironmentBeanBuilder extends BaseEnvironmentBeanBuilder{
         private final Set<String> classpathList;
         private final Set<String> packageList;
         private final Set<String> classNameList;
 
-        ScannedEnvironmentBeanBuilder() {
+        FileScannedEnvironmentBeanBuilder() {
             super();
             classpathList = new HashSet<>();
             packageList = new HashSet<>();
             classNameList = new HashSet<>();
         }
 
-        public ScannedEnvironmentBeanBuilder addClassPathList(List<String> classpathList) {
+        public FileScannedEnvironmentBeanBuilder addClassPathList(List<String> classpathList) {
             this.classpathList.addAll(classpathList);
             return this;
         }
 
-        public ScannedEnvironmentBeanBuilder addClassPath(String classpath){
+        public FileScannedEnvironmentBeanBuilder addClassPath(String classpath){
             this.classpathList.add(classpath);
             return this;
         }
 
-        public ScannedEnvironmentBeanBuilder addClassPaths(String... classPaths){
+        public FileScannedEnvironmentBeanBuilder addClassPaths(String... classPaths){
             for (String classpath : classPaths){
                 addClassPath(classpath);
             }
             return this;
         }
 
-        public ScannedEnvironmentBeanBuilder addPackageList(List<String> packageList) {
+        public FileScannedEnvironmentBeanBuilder addPackageList(List<String> packageList) {
             this.packageList.addAll(packageList);
             return this;
         }
 
-        public ScannedEnvironmentBeanBuilder addPackage(String packageName){
+        public FileScannedEnvironmentBeanBuilder addPackage(String packageName){
             this.packageList.add(packageName);
             return this;
         }
 
-        public ScannedEnvironmentBeanBuilder addClassNameList(List<String> classNameList) {
+        public FileScannedEnvironmentBeanBuilder addClassNameList(List<String> classNameList) {
             this.classNameList.addAll(classNameList);
             return this;
         }
 
-        public ScannedEnvironmentBeanBuilder addClassName(String className){
+        public FileScannedEnvironmentBeanBuilder addClassName(String className){
             this.classNameList.add(className);
             return this;
         }
 
         @Override
-        public ScannedEnvironmentBeanBuilder addProcessAnnotation(Class<Annotation> solveAnnotation) {
+        public FileScannedEnvironmentBeanBuilder addProcessAnnotation(Class<Annotation> solveAnnotation) {
             super.addProcessAnnotation(solveAnnotation);
             return this;
         }
 
         @Override
-        public ScannedEnvironmentBeanBuilder addAnnotationProcessorMap(Map<Class<?>, Object> annotationProcessorMap) {
+        public FileScannedEnvironmentBeanBuilder addAnnotationProcessorMap(Map<Class<?>, Object> annotationProcessorMap) {
             super.addAnnotationProcessorMap(annotationProcessorMap);
             return this;
         }
 
         @Override
-        public ScannedEnvironmentBeanBuilder addAnnotationProcessor(Object annotationProcessor) {
+        public FileScannedEnvironmentBeanBuilder addAnnotationProcessor(Object annotationProcessor) {
             super.addAnnotationProcessor(annotationProcessor);
             return this;
         }
@@ -138,4 +145,148 @@ public class FileScanBasedEnvironmentBean extends BaseEnvironmentBean {
             return new FileScanBasedEnvironmentBean(super.solveAnnotation, super.annotationProcessorMap, new ArrayList<>(classpathList), new ArrayList<>(packageList), new ArrayList<>(classNameList));
         }
     }
+
+    // step builder
+    public static final class FileScannedEnvironmentBeanSolveAnnotationBuilder extends AbstractBaseEnvironmentBeanSolveAnnotationBuilder<FileScannedEnvironmentBeanAnnotationProcessorBuilder> {
+
+        public FileScannedEnvironmentBeanSolveAnnotationBuilder(){
+            innerBuilder = new FileScannedEnvironmentBeanBuilder();
+        }
+
+        @Override
+        protected FileScannedEnvironmentBeanAnnotationProcessorBuilder createNextStepObject(BaseEnvironmentBeanBuilder innerBuilder) {
+            return new FileScannedEnvironmentBeanAnnotationProcessorBuilder(innerBuilder);
+        }
+    }
+    public static final class FileScannedEnvironmentBeanAnnotationProcessorBuilder extends AbstractBaseEnvironmentBeanAnnotationProcessorBuilder<FileScannedEnvironmentBeanClasspathListBuilder> {
+
+        FileScannedEnvironmentBeanAnnotationProcessorBuilder(BaseEnvironmentBeanBuilder innerBuilderProxy) {
+            super(innerBuilderProxy);
+        }
+
+        @Override
+        protected FileScannedEnvironmentBeanClasspathListBuilder createNextStepObject(BaseEnvironmentBeanBuilder innerBuilder) {
+            final FileScannedEnvironmentBeanBuilder innerBuilder1 = (FileScannedEnvironmentBeanBuilder) innerBuilder;
+            return new FileScannedEnvironmentBeanClasspathListBuilder(innerBuilder1);
+        }
+    }
+    public static abstract class FileScannedEnvironmentBeanStepBuilder<N> extends StepBuilder<FileScannedEnvironmentBeanBuilder, N>{
+
+        FileScannedEnvironmentBeanStepBuilder(FileScannedEnvironmentBeanBuilder innerBuilderProxy) {
+            super(innerBuilderProxy);
+        }
+
+        FileScannedEnvironmentBeanStepBuilder(){
+            super(new FileScannedEnvironmentBeanBuilder());
+        }
+    }
+    public static final class FileScannedEnvironmentBeanClasspathListBuilder extends FileScannedEnvironmentBeanStepBuilder<FileScannedEnvironmentBeanPackageListBuilder>{
+
+        FileScannedEnvironmentBeanClasspathListBuilder(FileScannedEnvironmentBeanBuilder innerBuilderProxy) {
+            super(innerBuilderProxy);
+        }
+
+
+        public FileScannedEnvironmentBeanPackageListBuilder addClassPathList(List<String> classpathList) {
+            if (classpathList == null){
+                classpathList = new ArrayList<>();
+            }
+            innerBuilder.addClassPathList(classpathList);
+            return build();
+        }
+
+        public FileScannedEnvironmentBeanPackageListBuilder addClassPath(String classpath){
+            if (StringUtility.isBlank(classpath)){
+                return build();
+            }
+            innerBuilder.addClassPath(classpath);
+            return build();
+        }
+
+        public FileScannedEnvironmentBeanPackageListBuilder addClassPaths(String... classPaths){
+            for (String classpath : classPaths){
+                if (StringUtility.isBlank(classpath)){
+                    continue;
+                }
+                innerBuilder.addClassPath(classpath);
+            }
+            return build();
+        }
+
+        @Override
+        protected FileScannedEnvironmentBeanPackageListBuilder build() {
+            return new FileScannedEnvironmentBeanPackageListBuilder(innerBuilder);
+        }
+    }
+    public static final class FileScannedEnvironmentBeanPackageListBuilder extends FileScannedEnvironmentBeanStepBuilder<FileScannedEnvironmentBeanClassNameListBuilder>{
+        public FileScannedEnvironmentBeanPackageListBuilder(FileScannedEnvironmentBeanBuilder innerBuilderProxy) {
+            super(innerBuilderProxy);
+        }
+
+        public FileScannedEnvironmentBeanClassNameListBuilder addPackageList(List<String> packageList) {
+            if (packageList == null){
+                packageList = new ArrayList<>();
+            }
+            innerBuilder.addPackageList(packageList);
+            return build();
+        }
+
+        public FileScannedEnvironmentBeanClassNameListBuilder addPackage(String packageName){
+            innerBuilder.addPackage(packageName);
+            return build();
+        }
+
+        public FileScannedEnvironmentBeanClassNameListBuilder addPackages(String... packageNames){
+            for (String packageName : packageNames){
+                if (!StringUtility.isBlank(packageName)){
+                    innerBuilder.addPackage(packageName);
+                }
+            }
+            return build();
+        }
+
+        @Override
+        protected FileScannedEnvironmentBeanClassNameListBuilder build() {
+            return new FileScannedEnvironmentBeanClassNameListBuilder(innerBuilder);
+        }
+
+
+        public FileScanBasedEnvironmentBean buildFileScanBasedEnvironmentBean(){
+            return innerBuilder.build();
+        }
+    }
+    public static final class FileScannedEnvironmentBeanClassNameListBuilder extends FileScannedEnvironmentBeanStepBuilder<FileScanBasedEnvironmentBean>{
+        public FileScannedEnvironmentBeanClassNameListBuilder(FileScannedEnvironmentBeanBuilder innerBuilderProxy) {
+            super(innerBuilderProxy);
+        }
+
+        public FileScanBasedEnvironmentBean addClassNameList(List<String> classNameList) {
+            if (classNameList == null){
+                classNameList = new ArrayList<>();
+            }
+            innerBuilder.addClassNameList(classNameList);
+            return build();
+        }
+
+        public FileScanBasedEnvironmentBean addClassName(String className){
+            innerBuilder.addClassName(className);
+            return build();
+        }
+
+        public FileScanBasedEnvironmentBean addClassNames(String... classNames){
+            for (String className : classNames){
+                if (!StringUtility.isBlank(className)){
+                    innerBuilder.addClassName(className);
+                }
+            }
+            return build();
+        }
+
+        @Override
+        protected FileScanBasedEnvironmentBean build() {
+            return innerBuilder.build();
+        }
+    }
+
+
 }
