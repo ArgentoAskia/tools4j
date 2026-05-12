@@ -178,41 +178,75 @@ public class AnnotationProcessors {
      * @param context context
      * @param <T>
      */
+    @SuppressWarnings("all")
     public static <E extends EnvironmentBean<E>, T> void process(Class<? extends Annotation> annotationTargetClass,
                                                                  T annotationProcessObj, EnvironmentBean<E> environmentBean, AnnotationProcessorContext context) throws InvocationTargetException, IllegalAccessException, BeanNotFoundException, NoSuchMethodException {
         final MutableAnnotationProcessorContext mutableContext = AnnotationProcessorContextHelper.getMutableContext(context);
+        mutableContext.registerAnnotationProcessor(annotationProcessObj);
         // 先进行初始化代码
-        AnnotationProcessorHelper.initContext(mutableContext, annotationProcessObj);
+        AnnotationProcessorContextHelper.initContext(mutableContext, annotationProcessObj);
         // 初始化必要参数
         BaseEnvironmentBean bean = BaseEnvironmentBean.valueOf(annotationTargetClass, annotationProcessObj);
         // 初始化上下文
         mutableContext.registerBean("baseEnvironmentBean", bean);
-        mutableContext.registerBean("environmentBean", environmentBean);
+        if (environmentBean != null){
+            mutableContext.registerBean("environmentBean", environmentBean);
+        }
         final AnnotationProcessingEnvironmentBean<T> annotationProcessingEnvironmentBean = AnnotationProcessorHelper.introspectAnnotationProcessor(annotationProcessObj);
-        AnnotationProcessorHelper.firePhase(LifeCyclePhase.SCANNING, annotationProcessingEnvironmentBean, mutableContext, annotationTargetClass);
-        AnnotationProcessorHelper.firePhase(LifeCyclePhase.CHECKING, annotationProcessingEnvironmentBean, mutableContext, annotationTargetClass);
-        AnnotationProcessorHelper.firePhase(LifeCyclePhase.ANNOTATION_PROCESSING, annotationProcessingEnvironmentBean, mutableContext, annotationTargetClass);
-        AnnotationProcessorHelper.firePhase(LifeCyclePhase.MAIN_PROCESSING, annotationProcessingEnvironmentBean, mutableContext, annotationTargetClass);
-        AnnotationProcessorHelper.firePhase(LifeCyclePhase.POST_PROCESSING, annotationProcessingEnvironmentBean, mutableContext, annotationTargetClass);
-        AnnotationProcessorHelper.firePhase(LifeCyclePhase.FINISHING, annotationProcessingEnvironmentBean, mutableContext, annotationTargetClass);
-        AnnotationProcessorHelper.closeContext(mutableContext, annotationProcessObj);
+        AnnotationProcessorHelper.firePhase(LifeCyclePhase.SCANNING, annotationProcessObj, annotationProcessingEnvironmentBean, mutableContext, annotationTargetClass);
+        AnnotationProcessorHelper.firePhase(LifeCyclePhase.CHECKING, annotationProcessObj, annotationProcessingEnvironmentBean, mutableContext, annotationTargetClass);
+        AnnotationProcessorHelper.firePhase(LifeCyclePhase.ANNOTATION_PROCESSING, annotationProcessObj, annotationProcessingEnvironmentBean, mutableContext, annotationTargetClass);
+        AnnotationProcessorHelper.firePhase(LifeCyclePhase.MAIN_PROCESSING, annotationProcessObj, annotationProcessingEnvironmentBean, mutableContext, annotationTargetClass);
+        AnnotationProcessorHelper.firePhase(LifeCyclePhase.POST_PROCESSING, annotationProcessObj, annotationProcessingEnvironmentBean, mutableContext, annotationTargetClass);
+        AnnotationProcessorHelper.firePhase(LifeCyclePhase.FINISHING, annotationProcessObj, annotationProcessingEnvironmentBean, mutableContext, annotationTargetClass);
+        AnnotationProcessorContextHelper.closeContext(mutableContext, annotationProcessObj);
+        // 恢复状态
+        LifeCyclePhase.setLastPhase(LifeCyclePhase.NO);
     }
 
-    public static <T> void process(BaseEnvironmentBean baseEnvironmentBean, AnnotationProcessorContext context) throws InvocationTargetException, IllegalAccessException, BeanNotFoundException, NoSuchMethodException {
-        final Object annotationProcessor = baseEnvironmentBean.getAnnotationProcessor(Object.class);
+    @SuppressWarnings("all")
+    public static void process(BaseEnvironmentBean baseEnvironmentBean, AnnotationProcessorContext context) throws InvocationTargetException, IllegalAccessException, BeanNotFoundException, NoSuchMethodException {
+        final Object annotationProcessor = baseEnvironmentBean.getFirstAnnotationProcessor();
+        if (annotationProcessor == null){
+            throw new IllegalAccessException("没有可用的注解处理器");
+        }
         final MutableAnnotationProcessorContext mutableContext = AnnotationProcessorContextHelper.getMutableContext(context);
-        AnnotationProcessorHelper.initContext(mutableContext, annotationProcessor);
-        mutableContext.registerBean("baseEnvironmentBean", baseEnvironmentBean);
-        mutableContext.registerBean("environmentBean", baseEnvironmentBean);
+        mutableContext.registerAnnotationProcessor(annotationProcessor);
+        if (mutableContext != null){
+            // 读写容器，则添加Bean
+            AnnotationProcessorContextHelper.initContext(mutableContext, annotationProcessor);
+            mutableContext.registerBean("baseEnvironmentBean", baseEnvironmentBean);
+            mutableContext.registerBean("environmentBean", baseEnvironmentBean);
+        }
+        else{
+            AnnotationProcessorContextHelper.initReadOnlyContext(context, annotationProcessor);
+        }
+
         final AnnotationProcessingEnvironmentBean<Object> annotationProcessingEnvironmentBean = AnnotationProcessorHelper.introspectAnnotationProcessor(annotationProcessor);
-        AnnotationProcessorHelper.firePhase(LifeCyclePhase.SCANNING, annotationProcessingEnvironmentBean, mutableContext, baseEnvironmentBean.getSolveAnnotation());
-        AnnotationProcessorHelper.firePhase(LifeCyclePhase.CHECKING, annotationProcessingEnvironmentBean, mutableContext, baseEnvironmentBean.getSolveAnnotation());
-        AnnotationProcessorHelper.firePhase(LifeCyclePhase.ANNOTATION_PROCESSING, annotationProcessingEnvironmentBean, mutableContext, baseEnvironmentBean.getSolveAnnotation());
-        AnnotationProcessorHelper.firePhase(LifeCyclePhase.MAIN_PROCESSING, annotationProcessingEnvironmentBean, mutableContext, baseEnvironmentBean.getSolveAnnotation());
-        AnnotationProcessorHelper.firePhase(LifeCyclePhase.POST_PROCESSING, annotationProcessingEnvironmentBean, mutableContext, baseEnvironmentBean.getSolveAnnotation());
-        AnnotationProcessorHelper.firePhase(LifeCyclePhase.FINISHING, annotationProcessingEnvironmentBean, mutableContext, baseEnvironmentBean.getSolveAnnotation());
-        AnnotationProcessorHelper.closeContext(mutableContext, annotationProcessor);
+        if (mutableContext != null){
+            AnnotationProcessorHelper.firePhase(LifeCyclePhase.SCANNING, annotationProcessor, annotationProcessingEnvironmentBean, mutableContext, baseEnvironmentBean.getSolveAnnotation());
+            AnnotationProcessorHelper.firePhase(LifeCyclePhase.CHECKING, annotationProcessor, annotationProcessingEnvironmentBean, mutableContext, baseEnvironmentBean.getSolveAnnotation());
+            AnnotationProcessorHelper.firePhase(LifeCyclePhase.ANNOTATION_PROCESSING, annotationProcessor, annotationProcessingEnvironmentBean, mutableContext, baseEnvironmentBean.getSolveAnnotation());
+            AnnotationProcessorHelper.firePhase(LifeCyclePhase.MAIN_PROCESSING, annotationProcessor, annotationProcessingEnvironmentBean, mutableContext, baseEnvironmentBean.getSolveAnnotation());
+            AnnotationProcessorHelper.firePhase(LifeCyclePhase.POST_PROCESSING, annotationProcessor, annotationProcessingEnvironmentBean, mutableContext, baseEnvironmentBean.getSolveAnnotation());
+            AnnotationProcessorHelper.firePhase(LifeCyclePhase.FINISHING, annotationProcessor, annotationProcessingEnvironmentBean, mutableContext, baseEnvironmentBean.getSolveAnnotation());
+            AnnotationProcessorContextHelper.closeContext(mutableContext, annotationProcessor);
+            // 恢复状态
+            LifeCyclePhase.setLastPhase(LifeCyclePhase.NO);
+        }
+        else{
+            // 只读容器阶段判别
+        }
     }
+
+
+
+
+
+
+
+
+
 
     /**
      * 带返回值的处理方法.
