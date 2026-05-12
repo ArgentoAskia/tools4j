@@ -159,9 +159,9 @@ package cn.argento.askia;
 import cn.argento.askia.context.AnnotationProcessorContext;
 import cn.argento.askia.context.BeanNotFoundException;
 import cn.argento.askia.context.MutableAnnotationProcessorContext;
-import cn.argento.askia.supports.LifeCyclePhase;
-import cn.argento.askia.supports.environment.BaseEnvironmentBean;
-import cn.argento.askia.supports.environment.EnvironmentBean;
+import cn.argento.askia.support.LifeCyclePhase;
+import cn.argento.askia.support.environment.BaseEnvironmentBean;
+import cn.argento.askia.support.environment.EnvironmentBean;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;

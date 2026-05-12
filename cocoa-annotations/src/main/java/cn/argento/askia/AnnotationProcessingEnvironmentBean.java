@@ -1,9 +1,9 @@
 package cn.argento.askia;
 
-import cn.argento.askia.annotations.AnnotationProcessor;
+import cn.argento.askia.annotation.AnnotationProcessor;
+import cn.argento.askia.annotation.phase.*;
 import cn.argento.askia.annotations.ApiStatus;
-import cn.argento.askia.annotations.phase.*;
-import cn.argento.askia.supports.LifeCyclePhase;
+import cn.argento.askia.support.LifeCyclePhase;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
