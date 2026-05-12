@@ -178,7 +178,7 @@ public class AnnotationProcessors {
      * @param context context
      * @param <T>
      */
-    public static <E extends EnvironmentBean<E>, T> void process(Class<Annotation> annotationTargetClass,
+    public static <E extends EnvironmentBean<E>, T> void process(Class<? extends Annotation> annotationTargetClass,
                                                                  T annotationProcessObj, EnvironmentBean<E> environmentBean, AnnotationProcessorContext context) throws InvocationTargetException, IllegalAccessException, BeanNotFoundException, NoSuchMethodException {
         final MutableAnnotationProcessorContext mutableContext = AnnotationProcessorContextHelper.getMutableContext(context);
         // 先进行初始化代码
@@ -198,17 +198,29 @@ public class AnnotationProcessors {
         AnnotationProcessorHelper.closeContext(mutableContext, annotationProcessObj);
     }
 
-    public static <T> void process(BaseEnvironmentBean baseEnvironmentBean, AnnotationProcessorContext context){
+    public static <T> void process(BaseEnvironmentBean baseEnvironmentBean, AnnotationProcessorContext context) throws InvocationTargetException, IllegalAccessException, BeanNotFoundException, NoSuchMethodException {
+        final Object annotationProcessor = baseEnvironmentBean.getAnnotationProcessor(Object.class);
         final MutableAnnotationProcessorContext mutableContext = AnnotationProcessorContextHelper.getMutableContext(context);
+        AnnotationProcessorHelper.initContext(mutableContext, annotationProcessor);
+        mutableContext.registerBean("baseEnvironmentBean", baseEnvironmentBean);
+        mutableContext.registerBean("environmentBean", baseEnvironmentBean);
+        final AnnotationProcessingEnvironmentBean<Object> annotationProcessingEnvironmentBean = AnnotationProcessorHelper.introspectAnnotationProcessor(annotationProcessor);
+        AnnotationProcessorHelper.firePhase(LifeCyclePhase.SCANNING, annotationProcessingEnvironmentBean, mutableContext, baseEnvironmentBean.getSolveAnnotation());
+        AnnotationProcessorHelper.firePhase(LifeCyclePhase.CHECKING, annotationProcessingEnvironmentBean, mutableContext, baseEnvironmentBean.getSolveAnnotation());
+        AnnotationProcessorHelper.firePhase(LifeCyclePhase.ANNOTATION_PROCESSING, annotationProcessingEnvironmentBean, mutableContext, baseEnvironmentBean.getSolveAnnotation());
+        AnnotationProcessorHelper.firePhase(LifeCyclePhase.MAIN_PROCESSING, annotationProcessingEnvironmentBean, mutableContext, baseEnvironmentBean.getSolveAnnotation());
+        AnnotationProcessorHelper.firePhase(LifeCyclePhase.POST_PROCESSING, annotationProcessingEnvironmentBean, mutableContext, baseEnvironmentBean.getSolveAnnotation());
+        AnnotationProcessorHelper.firePhase(LifeCyclePhase.FINISHING, annotationProcessingEnvironmentBean, mutableContext, baseEnvironmentBean.getSolveAnnotation());
+        AnnotationProcessorHelper.closeContext(mutableContext, annotationProcessor);
     }
 
     /**
      * 带返回值的处理方法.
      * <p>该方法允许您在注解处理完成之后返回容器内的一些东西以作为复用.</p>
-     * @param fileScanBasedEnvironmentBean
      * @param annotationTargetClass
      * @param annotationProcessObj
      * @param context
+     * @param environmentBean
      * @param retFunction
      * @return
      * @param <T>
@@ -226,7 +238,7 @@ public class AnnotationProcessors {
     }
 
     public static <T, P> T process(BaseEnvironmentBean baseEnvironmentBean, AnnotationProcessorContext context,
-                                   Function<AnnotationProcessorContext, T> retFunction){
+                                   Function<AnnotationProcessorContext, T> retFunction) throws BeanNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         process(baseEnvironmentBean, context);
         return retFunction.apply(context);
     }

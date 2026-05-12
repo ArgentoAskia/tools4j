@@ -223,7 +223,7 @@ class AnnotationProcessorHelper {
      */
     @SuppressWarnings("all")
     static <T> void firePhase(LifeCyclePhase lifeCyclePhase2, AnnotationProcessingEnvironmentBean<T> bean, MutableAnnotationProcessorContext context,
-                              Class<? extends Annotation>[] phaseAnnotationsClass, Class<Annotation> annotationTargetClass) throws BeanNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+                              Class<? extends Annotation>[] phaseAnnotationsClass, Class<? extends Annotation> annotationTargetClass) throws BeanNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         // 阶段方法
         final Map<Method, List<Annotation>> phaseMap = bean.getPhaseMap(lifeCyclePhase2);
         Map<Integer, List<Method>> orderMethodCallMap = new TreeMap<>();
@@ -352,7 +352,7 @@ class AnnotationProcessorHelper {
         }
     }
     @SuppressWarnings("all")
-    static <T> void firePhase(LifeCyclePhase lifeCyclePhase2, AnnotationProcessingEnvironmentBean<T> bean, MutableAnnotationProcessorContext context, Class<Annotation> annotationTargetClass) throws IllegalAccessException, BeanNotFoundException, InvocationTargetException, NoSuchMethodException {
+    static <T> void firePhase(LifeCyclePhase lifeCyclePhase2, AnnotationProcessingEnvironmentBean<T> bean, MutableAnnotationProcessorContext context, Class<? extends Annotation> annotationTargetClass) throws IllegalAccessException, BeanNotFoundException, InvocationTargetException, NoSuchMethodException {
 
         Class<? extends Annotation>[] resolveCache = context.getResolveCache(bean.getAnnotationProcessorClass());
         if (resolveCache == null){

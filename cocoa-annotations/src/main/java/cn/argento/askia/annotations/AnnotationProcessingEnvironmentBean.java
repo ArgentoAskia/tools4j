@@ -21,10 +21,11 @@ class AnnotationProcessingEnvironmentBean<T> {
      */
     private Class<T> annotationProcessorClass;
     /**
-     * 注解处理器
+     * 注解处理器注解
      */
     private AnnotationProcessor annotationProcessor;
 
+    // 阶段方法绑定
     private final Map<LifeCyclePhase, Map<Method, List<Annotation>>> lifeCyclePhaseMap;
 
 
