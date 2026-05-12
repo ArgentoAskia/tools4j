@@ -1,4 +1,4 @@
-package cn.argento.askia.annotations.phase;
+package cn.argento.askia.annotation.phase;
 
 import java.lang.annotation.*;
 

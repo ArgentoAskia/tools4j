@@ -1,11 +1,11 @@
-package cn.argento.askia.annotations.phase;
+package cn.argento.askia.annotation.phase;
 
 import java.lang.annotation.*;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(CheckPhase.CheckPhaseContainer.class)
-public @interface CheckPhase {
+@Repeatable(MainProcessingPhase.MainProcessingPhaseContainer.class)
+public @interface MainProcessingPhase {
 
     /**
      * 绑定哪个注解处理器
@@ -34,7 +34,7 @@ public @interface CheckPhase {
 
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    @interface CheckPhaseContainer{
-        CheckPhase[] value();
+    @interface MainProcessingPhaseContainer{
+        MainProcessingPhase[] value();
     }
 }

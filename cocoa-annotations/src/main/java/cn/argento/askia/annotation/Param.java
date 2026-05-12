@@ -1,6 +1,6 @@
-package cn.argento.askia.annotations;
+package cn.argento.askia.annotation;
 
-import cn.argento.askia.supports.LifeCyclePhase;
+import cn.argento.askia.support.LifeCyclePhase;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

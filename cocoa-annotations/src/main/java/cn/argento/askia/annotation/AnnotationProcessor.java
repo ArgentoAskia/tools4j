@@ -1,4 +1,4 @@
-package cn.argento.askia.annotations;
+package cn.argento.askia.annotation;
 
 import java.lang.annotation.*;
 
