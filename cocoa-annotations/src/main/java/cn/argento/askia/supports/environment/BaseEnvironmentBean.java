@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class BaseEnvironmentBean implements EnvironmentBean<BaseEnvironmentBean>{
 
-    private Class<Annotation> solveAnnotation;
+    private Class<? extends Annotation> solveAnnotation;
 
     private final Map<Class<?>, Object> annotationProcessorMap;
 
@@ -20,7 +20,7 @@ public class BaseEnvironmentBean implements EnvironmentBean<BaseEnvironmentBean>
      * @param solveAnnotation
      * @param annotationProcessors
      */
-    private BaseEnvironmentBean(Class<Annotation> solveAnnotation, Object[] annotationProcessors){
+    private BaseEnvironmentBean(Class<? extends Annotation> solveAnnotation, Object[] annotationProcessors){
         AssertionUtility.requireArrayAtLeastOneMember(annotationProcessors);
         this.solveAnnotation = solveAnnotation;
         annotationProcessorMap = new HashMap<>();
@@ -29,7 +29,7 @@ public class BaseEnvironmentBean implements EnvironmentBean<BaseEnvironmentBean>
         }
     }
 
-    public Class<Annotation> getSolveAnnotation() {
+    public Class<? extends Annotation> getSolveAnnotation() {
         return solveAnnotation;
     }
 
@@ -47,7 +47,7 @@ public class BaseEnvironmentBean implements EnvironmentBean<BaseEnvironmentBean>
         }
     }
 
-    public static BaseEnvironmentBean valueOf(Class<Annotation> solveAnnotation, Object... annotationProcessors){
+    public static BaseEnvironmentBean valueOf(Class<? extends Annotation> solveAnnotation, Object... annotationProcessors){
         if (annotationProcessors == null){
             annotationProcessors = new Object[0];
         }
@@ -59,7 +59,7 @@ public class BaseEnvironmentBean implements EnvironmentBean<BaseEnvironmentBean>
      * @param solveAnnotation
      * @param annotationProcessorMap
      */
-    BaseEnvironmentBean(Class<Annotation> solveAnnotation, Map<Class<?>, Object> annotationProcessorMap) {
+    BaseEnvironmentBean(Class<? extends Annotation> solveAnnotation, Map<Class<?>, Object> annotationProcessorMap) {
         this.solveAnnotation = solveAnnotation;
         this.annotationProcessorMap = annotationProcessorMap;
     }
@@ -82,14 +82,14 @@ public class BaseEnvironmentBean implements EnvironmentBean<BaseEnvironmentBean>
     }
 
     public static class BaseEnvironmentBeanBuilder {
-        protected Class<Annotation> solveAnnotation;
+        protected Class<? extends Annotation> solveAnnotation;
         protected final Map<Class<?>, Object> annotationProcessorMap;
 
         BaseEnvironmentBeanBuilder() {
             annotationProcessorMap = new HashMap<>();
         }
 
-        public BaseEnvironmentBeanBuilder addProcessAnnotation(Class<Annotation> solveAnnotation) {
+        public BaseEnvironmentBeanBuilder addProcessAnnotation(Class<? extends Annotation> solveAnnotation) {
             this.solveAnnotation = solveAnnotation;
             return this;
         }
@@ -139,7 +139,7 @@ public class BaseEnvironmentBean implements EnvironmentBean<BaseEnvironmentBean>
             super();
         }
 
-        public N addProcessAnnotation(Class<Annotation> solveAnnotation) {
+        public N addProcessAnnotation(Class<? extends Annotation> solveAnnotation) {
             innerBuilder.addProcessAnnotation(solveAnnotation);
             return build();
         }

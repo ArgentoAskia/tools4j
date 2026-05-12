@@ -19,7 +19,7 @@ public class FileScanBasedEnvironmentBean extends BaseEnvironmentBean {
     // 指定类名, 支持通配符
     private List<String> classNameList;
 
-    FileScanBasedEnvironmentBean(Class<Annotation> solveAnnotation, Map<Class<?>, Object> annotationProcessorMap, List<String> classpathList, List<String> packageList, List<String> classNameList) {
+    FileScanBasedEnvironmentBean(Class<? extends Annotation> solveAnnotation, Map<Class<?>, Object> annotationProcessorMap, List<String> classpathList, List<String> packageList, List<String> classNameList) {
         super(solveAnnotation, annotationProcessorMap);
         this.classpathList = classpathList;
         this.packageList = packageList;
@@ -123,7 +123,7 @@ public class FileScanBasedEnvironmentBean extends BaseEnvironmentBean {
         }
 
         @Override
-        public FileScannedEnvironmentBeanBuilder addProcessAnnotation(Class<Annotation> solveAnnotation) {
+        public FileScannedEnvironmentBeanBuilder addProcessAnnotation(Class<? extends Annotation> solveAnnotation) {
             super.addProcessAnnotation(solveAnnotation);
             return this;
         }
@@ -170,7 +170,7 @@ public class FileScanBasedEnvironmentBean extends BaseEnvironmentBean {
             return new FileScannedEnvironmentBeanClasspathListBuilder(innerBuilder1);
         }
     }
-    public static abstract class FileScannedEnvironmentBeanStepBuilder<N> extends StepBuilder<FileScannedEnvironmentBeanBuilder, N>{
+    protected static abstract class FileScannedEnvironmentBeanStepBuilder<N> extends StepBuilder<FileScannedEnvironmentBeanBuilder, N>{
 
         FileScannedEnvironmentBeanStepBuilder(FileScannedEnvironmentBeanBuilder innerBuilderProxy) {
             super(innerBuilderProxy);
@@ -254,6 +254,10 @@ public class FileScanBasedEnvironmentBean extends BaseEnvironmentBean {
         public FileScanBasedEnvironmentBean buildFileScanBasedEnvironmentBean(){
             return innerBuilder.build();
         }
+
+        public BaseEnvironmentBean buildBaseEnvironmentBean(){
+            return buildFileScanBasedEnvironmentBean();
+        }
     }
     public static final class FileScannedEnvironmentBeanClassNameListBuilder extends FileScannedEnvironmentBeanStepBuilder<FileScanBasedEnvironmentBean>{
         public FileScannedEnvironmentBeanClassNameListBuilder(FileScannedEnvironmentBeanBuilder innerBuilderProxy) {
@@ -279,6 +283,14 @@ public class FileScanBasedEnvironmentBean extends BaseEnvironmentBean {
                     innerBuilder.addClassName(className);
                 }
             }
+            return build();
+        }
+
+        public FileScanBasedEnvironmentBean buildFileScanBasedEnvironmentBean(){
+            return build();
+        }
+
+        public BaseEnvironmentBean buildBaseEnvironmentBean(){
             return build();
         }
 
