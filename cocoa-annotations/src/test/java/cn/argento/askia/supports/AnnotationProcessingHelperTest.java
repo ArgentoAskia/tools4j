@@ -1,6 +1,6 @@
 //package cn.argento.askia.supports;
 //
-//import cn.argento.askia.AnnotationProcessors;
+//import cn.argento.askia.annotations.AnnotationProcessors;
 //import cn.argento.askia.annotations.Utility;
 //import cn.argento.askia.utilities.annotation.AnnotationUtility;
 //import org.junit.Test;
