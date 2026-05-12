@@ -3,6 +3,7 @@ package cn.argento.askia.utilities.annotation;
 
 
 import cn.argento.askia.annotations.Utility;
+import cn.argento.askia.utilities.lang.LangUtility;
 
 import java.lang.annotation.*;
 import java.lang.reflect.*;
@@ -972,8 +973,15 @@ public final class AnnotationUtility {
      * @throws IllegalAccessException if this {@code Method} object is enforcing Java language access control and the underlying method is inaccessible.
      * @see #getAnnotationAttributeValue(Annotation, String)
      */
+    @SuppressWarnings("unchecked")
     public static <V> V getAnnotationAttributeValue(Annotation annotation, String attributeName, Class<V> attributeValueType) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         final Object value = getAnnotationAttributeValue(annotation, attributeName);
+        if (attributeValueType.isPrimitive()){
+            // 如果提供的类型是基本类型, 则处理基本类型
+            final Class<?> boxingType = LangUtility.getBoxingType(attributeValueType);
+            final Object cast = boxingType.cast(value);
+            return (V) cast;
+        }
         return attributeValueType.cast(value);
     }
 
