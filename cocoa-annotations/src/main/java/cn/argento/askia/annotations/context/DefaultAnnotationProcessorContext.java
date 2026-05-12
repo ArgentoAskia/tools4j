@@ -24,6 +24,13 @@ public class DefaultAnnotationProcessorContext extends AbstractAnnotationProcess
     }
 
     @Override
+    public void registerAnnotationProcessor(Object annotationProcessor) {
+        if (annotationProcessor != null){
+            annotationProcessorMap.put(annotationProcessor.getClass(), annotationProcessor);
+        }
+    }
+
+    @Override
     public void setPhaseReturnValue(LifeCyclePhase phase, Object value) {
         lifeCyclePhaseReturnObjectMap.put(phase, value);
     }

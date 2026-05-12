@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class AbstractAnnotationProcessorContext implements AnnotationProcessorContext{
 
     // 注解处理器
-    protected Map<Class<?>, Object> annotationProcessorList;
+    protected Map<Class<?>, Object> annotationProcessorMap;
 
     // 返回值Map
     protected Map<LifeCyclePhase, Object> lifeCyclePhaseReturnObjectMap;
@@ -25,7 +25,7 @@ public abstract class AbstractAnnotationProcessorContext implements AnnotationPr
     protected Map<Type, List<String>> typeIndex;
 
     protected AbstractAnnotationProcessorContext(){
-        annotationProcessorList = new HashMap<>();
+        annotationProcessorMap = new HashMap<>();
         lifeCyclePhaseReturnObjectMap = new ConcurrentHashMap<>();
         nameMap = new ConcurrentHashMap<>();
         typeIndex = new ConcurrentHashMap<>();
@@ -33,12 +33,12 @@ public abstract class AbstractAnnotationProcessorContext implements AnnotationPr
 
     @Override
     public List<Object> getAnnotationProcessors() {
-        return new ArrayList<>(annotationProcessorList.values());
+        return new ArrayList<>(annotationProcessorMap.values());
     }
 
     @Override
     public <T> T getAnnotationProcessor(Class<T> annotationProcessorClass) {
-        final Object annotationProcessor = annotationProcessorList.get(annotationProcessorClass);
+        final Object annotationProcessor = annotationProcessorMap.get(annotationProcessorClass);
         if (annotationProcessor == null){
             return null;
         }
@@ -103,7 +103,7 @@ public abstract class AbstractAnnotationProcessorContext implements AnnotationPr
 
 
     protected void close(){
-        annotationProcessorList.clear();
+        annotationProcessorMap.clear();
         lifeCyclePhaseReturnObjectMap.clear();
         nameMap.clear();
         typeIndex.clear();
