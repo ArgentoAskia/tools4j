@@ -249,15 +249,6 @@ public class FileScanBasedEnvironmentBean extends BaseEnvironmentBean {
         protected FileScannedEnvironmentBeanClassNameListBuilder build() {
             return new FileScannedEnvironmentBeanClassNameListBuilder(innerBuilder);
         }
-
-
-        public FileScanBasedEnvironmentBean buildFileScanBasedEnvironmentBean(){
-            return innerBuilder.build();
-        }
-
-        public BaseEnvironmentBean buildBaseEnvironmentBean(){
-            return buildFileScanBasedEnvironmentBean();
-        }
     }
     public static final class FileScannedEnvironmentBeanClassNameListBuilder extends FileScannedEnvironmentBeanStepBuilder<FileScanBasedEnvironmentBean>{
         public FileScannedEnvironmentBeanClassNameListBuilder(FileScannedEnvironmentBeanBuilder innerBuilderProxy) {
@@ -283,14 +274,6 @@ public class FileScanBasedEnvironmentBean extends BaseEnvironmentBean {
                     innerBuilder.addClassName(className);
                 }
             }
-            return build();
-        }
-
-        public FileScanBasedEnvironmentBean buildFileScanBasedEnvironmentBean(){
-            return build();
-        }
-
-        public BaseEnvironmentBean buildBaseEnvironmentBean(){
             return build();
         }
 
