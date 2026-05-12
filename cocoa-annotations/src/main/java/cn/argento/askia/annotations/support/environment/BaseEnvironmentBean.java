@@ -5,6 +5,7 @@ import cn.argento.askia.utilities.lang.AssertionUtility;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 基础环境信息支持
@@ -45,6 +46,16 @@ public class BaseEnvironmentBean implements EnvironmentBean<BaseEnvironmentBean>
         else{
             return null;
         }
+    }
+
+    public Object getFirstAnnotationProcessor(){
+        final int size = annotationProcessorMap.size();
+        if (size > 0){
+            final Set<Map.Entry<Class<?>, Object>> entries = annotationProcessorMap.entrySet();
+            final Map.Entry<Class<?>, Object> next = entries.iterator().next();
+            return next.getValue();
+        }
+        return null;
     }
 
     public static BaseEnvironmentBean valueOf(Class<? extends Annotation> solveAnnotation, Object... annotationProcessors){
