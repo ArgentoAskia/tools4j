@@ -19,18 +19,19 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 public @interface Utility {
 
+    String USE_PACKAGE = "{{ packageName }}";
+
     /**
      * 描述此工具类的用途的文本(名称)
      * @return 描述文本
      */
     String value();
 
-
     /**
      * 归档分类, 使用/进行分割, 默认应该使用简易包名作为归档类型
      * @return 归档名，默认包名
      */
-    String archive() default "{{ packageName }}";
+    String archive() default USE_PACKAGE;
 
     /**
      * 当前版本
